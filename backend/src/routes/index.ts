@@ -11,6 +11,7 @@ import { createMoodRoutes } from "./moodRoutes.js";
 import { createReactionRoutes } from "./reactionRoutes.js";
 import { createReportRoutes } from "./reportRoutes.js";
 import { createStatisticsRoutes, createJobRoutes } from "./statisticsRoutes.js";
+import { createNotificationRoutes } from "./notificationRoutes.js";
 import { createTagRoutes } from "./tagRoutes.js";
 
 export function createApiRoutes(deps: Dependencies): Router {
@@ -27,6 +28,7 @@ export function createApiRoutes(deps: Dependencies): Router {
   router.use(createCommentRoutes(deps));
   router.use(createReportRoutes(deps));
   router.use("/statistics", createStatisticsRoutes(deps));
+  router.use("/notifications", createNotificationRoutes(deps));
   router.use("/internal/jobs", createJobRoutes(deps));
   router.use("/admin", createAdminRoutes(deps));
 

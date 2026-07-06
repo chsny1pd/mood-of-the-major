@@ -34,6 +34,14 @@ export interface MoodSearchQuery extends MoodFeedFilters {
   cursorId?: string;
 }
 
+export interface AdminMoodListQuery {
+  status?: Mood["status"];
+  minReportCount?: number;
+  limit: number;
+  cursorCreatedAt?: Date;
+  cursorId?: string;
+}
+
 export interface IMoodRepository {
   create(input: CreateMoodInput): Promise<MoodWithRelations>;
   findById(id: string): Promise<MoodWithRelations | null>;
@@ -47,4 +55,7 @@ export interface IMoodRepository {
   adjustReactionSummary(moodId: string, reactionType: string, delta: number): Promise<Record<string, number>>;
   incrementReportCount(moodId: string): Promise<void>;
   isActive(moodId: string): Promise<boolean>;
+  moderateRemove(moodId: string, adminId: string, moderationNote: string | null): Promise<MoodWithRelations | null>;
+  findAdminContentList(query: AdminMoodListQuery): Promise<MoodWithRelations[]>;
+  countCreatedSince(since: Date): Promise<number>;
 }

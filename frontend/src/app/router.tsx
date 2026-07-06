@@ -1,9 +1,15 @@
 import { createBrowserRouter } from "react-router-dom";
 import { RedirectIfAuthenticated, RequireAuth } from "../components/RequireAuth";
+import { RequireAdmin } from "../components/RequireAdmin";
 import { ROUTES } from "../constants/routes";
+import { AdminLayout } from "../layouts/AdminLayout";
 import { AuthLayout } from "../layouts/AuthLayout";
 import { PublicLayout } from "../layouts/PublicLayout";
 import { StudentLayout } from "../layouts/StudentLayout";
+import { AdminAuditLogPage } from "../pages/AdminAuditLogPage";
+import { AdminOverviewPage } from "../pages/AdminOverviewPage";
+import { AdminReportsPage } from "../pages/AdminReportsPage";
+import { AdminUsersPage } from "../pages/AdminUsersPage";
 import { BookmarksPage } from "../pages/BookmarksPage";
 import { CreateMoodPage } from "../pages/CreateMoodPage";
 import { FacultyFeedPage } from "../pages/FacultyFeedPage";
@@ -12,6 +18,7 @@ import { LandingPage } from "../pages/LandingPage";
 import { LoginPage } from "../pages/LoginPage";
 import { MajorFeedPage } from "../pages/MajorFeedPage";
 import { MoodDetailPage } from "../pages/MoodDetailPage";
+import { NotificationsPage } from "../pages/NotificationsPage";
 import { RegisterPage } from "../pages/RegisterPage";
 import { SearchPage } from "../pages/SearchPage";
 import { StatisticsPage } from "../pages/StatisticsPage";
@@ -91,6 +98,35 @@ export const router = createBrowserRouter([
       {
         path: ROUTES.trending,
         element: <TrendingPage />,
+      },
+      {
+        path: ROUTES.notifications,
+        element: <NotificationsPage />,
+      },
+    ],
+  },
+  {
+    element: (
+      <RequireAdmin>
+        <AdminLayout />
+      </RequireAdmin>
+    ),
+    children: [
+      {
+        path: ROUTES.admin,
+        element: <AdminOverviewPage />,
+      },
+      {
+        path: ROUTES.adminReports,
+        element: <AdminReportsPage />,
+      },
+      {
+        path: ROUTES.adminUsers,
+        element: <AdminUsersPage />,
+      },
+      {
+        path: ROUTES.adminAudit,
+        element: <AdminAuditLogPage />,
       },
     ],
   },

@@ -4,6 +4,7 @@ import type {
   MoodFeedQuery,
   MoodSearchQuery,
   MoodWithRelations,
+  AdminMoodListQuery,
 } from "../../../domain/ports/IMoodRepository.js";
 import { FacultyModel } from "../models/Faculty.js";
 import { MajorModel } from "../models/Major.js";
@@ -350,5 +351,61 @@ export class MongooseMoodRepository implements IMoodRepository {
   async isAuthor(moodId: string, authorId: string): Promise<boolean> {
     const count = await MoodModel.countDocuments({ _id: moodId, authorId });
     return count > 0;
+  }
+
+  async moderateRemove(
+    moodId: string,
+    adminId: string,
+    moderationNote: string | null,
+  ): Promise<MoodWithRelations | null> {
+    const updated = await MoodModel.findOneAndUpdate(
+      { _id: moodId, deletedAt: null },
+      {
+        status: "moderated_removed",
+        moderatedAt: new Date(),
+        moderatedBy: adminId,
+        moderationNote,
+        deletedAt: new Date(),
+      },
+      { returnDocument: "after" },
+    ).lean();
+
+    if (!updated) return null;
+
+    const [hydrated] = await hydrateMoods([updated]);
+    return hydrated ?? null;
+  }
+
+  async findAdminContentList(query: AdminMoodListQuery): Promise<MoodWithRelations[]> {
+    const filter: Record<string, unknown> = { deletedAt: null };
+
+    if (query.status) {
+      filter.status = query.status;
+    }
+
+    if (query.minReportCount !== undefined) {
+      filter.reportCount = { $gte: query.minReportCount };
+    }
+
+    if (query.cursorCreatedAt && query.cursorId) {
+      filter.$or = [
+        { createdAt: { $lt: query.cursorCreatedAt } },
+        { createdAt: query.cursorCreatedAt, _id: { $lt: query.cursorId } },
+      ];
+    }
+
+    const moodDocs = await MoodModel.find(filter)
+      .sort({ createdAt: -1, _id: -1 })
+      .limit(query.limit)
+      .lean();
+
+    return hydrateMoods(moodDocs);
+  }
+
+  async countCreatedSince(since: Date): Promise<number> {
+    return MoodModel.countDocuments({
+      deletedAt: null,
+      createdAt: { $gte: since },
+    });
   }
 }

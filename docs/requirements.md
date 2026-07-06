@@ -17,7 +17,9 @@ This document captures **resolved business rules** and **remaining open decision
 | **OD-003** | JWT refresh token strategy | **Resolved** in [`authentication.md`](./authentication.md): opaque refresh token, HttpOnly cookie (browser), SHA-256 hash on `users`, rotation on refresh, 7-day sliding expiry. |
 | **OD-005** | Pagination strategy | **Cursor-based** on all paginated list endpoints (`limit`, `cursor`, `meta.nextCursor`). See [`api.md`](./api.md) §Pagination. |
 | **OD-006** | Image limits | **4 images per mood**, **5 MB** per image, MIME allowlist JPEG/PNG/WebP. See [`cloudflare-r2.md`](./cloudflare-r2.md). |
+| **OD-009** | Student access to statistics dashboard | **Permitted.** Students, advisors, and administrators may access aggregated statistics and trending endpoints. All responses enforce `AGGREGATION_THRESHOLD_MIN`; no individual posts are exposed. Frontend routes `/statistics` and `/trending` require authentication (trending API is public read per `OD-002`). |
 | **OD-010** | Minimum aggregation threshold | **`AGGREGATION_THRESHOLD_MIN` default 5.** See [`security.md`](./security.md). |
+| **OD-011** | Advisor role: distinct vs. admin subset | **Distinct role.** Advisors have read-only access to statistics endpoints (same scope as students in v1.0). Advisors cannot access the admin namespace or moderation tools. Role assignment is administrative (Sprint 6 user management); registration defaults to `student`. |
 | **OD-012** | Post edit window | **24 hours** from `createdAt`. See [`api.md`](./api.md) Update Mood. |
 | **OD-013** | Faculty/major on posts | **Optional** on create. If omitted, application defaults from the author's `users.facultyId` / `users.majorId` when set. If both are provided, `majorId` must belong to `facultyId`. |
 | **OD-014** | University email domain restriction | **Configurable** via `ALLOWED_EMAIL_DOMAINS` (comma-separated). When unset, any valid email is accepted. When set, registration rejects non-matching domains with `422`. See [`authentication.md`](./authentication.md). |
@@ -49,8 +51,6 @@ Anonymous **comments**, **reactions**, and **bookmarks** are **student-only** wr
 | **OD-004** | Comment model: threaded vs. flat | Phase 2 | API supports `parentId`; max depth and default UX TBD. |
 | **OD-007** | Predefined reaction types | Phase 2 | Default set documented in [`glossary.md`](./glossary.md); admin configurability scope TBD. |
 | **OD-008** | Notification triggers and channels | Phase 3 | In-app minimum in v1; push deferred. |
-| **OD-009** | Student access to statistics dashboard | Phase 3 | API permits `student` role; product gating TBD. |
-| **OD-011** | Advisor role: distinct vs. admin subset | Phase 3 | Schema supports `advisor`; assignment and UI TBD. |
 
 ---
 

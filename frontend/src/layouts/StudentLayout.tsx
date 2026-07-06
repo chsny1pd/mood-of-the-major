@@ -39,6 +39,20 @@ export function StudentLayout() {
                 >
                   Trending
                 </Link>
+                <Link
+                  to={ROUTES.notifications}
+                  className="hidden text-stone-600 hover:text-teal-800 sm:inline"
+                >
+                  Inbox
+                </Link>
+                {user.role === "administrator" ? (
+                  <Link
+                    to={ROUTES.admin}
+                    className="hidden rounded-md bg-stone-900 px-2 py-1 text-white hover:bg-stone-800 sm:inline"
+                  >
+                    Admin
+                  </Link>
+                ) : null}
               </>
             ) : null}
             {user ? (

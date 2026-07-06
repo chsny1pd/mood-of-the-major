@@ -7,6 +7,8 @@ import { CommentModel } from "./models/Comment.js";
 import { MoodModel } from "./models/Mood.js";
 import { ReactionModel } from "./models/Reaction.js";
 import { ReportModel } from "./models/Report.js";
+import { AuditLogModel } from "./models/AuditLog.js";
+import { NotificationModel } from "./models/Notification.js";
 
 export type DatabaseStatus = "disconnected" | "connecting" | "connected" | "disconnecting";
 
@@ -17,6 +19,8 @@ async function syncModelIndexes(logger: Logger): Promise<void> {
     ReactionModel.syncIndexes(),
     BookmarkModel.syncIndexes(),
     ReportModel.syncIndexes(),
+    AuditLogModel.syncIndexes(),
+    NotificationModel.syncIndexes(),
     EmotionStatisticsModel.syncIndexes(),
     DailyStatisticsModel.syncIndexes(),
   ]);

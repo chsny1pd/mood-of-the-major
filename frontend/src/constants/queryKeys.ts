@@ -10,4 +10,9 @@ export const queryKeys = {
   trending: (params: unknown) => ["statistics", "trending", params] as const,
   emotionTags: ["tags", "emotions"] as const,
   imageUrl: (imageId: string) => ["images", "url", imageId] as const,
+  adminDashboard: ["admin", "dashboard"] as const,
+  adminReports: (params?: unknown) => ["admin", "reports", params] as const,
+  adminUsers: (params?: unknown) => ["admin", "users", params] as const,
+  adminAuditLogs: (params?: unknown) => ["admin", "audit-logs", params] as const,
+  notifications: (params?: unknown) => ["notifications", params] as const,
 };

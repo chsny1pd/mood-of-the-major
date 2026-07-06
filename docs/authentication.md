@@ -824,10 +824,11 @@ Not in v1 scope. Documented for architectural planning.
 | ID | Resolution in this document |
 |----|----------------------------|
 | `OD-003` | Opaque refresh token in HttpOnly cookie; SHA-256 hash on `users`; rotation on refresh; reuse detection |
-| `OD-011` | Advisor role documented as statistics-only; student and administrator are primary |
+| `OD-009` | Students may access statistics and trending dashboards; data is aggregated with threshold enforcement |
+| `OD-011` | Advisor is a distinct read-only statistics role; assignment is administrative (Sprint 6) |
 | `OD-014` | Email domain restriction optional via `ALLOWED_EMAIL_DOMAINS` |
 
-Remaining TBD: `OD-002` (guest feed limits — route protection notes), `OD-009` (student statistics access — listed as permitted with TBD note in `api.md`).
+Remaining TBD: `OD-002` (guest feed limits — route protection notes).
 
 ---
 

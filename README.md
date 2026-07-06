@@ -464,11 +464,22 @@ Try auth: **Join** → register → redirects to `/feed`. Sign out from header.
 
 **Quality checks:** `npm run lint`, `npm run typecheck`, `npm test`, `npm run build` in each package.
 
-### Current Phase: Sprint 2 Auth (complete) → Sprint 3 Mood Posting (next)
+### Current Phase: Sprint 6 Admin Dashboard (complete) → Sprint 7 Hardening (next)
 
 1. Review this README and `docs/roadmap.md` for milestone scope.
 2. Track active tasks in `TODO.md`.
 3. Follow `.cursor/rules/` and layer docs when implementing features.
+
+**Statistics QA (local or staging):**
+
+```bash
+cd backend
+npm run seed              # reference data
+npm run seed:sample-moods # demo moods for aggregation (optional)
+npm run qa:statistics     # run aggregation job + verify dashboard output
+```
+
+**Staging aggregation (cron or manual):** `POST /api/v1/internal/jobs/aggregate-statistics` with header `x-service-api-key: $SERVICE_API_KEY`. Schedule daily at 01:00 UTC on Railway.
 
 ### Branching Strategy
 

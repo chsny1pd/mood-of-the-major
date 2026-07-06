@@ -1,4 +1,13 @@
-import type { CreateUserInput, User } from "../entities/User.js";
+import type { CreateUserInput, User, UserRole, UserStatus } from "../entities/User.js";
+
+export interface AdminUserListQuery {
+  status?: UserStatus;
+  role?: UserRole;
+  q?: string;
+  limit: number;
+  cursorCreatedAt?: Date;
+  cursorId?: string;
+}
 
 export interface IUserRepository {
   findByEmail(email: string): Promise<User | null>;
@@ -13,4 +22,7 @@ export interface IUserRepository {
   ): Promise<void>;
   incrementTokenVersion(id: string): Promise<number>;
   clearRefreshSession(id: string): Promise<void>;
+  findManyAdmin(query: AdminUserListQuery): Promise<User[]>;
+  updateStatus(id: string, status: UserStatus): Promise<User | null>;
+  countActiveSince(since: Date): Promise<number>;
 }

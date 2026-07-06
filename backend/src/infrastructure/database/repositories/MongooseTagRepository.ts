@@ -1,5 +1,9 @@
 import type { EmotionTag } from "../../../domain/entities/Tag.js";
-import type { ITagRepository } from "../../../domain/ports/ITagRepository.js";
+import type {
+  CreateTagInput,
+  ITagRepository,
+  UpdateTagInput,
+} from "../../../domain/ports/ITagRepository.js";
 import { TagModel } from "../models/Tag.js";
 
 function toEmotionTag(doc: {
@@ -51,5 +55,48 @@ export class MongooseTagRepository implements ITagRepository {
       .lean();
 
     return tags.map(toEmotionTag);
+  }
+
+  async findAllAdmin(type = "emotion", includeInactive = false): Promise<EmotionTag[]> {
+    const filter: Record<string, unknown> = { type };
+
+    if (!includeInactive) {
+      filter.isActive = true;
+    }
+
+    const tags = await TagModel.find(filter).sort({ sortOrder: 1, name: 1 }).lean();
+    return tags.map(toEmotionTag);
+  }
+
+  async findById(id: string): Promise<EmotionTag | null> {
+    const tag = await TagModel.findById(id).lean();
+    return tag ? toEmotionTag(tag) : null;
+  }
+
+  async create(input: CreateTagInput): Promise<EmotionTag> {
+    const doc = await TagModel.create({
+      name: input.name.trim(),
+      slug: input.slug.trim().toLowerCase(),
+      type: input.type ?? "emotion",
+      colorToken: input.colorToken ?? null,
+      iconKey: input.iconKey ?? null,
+      isActive: true,
+      sortOrder: input.sortOrder ?? 0,
+    });
+
+    return toEmotionTag(doc.toObject());
+  }
+
+  async update(id: string, input: UpdateTagInput): Promise<EmotionTag | null> {
+    const patch: Record<string, unknown> = {};
+
+    if (input.name !== undefined) patch.name = input.name.trim();
+    if (input.isActive !== undefined) patch.isActive = input.isActive;
+    if (input.sortOrder !== undefined) patch.sortOrder = input.sortOrder;
+    if (input.colorToken !== undefined) patch.colorToken = input.colorToken;
+    if (input.iconKey !== undefined) patch.iconKey = input.iconKey;
+
+    const doc = await TagModel.findByIdAndUpdate(id, patch, { returnDocument: "after" }).lean();
+    return doc ? toEmotionTag(doc) : null;
   }
 }

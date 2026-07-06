@@ -136,7 +136,7 @@ Implements `FR-AUTH-006`, `BR-AUTH-002`. Roles stored in `users.role` and JWT `r
 | Role | Database value | Create content | Admin namespace | Statistics |
 |------|----------------|:--------------:|:-----------------:|:----------:|
 | **Guest** | (no JWT) | — | — | — |
-| **Student** | `student` | ✓ | — | TBD (`OD-009`) |
+| **Student** | `student` | ✓ | — | Read |
 | **Advisor** | `advisor` | — | — | Read |
 | **Administrator** | `administrator` | Moderate only | ✓ | ✓ |
 

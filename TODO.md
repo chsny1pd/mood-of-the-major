@@ -47,14 +47,28 @@
 - [x] Integration tests: engagement auth guards
 - [ ] Manual QA on staging (comments, reactions, bookmarks, search)
 
-## Sprint 5 — Statistics Dashboard (in progress)
+## Sprint 5 — Statistics Dashboard
 
 - [x] Backend: StatisticsService, TrendingService, statistics repositories
 - [x] Backend: `GET /statistics/dashboard`, `GET /moods/trending`
 - [x] Backend: AggregationThresholdPolicy; daily aggregation job endpoint
 - [x] Frontend: `features/statistics/` — DistributionChart, TimeSeriesChart, ScopeSelector
 - [x] Frontend: StatisticsPage, TrendingPage; ChartContainer threshold empty states
-- [x] Tests: threshold boundary unit test (4 vs 5 records)
-- [ ] Run aggregation job on staging after mood data exists
-- [ ] Manual QA: statistics and trending pages with seeded aggregates
-- [ ] Resolve OD-009/OD-010/OD-011 (student access policy, threshold value, advisor role)
+- [x] Tests: threshold boundary unit test (4 vs 5 records); StatisticsService threshold tests; statistics route integration tests
+- [x] Ops scripts: `seed:sample-moods`, `aggregate:statistics`, `qa:statistics`
+- [x] Resolved OD-009 (students may access statistics), OD-010 (threshold 5), OD-011 (distinct advisor role)
+- [x] Manual QA: `npm run qa:statistics` verifies aggregation + dashboard output locally/staging
+
+## Sprint 6 — Admin Dashboard
+
+- [x] Backend: AdminService, NotificationService; extended Report/User/Mood/Tag repositories
+- [x] Backend: Admin routes — dashboard, reports, users, moods moderation, audit logs, tags
+- [x] Backend: AuditLog + Notification models/repos; append-only audit on moderation
+- [x] Backend: Notifications API — list, mark read, read-all, delete
+- [x] Frontend: AdminLayout, RequireAdmin, `/admin/*` pages (overview, reports, users, audit)
+- [x] Frontend: NotificationsPage; admin link in header for administrators
+- [x] Ops: `npm run promote:admin -- <email>`
+- [x] Tests: admin + notification auth guard integration tests
+- [ ] Manual QA on staging (report resolve, user suspend, audit log entries)
+
+## Sprint 7 — Performance & Security Hardening (next)

@@ -15,7 +15,11 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "seed": "tsx scripts/seed.ts"
+    "seed": "tsx scripts/seed.ts",
+    "seed:sample-moods": "tsx scripts/seed-sample-moods.ts",
+    "aggregate:statistics": "tsx scripts/run-aggregation.ts",
+    "qa:statistics": "tsx scripts/qa-statistics.ts",
+    "promote:admin": "tsx scripts/promote-admin.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1079.0",

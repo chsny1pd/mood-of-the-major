@@ -1,6 +1,7 @@
-import type { CreateUserInput, User } from "../../../domain/entities/User.js";
-import type { IUserRepository } from "../../../domain/ports/IUserRepository.js";
+import type { CreateUserInput, User, UserStatus } from "../../../domain/entities/User.js";
+import type { AdminUserListQuery, IUserRepository } from "../../../domain/ports/IUserRepository.js";
 import { UserModel } from "../models/User.js";
+import { escapeRegex } from "../../../utils/escapeRegex.js";
 
 function mapUser(doc: {
   _id: { toString(): string };
@@ -95,5 +96,53 @@ export class MongooseUserRepository implements IUserRepository {
       { _id: id },
       { refreshTokenHash: null, refreshTokenExpiresAt: null },
     );
+  }
+
+  async findManyAdmin(query: AdminUserListQuery): Promise<User[]> {
+    const filter: Record<string, unknown> = { deletedAt: null };
+
+    if (query.status) {
+      filter.status = query.status;
+    }
+
+    if (query.role) {
+      filter.role = query.role;
+    }
+
+    if (query.q) {
+      filter.email = { $regex: escapeRegex(query.q.trim()), $options: "i" };
+    }
+
+    if (query.cursorCreatedAt && query.cursorId) {
+      filter.$or = [
+        { createdAt: { $lt: query.cursorCreatedAt } },
+        { createdAt: query.cursorCreatedAt, _id: { $lt: query.cursorId } },
+      ];
+    }
+
+    const docs = await UserModel.find(filter)
+      .sort({ createdAt: -1, _id: -1 })
+      .limit(query.limit)
+      .lean();
+
+    return docs.map(mapUser);
+  }
+
+  async updateStatus(id: string, status: UserStatus): Promise<User | null> {
+    const doc = await UserModel.findOneAndUpdate(
+      { _id: id, deletedAt: null },
+      { status },
+      { returnDocument: "after" },
+    ).lean();
+
+    return doc ? mapUser(doc) : null;
+  }
+
+  async countActiveSince(since: Date): Promise<number> {
+    return UserModel.countDocuments({
+      deletedAt: null,
+      status: "active",
+      lastLoginAt: { $gte: since },
+    });
   }
 }

@@ -110,6 +110,20 @@ export class MongooseCommentRepository implements ICommentRepository {
     return result.modifiedCount > 0;
   }
 
+  async moderateRemove(commentId: string, adminId: string): Promise<boolean> {
+    const result = await CommentModel.updateOne(
+      { _id: commentId, deletedAt: null, status: "active" },
+      {
+        status: "moderated_removed",
+        moderatedAt: new Date(),
+        moderatedBy: adminId,
+        deletedAt: new Date(),
+      },
+    );
+
+    return result.modifiedCount > 0;
+  }
+
   async isAuthor(commentId: string, authorId: string): Promise<boolean> {
     const count = await CommentModel.countDocuments({ _id: commentId, authorId });
     return count > 0;
