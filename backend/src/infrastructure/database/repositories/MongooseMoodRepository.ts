@@ -2,6 +2,7 @@ import type { CreateMoodInput } from "../../../domain/entities/Mood.js";
 import type {
   IMoodRepository,
   MoodFeedQuery,
+  MoodSearchQuery,
   MoodWithRelations,
 } from "../../../domain/ports/IMoodRepository.js";
 import { FacultyModel } from "../models/Faculty.js";
@@ -10,6 +11,7 @@ import { MoodImageModel } from "../models/MoodImage.js";
 import { MoodModel } from "../models/Mood.js";
 import { MoodTagModel } from "../models/MoodTag.js";
 import { TagModel } from "../models/Tag.js";
+import { escapeRegex } from "../../../utils/escapeRegex.js";
 
 async function hydrateMoods(
   moodDocs: Array<{
@@ -198,6 +200,108 @@ export class MongooseMoodRepository implements IMoodRepository {
 
     const hydrated = await hydrateMoods([moodDoc]);
     return hydrated[0] ?? null;
+  }
+
+  async findByIdIncludingRemoved(id: string): Promise<MoodWithRelations | null> {
+    const moodDoc = await MoodModel.findOne({
+      _id: id,
+      deletedAt: null,
+      status: { $nin: ["moderated_removed"] },
+    }).lean();
+
+    if (!moodDoc) return null;
+
+    const hydrated = await hydrateMoods([moodDoc]);
+    return hydrated[0] ?? null;
+  }
+
+  async search(query: MoodSearchQuery): Promise<MoodWithRelations[]> {
+    const pattern = escapeRegex(query.q.trim());
+
+    const filter: Record<string, unknown> = {
+      status: "active",
+      deletedAt: null,
+      content: { $regex: pattern, $options: "i" },
+    };
+
+    if (query.facultyId) filter.facultyId = query.facultyId;
+    if (query.majorId) filter.majorId = query.majorId;
+
+    if (query.from || query.to) {
+      const createdAt: Record<string, Date> = {};
+      if (query.from) createdAt.$gte = query.from;
+      if (query.to) createdAt.$lte = query.to;
+      filter.createdAt = createdAt;
+    }
+
+    if (query.cursorCreatedAt && query.cursorId) {
+      filter.$or = [
+        { createdAt: { $lt: query.cursorCreatedAt } },
+        { createdAt: query.cursorCreatedAt, _id: { $lt: query.cursorId } },
+      ];
+    }
+
+    if (query.tagSlug) {
+      const tag = await TagModel.findOne({
+        slug: query.tagSlug.toLowerCase(),
+        type: "emotion",
+        isActive: true,
+      }).lean();
+
+      if (!tag) return [];
+
+      const moodTagRows = await MoodTagModel.find({ tagId: tag._id }).select("moodId").lean();
+      filter._id = { $in: moodTagRows.map((row) => row.moodId) };
+    }
+
+    const moodDocs = await MoodModel.find(filter)
+      .sort({ createdAt: -1, _id: -1 })
+      .limit(query.limit)
+      .lean();
+
+    return hydrateMoods(moodDocs);
+  }
+
+  async incrementCommentCount(moodId: string): Promise<void> {
+    await MoodModel.updateOne(
+      { _id: moodId },
+      { $inc: { commentCount: 1 }, $set: { lastActivityAt: new Date() } },
+    );
+  }
+
+  async decrementCommentCount(moodId: string): Promise<void> {
+    await MoodModel.updateOne(
+      { _id: moodId, commentCount: { $gt: 0 } },
+      { $inc: { commentCount: -1 } },
+    );
+  }
+
+  async adjustReactionSummary(
+    moodId: string,
+    reactionType: string,
+    delta: number,
+  ): Promise<Record<string, number>> {
+    const key = `reactionSummary.${reactionType}`;
+    const updated = await MoodModel.findOneAndUpdate(
+      { _id: moodId },
+      { $inc: { [key]: delta }, $set: { lastActivityAt: new Date() } },
+      { new: true },
+    ).lean();
+
+    return (updated?.reactionSummary as Record<string, number>) ?? {};
+  }
+
+  async incrementReportCount(moodId: string): Promise<void> {
+    await MoodModel.updateOne({ _id: moodId }, { $inc: { reportCount: 1 } });
+  }
+
+  async isActive(moodId: string): Promise<boolean> {
+    const count = await MoodModel.countDocuments({
+      _id: moodId,
+      status: "active",
+      deletedAt: null,
+    });
+    return count > 0;
   }
 
   async findActiveFeed(query: MoodFeedQuery): Promise<MoodWithRelations[]> {

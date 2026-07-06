@@ -4,6 +4,7 @@ import { ROUTES } from "../constants/routes";
 import { AuthLayout } from "../layouts/AuthLayout";
 import { PublicLayout } from "../layouts/PublicLayout";
 import { StudentLayout } from "../layouts/StudentLayout";
+import { BookmarksPage } from "../pages/BookmarksPage";
 import { CreateMoodPage } from "../pages/CreateMoodPage";
 import { FacultyFeedPage } from "../pages/FacultyFeedPage";
 import { FeedPage } from "../pages/FeedPage";
@@ -12,6 +13,7 @@ import { LoginPage } from "../pages/LoginPage";
 import { MajorFeedPage } from "../pages/MajorFeedPage";
 import { MoodDetailPage } from "../pages/MoodDetailPage";
 import { RegisterPage } from "../pages/RegisterPage";
+import { SearchPage } from "../pages/SearchPage";
 
 export const router = createBrowserRouter([
   {
@@ -71,6 +73,14 @@ export const router = createBrowserRouter([
       {
         path: ROUTES.create,
         element: <CreateMoodPage />,
+      },
+      {
+        path: ROUTES.bookmarks,
+        element: <BookmarksPage />,
+      },
+      {
+        path: ROUTES.search,
+        element: <SearchPage />,
       },
     ],
   },

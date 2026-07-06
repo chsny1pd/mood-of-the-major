@@ -4,12 +4,21 @@ import { postRateLimiter } from "../middlewares/postRateLimiter.js";
 import { authorize } from "../middlewares/authorize.js";
 import { validate } from "../middlewares/validate.js";
 import { createMoodSchema, feedQuerySchema } from "../validators/moodSchemas.js";
+import { searchQuerySchema } from "../validators/engagementSchemas.js";
 
 export function createMoodRoutes(deps: Dependencies): Router {
   const router = Router();
   const { moodController, authenticate, optionalAuthenticate } = deps;
 
   router.get("/feed", optionalAuthenticate, validate(feedQuerySchema, "query"), moodController.feed);
+
+  router.get(
+    "/search",
+    authenticate,
+    authorize("student", "advisor", "administrator"),
+    validate(searchQuerySchema, "query"),
+    moodController.search,
+  );
 
   router.post(
     "/",

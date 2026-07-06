@@ -1,7 +1,23 @@
 import mongoose from "mongoose";
 import type { Logger } from "../logging/logger.js";
+import { BookmarkModel } from "./models/Bookmark.js";
+import { CommentModel } from "./models/Comment.js";
+import { MoodModel } from "./models/Mood.js";
+import { ReactionModel } from "./models/Reaction.js";
+import { ReportModel } from "./models/Report.js";
 
 export type DatabaseStatus = "disconnected" | "connecting" | "connected" | "disconnecting";
+
+async function syncModelIndexes(logger: Logger): Promise<void> {
+  await Promise.all([
+    MoodModel.syncIndexes(),
+    CommentModel.syncIndexes(),
+    ReactionModel.syncIndexes(),
+    BookmarkModel.syncIndexes(),
+    ReportModel.syncIndexes(),
+  ]);
+  logger.info("MongoDB indexes synced");
+}
 
 export async function connectDatabase(uri: string, logger: Logger): Promise<void> {
   if (mongoose.connection.readyState === 1) {
@@ -10,6 +26,7 @@ export async function connectDatabase(uri: string, logger: Logger): Promise<void
 
   logger.info("Connecting to MongoDB...");
   await mongoose.connect(uri);
+  await syncModelIndexes(logger);
   logger.info("MongoDB connected");
 }
 

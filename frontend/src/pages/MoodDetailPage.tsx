@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
 import { EmotionBadge } from "../components/EmotionBadge";
@@ -5,8 +6,13 @@ import { EmptyState } from "../components/EmptyState";
 import { Skeleton } from "../components/Skeleton";
 import { queryKeys } from "../constants/queryKeys";
 import { ROUTES } from "../constants/routes";
+import { CommentSection } from "../features/comments/components/CommentSection";
+import { BookmarkButton } from "../features/bookmarks/components/BookmarkButton";
+import { ReactionBar } from "../features/reactions/components/ReactionBar";
+import { ReportModal } from "../features/report/components/ReportModal";
 import { fetchSignedImageUrl } from "../services/imageService";
 import { fetchMoodById } from "../services/moodService";
+import { useAuth } from "../contexts/AuthContext";
 
 function MoodImage({ imageId }: { imageId: string }) {
   const imageQuery = useQuery({
@@ -30,6 +36,9 @@ function MoodImage({ imageId }: { imageId: string }) {
 
 export function MoodDetailPage() {
   const { moodId = "" } = useParams();
+  const { isAuthenticated } = useAuth();
+  const [showReport, setShowReport] = useState(false);
+
   const moodQuery = useQuery({
     queryKey: queryKeys.moodDetail(moodId),
     queryFn: () => fetchMoodById(moodId),
@@ -92,7 +101,30 @@ export function MoodDetailPage() {
           {mood.major ? <span>{mood.major.name}</span> : null}
           <span>{new Date(mood.createdAt).toLocaleString()}</span>
         </div>
+
+        <div className="mt-6 border-t border-stone-100 pt-4">
+          <ReactionBar targetType="mood" targetId={mood.id} />
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <BookmarkButton moodId={mood.id} />
+          {isAuthenticated ? (
+            <button
+              type="button"
+              onClick={() => setShowReport(true)}
+              className="text-sm text-stone-500 hover:text-red-700"
+            >
+              Report
+            </button>
+          ) : null}
+        </div>
       </article>
+
+      <CommentSection moodId={mood.id} />
+
+      {showReport ? (
+        <ReportModal targetType="mood" targetId={mood.id} onClose={() => setShowReport(false)} />
+      ) : null}
     </section>
   );
 }

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { EmotionBadge } from "./EmotionBadge";
 import { ROUTES } from "../constants/routes";
+import { REACTION_TYPES } from "../types/engagement";
 import type { AnonymousMood } from "../types/mood";
 
 function formatRelativeTime(isoDate: string): string {
@@ -20,6 +21,10 @@ function formatRelativeTime(isoDate: string): string {
 
 export function MoodCard({ mood }: { mood: AnonymousMood }) {
   const primaryTag = mood.tags.find((tag) => tag.isPrimary) ?? mood.tags[0];
+  const totalReactions = REACTION_TYPES.reduce(
+    (sum, reaction) => sum + (mood.reactionSummary[reaction.type] ?? 0),
+    0,
+  );
 
   return (
     <article className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm transition hover:border-teal-200">
@@ -38,6 +43,7 @@ export function MoodCard({ mood }: { mood: AnonymousMood }) {
       <div className="mt-4 flex items-center gap-4 text-xs text-stone-500">
         {mood.imageCount > 0 ? <span>{mood.imageCount} image{mood.imageCount > 1 ? "s" : ""}</span> : null}
         <span>{mood.commentCount} comments</span>
+        {totalReactions > 0 ? <span>{totalReactions} reactions</span> : null}
       </div>
     </article>
   );

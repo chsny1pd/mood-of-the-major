@@ -56,3 +56,23 @@ export async function createMood(payload: CreateMoodPayload): Promise<AnonymousM
 export async function deleteMood(moodId: string): Promise<void> {
   await apiClient.delete(`/moods/${moodId}`);
 }
+
+export interface SearchParams {
+  q: string;
+  facultyId?: string;
+  majorId?: string;
+  tagSlug?: string;
+  from?: string;
+  to?: string;
+  limit?: number;
+  cursor?: string;
+}
+
+export async function searchMoods(params: SearchParams): Promise<PaginatedMoods> {
+  const response = await apiClient.get<{ success: true; data: AnonymousMood[]; meta: PaginatedMoods["meta"] }>(
+    "/moods/search",
+    { params },
+  );
+
+  return { data: response.data.data, meta: response.data.meta };
+}

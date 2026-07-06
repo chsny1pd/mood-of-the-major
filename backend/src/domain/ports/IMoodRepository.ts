@@ -27,10 +27,24 @@ export interface MoodWithRelations extends Mood {
   images: Array<{ id: string; sortOrder: number }>;
 }
 
+export interface MoodSearchQuery extends MoodFeedFilters {
+  q: string;
+  limit: number;
+  cursorCreatedAt?: Date;
+  cursorId?: string;
+}
+
 export interface IMoodRepository {
   create(input: CreateMoodInput): Promise<MoodWithRelations>;
   findById(id: string): Promise<MoodWithRelations | null>;
+  findByIdIncludingRemoved(id: string): Promise<MoodWithRelations | null>;
   findActiveFeed(query: MoodFeedQuery): Promise<MoodWithRelations[]>;
+  search(query: MoodSearchQuery): Promise<MoodWithRelations[]>;
   softDeleteByAuthor(moodId: string, authorId: string): Promise<boolean>;
   isAuthor(moodId: string, authorId: string): Promise<boolean>;
+  incrementCommentCount(moodId: string): Promise<void>;
+  decrementCommentCount(moodId: string): Promise<void>;
+  adjustReactionSummary(moodId: string, reactionType: string, delta: number): Promise<Record<string, number>>;
+  incrementReportCount(moodId: string): Promise<void>;
+  isActive(moodId: string): Promise<boolean>;
 }

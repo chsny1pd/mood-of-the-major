@@ -22,14 +22,25 @@
 - [x] Unit/integration tests for auth baseline
 - [ ] Auth E2E on staging with cross-origin cookie config
 
-## Sprint 3 — Mood Posting (in progress)
+## Sprint 3 — Mood Posting
 
 - [x] MoodService, ImageService, MoodMapper, mood and image repositories
 - [x] Mood routes: create, feeds (global/faculty/major), detail, delete (owner)
 - [x] Image routes: presign upload, confirm, signed URL, delete unlinked
-- [x] R2ImageStorage adapter implementing IImageStorage (DevImageStorage fallback for local)
-- [ ] R2 dev/staging buckets configured with private access and CORS
-- [x] Frontend: `features/feed/`, `features/mood/`, `features/upload/`, faculty/major feed pages
+- [x] R2ImageStorage adapter implementing IImageStorage
+- [x] Frontend: feed, mood create, faculty/major feed pages
 - [x] Shared components: MoodCard, EmotionBadge, Skeleton, EmptyState
-- [x] Tests: anonymity DTO contract, cursor pagination, auth-gated mood routes
+- [x] Production deploy verified (Vercel + Railway)
 - [ ] Manual QA: full image flow on staging
+
+## Sprint 4 — Comments, Reactions & Bookmarks (in progress)
+
+- [x] Backend: CommentService, ReactionService, BookmarkService, ReportService, mood search
+- [x] Backend: API routes for comments, reactions, bookmarks, search, reports
+- [x] Backend: Mongoose models/repos for comments, reactions, bookmarks, reports
+- [x] Backend: comment rate limiter; denormalized reactionSummary / commentCount updates
+- [x] Frontend: comments, reactions, bookmarks, search, report UI
+- [x] Frontend: BookmarksPage, SearchPage; MoodDetail engagement section
+- [x] Tests: commentMapper anonymity unit test
+- [x] Integration tests: engagement auth guards
+- [ ] Manual QA on staging (comments, reactions, bookmarks, search)

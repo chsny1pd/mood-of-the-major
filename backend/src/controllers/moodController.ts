@@ -89,5 +89,25 @@ export function createMoodController(moodService: MoodService) {
         meta: result.meta,
       });
     }),
+
+    search: asyncHandler(async (req, res: Response) => {
+      const query = req.validatedQuery ?? req.query;
+      const result = await moodService.searchMoods({
+        q: String(query.q),
+        facultyId: query.facultyId ? String(query.facultyId) : undefined,
+        majorId: query.majorId ? String(query.majorId) : undefined,
+        tagSlug: query.tagSlug ? String(query.tagSlug) : undefined,
+        from: query.from ? String(query.from) : undefined,
+        to: query.to ? String(query.to) : undefined,
+        limit: query.limit ? Number(query.limit) : undefined,
+        cursor: query.cursor ? String(query.cursor) : undefined,
+      });
+
+      res.status(200).json({
+        success: true,
+        data: result.items.map(toAnonymousMoodDto),
+        meta: result.meta,
+      });
+    }),
   };
 }

@@ -6,6 +6,7 @@ import {
   MOOD_CONTENT_MAX_LENGTH,
   MOOD_CONTENT_MIN_LENGTH,
 } from "../../domain/constants/moodConstants.js";
+import { SEARCH_QUERY_MIN_LENGTH } from "../../domain/constants/engagementConstants.js";
 import {
   AppError,
   AuthorizationError,
@@ -34,6 +35,17 @@ export interface FeedQueryInput extends Omit<MoodFeedFilters, "from" | "to"> {
   isAuthenticated?: boolean;
   from?: string;
   to?: string;
+}
+
+export interface SearchQueryInput {
+  q: string;
+  facultyId?: string;
+  majorId?: string;
+  tagSlug?: string;
+  from?: string;
+  to?: string;
+  limit?: number;
+  cursor?: string;
 }
 
 export interface FeedResult {
@@ -272,5 +284,59 @@ export class MoodService {
     }
 
     return this.getFeed({ ...input, majorId: major.id });
+  }
+
+  async searchMoods(input: SearchQueryInput): Promise<FeedResult> {
+    const q = input.q.trim();
+    if (q.length < SEARCH_QUERY_MIN_LENGTH) {
+      throw new ValidationError("Invalid search query", [
+        {
+          field: "q",
+          message: `Search query must be at least ${SEARCH_QUERY_MIN_LENGTH} characters.`,
+        },
+      ]);
+    }
+
+    const limit = Math.min(Math.max(input.limit ?? FEED_DEFAULT_LIMIT, 1), FEED_MAX_LIMIT);
+
+    let cursorCreatedAt: Date | undefined;
+    let cursorId: string | undefined;
+
+    if (input.cursor) {
+      const decoded = decodeCursor(input.cursor);
+      if (!decoded) {
+        throw new ValidationError("Invalid cursor", [
+          { field: "cursor", message: "Cursor is invalid or expired." },
+        ]);
+      }
+      cursorCreatedAt = new Date(decoded.createdAt);
+      cursorId = decoded.id;
+    }
+
+    const items = await this.moods.search({
+      q,
+      limit,
+      cursorCreatedAt,
+      cursorId,
+      facultyId: input.facultyId,
+      majorId: input.majorId,
+      tagSlug: input.tagSlug,
+      from: input.from ? new Date(input.from) : undefined,
+      to: input.to ? new Date(input.to) : undefined,
+    });
+
+    const pagination = buildNextCursor(
+      items.map((item) => ({ id: item.id, createdAt: item.createdAt })),
+      limit,
+    );
+
+    return {
+      items,
+      meta: {
+        limit,
+        nextCursor: pagination.nextCursor,
+        hasMore: pagination.hasMore,
+      },
+    };
   }
 }
