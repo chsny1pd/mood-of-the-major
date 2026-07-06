@@ -464,9 +464,9 @@ Try auth: **Join** → register → redirects to `/feed`. Sign out from header.
 
 **Quality checks:** `npm run lint`, `npm run typecheck`, `npm test`, `npm run build` in each package.
 
-### Current Phase: Sprint 8 Testing & Bug Fixes (in progress)
+### Current Phase: Sprint 9 Production Release (code-ready)
 
-Sprint 7 code deliverables are complete. Remaining Sprint 7 ops items: staging k6 report, Sentry DSN, uptime secrets — see `docs/sprint-7-signoff.md`.
+Sprint 7–8 code deliverables are complete. Remaining work is staging/production ops — see `docs/sprint-8-signoff.md` and `docs/sprint-9-signoff.md`.
 
 1. Review this README and `docs/roadmap.md` for milestone scope.
 2. Track active tasks in `TODO.md`.

@@ -89,7 +89,7 @@
 - [ ] External uptime secrets set (`STAGING_API_URL`, `STAGING_FRONTEND_URL`)
 - [ ] Formal security audit / pentest (pre–Sprint 9)
 
-## Sprint 8 — Testing & Bug Fixes (in progress)
+## Sprint 8 — Testing & Bug Fixes (complete — code)
 
 - [x] Public DTO anonymity contract tests (`backend/tests/unit/anonymityContract.test.ts`)
 - [x] API error envelope contract tests (`backend/tests/integration/apiContract.test.ts`)
@@ -97,9 +97,24 @@
 - [x] Accessibility baseline: jest-axe on LandingPage; eslint-plugin-jsx-a11y in CI
 - [x] Playwright E2E suite: smoke + student journey (`e2e/tests/`)
 - [x] E2E + Lighthouse jobs in GitHub Actions CI
-- [ ] Backend integration tests with MongoDB service container (expand beyond auth guards)
-- [ ] Playwright admin report flow E2E
-- [ ] Playwright image upload E2E
+- [x] Backend integration tests with MongoDB service container (`authFlow`, `moodFlow`, `imageFlow`, `reportAdminFlow`)
+- [x] Playwright admin report flow E2E (`e2e/tests/admin-report.spec.ts`)
+- [x] Playwright image upload E2E (`e2e/tests/image-upload.spec.ts`)
+- [x] Sprint 8 sign-off doc (`docs/sprint-8-signoff.md`)
 - [ ] Manual QA checklist on staging (`docs/testing-strategy.md`) — all items checked
 - [ ] Defect backlog triaged; P0/P1 closed
 - [ ] Rollback procedure tested on staging
+
+## Sprint 9 — Production Release (v1.0) (code-ready)
+
+- [x] Post-deploy smoke test script (`backend/scripts/smoke-test.ts`)
+- [x] Production deploy workflow template (`.github/workflows/deploy-production.yml`)
+- [x] Rollback runbook (`docs/ops/rollback-runbook.md`)
+- [x] Sprint 9 sign-off doc (`docs/sprint-9-signoff.md`)
+- [ ] Production MongoDB Atlas cluster with backups
+- [ ] Production R2 bucket configured
+- [ ] Railway + Vercel production secrets and domains
+- [ ] `PRODUCTION_API_BASE_URL` GitHub secret for deploy smoke
+- [ ] Post-deploy smoke executed and archived on production
+- [ ] v1.0 release tag and release notes
+- [ ] **v1.0 declared live**

@@ -16,11 +16,13 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "seed": "tsx scripts/seed.ts",
+    "seed:e2e-admin": "tsx scripts/seed-e2e-admin.ts",
     "seed:sample-moods": "tsx scripts/seed-sample-moods.ts",
     "aggregate:statistics": "tsx scripts/run-aggregation.ts",
     "cleanup:images": "tsx scripts/run-image-cleanup.ts",
     "qa:statistics": "tsx scripts/qa-statistics.ts",
-    "promote:admin": "tsx scripts/promote-admin.ts"
+    "promote:admin": "tsx scripts/promote-admin.ts",
+    "smoke": "tsx scripts/smoke-test.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1079.0",

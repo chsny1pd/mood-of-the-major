@@ -1,0 +1,45 @@
+name: Deploy Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "deploy" to confirm production release'
+        required: true
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  verify-input:
+    name: Verify confirmation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check confirmation token
+        if: inputs.confirm != 'deploy'
+        run: |
+          echo "Confirmation input must be exactly 'deploy'"
+          exit 1
+
+  smoke-test:
+    name: Post-deploy smoke test
+    needs: verify-input
+    runs-on: ubuntu-latest
+    environment: production
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci
+      - name: Run smoke test against production API
+        env:
+          API_BASE_URL: ${{ secrets.PRODUCTION_API_BASE_URL }}
+          SMOKE_REGISTER: "true"
+        run: npm run smoke
