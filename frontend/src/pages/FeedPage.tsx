@@ -1,17 +1,29 @@
-import { useState } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { MoodCard } from "../components/MoodCard";
 import { EmptyState } from "../components/EmptyState";
 import { MoodCardSkeleton } from "../components/Skeleton";
 import { ROUTES } from "../constants/routes";
-import { FilterPanel } from "../features/search/components/FilterPanel";
 import { DEFAULT_MOOD_FILTERS, type MoodFilters } from "../features/search/types";
 import { useMoodFeed } from "../features/feed/hooks/useMoodFeed";
+
+const FilterPanel = lazy(() =>
+  import("../features/search/components/FilterPanel").then((module) => ({
+    default: module.FilterPanel,
+  })),
+);
+
+function FilterPanelFallback() {
+  return <div className="h-32 animate-pulse rounded-xl border border-stone-200 bg-stone-100" />;
+}
 
 export function FeedPage() {
   const [filters, setFilters] = useState<MoodFilters>(DEFAULT_MOOD_FILTERS);
   const feedQuery = useMoodFeed({ type: "global", params: filters });
-  const moods = feedQuery.data?.pages.flatMap((page) => page.data) ?? [];
+  const moods = useMemo(
+    () => feedQuery.data?.pages.flatMap((page) => page.data) ?? [],
+    [feedQuery.data],
+  );
 
   return (
     <section className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
@@ -28,7 +40,9 @@ export function FeedPage() {
         </Link>
       </div>
 
-      <FilterPanel filters={filters} onChange={setFilters} />
+      <Suspense fallback={<FilterPanelFallback />}>
+        <FilterPanel filters={filters} onChange={setFilters} />
+      </Suspense>
 
       {feedQuery.isLoading ? (
         <div className="mt-6 space-y-4">

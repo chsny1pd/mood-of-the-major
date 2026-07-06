@@ -21,23 +21,3 @@ export function RequireAuth({ children }: { children: ReactNode }) {
 
   return children;
 }
-
-export function RedirectIfAuthenticated({ children }: { children: ReactNode }) {
-  const { isAuthenticated, isLoading } = useAuth();
-  const location = useLocation();
-  const returnUrl = (location.state as { returnUrl?: string } | null)?.returnUrl ?? ROUTES.feed;
-
-  if (isLoading) {
-    return (
-      <div className="flex min-h-[40vh] items-center justify-center text-stone-500">
-        Loading session...
-      </div>
-    );
-  }
-
-  if (isAuthenticated) {
-    return <Navigate to={returnUrl} replace />;
-  }
-
-  return children;
-}

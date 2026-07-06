@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Link } from "react-router-dom";
 import { EmotionBadge } from "./EmotionBadge";
 import { BookmarkIconButton } from "../features/bookmarks/components/BookmarkIconButton";
@@ -20,7 +21,7 @@ function formatRelativeTime(isoDate: string): string {
   return `${diffDays}d ago`;
 }
 
-export function MoodCard({
+export const MoodCard = memo(function MoodCard({
   mood,
   showBookmark = false,
 }: {
@@ -72,4 +73,4 @@ export function MoodCard({
       </div>
     </article>
   );
-}
+});

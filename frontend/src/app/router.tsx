@@ -1,28 +1,40 @@
 import { createBrowserRouter } from "react-router-dom";
-import { RedirectIfAuthenticated, RequireAuth } from "../components/RequireAuth";
+import { RequireAuth } from "../components/RequireAuth";
 import { RequireAdmin } from "../components/RequireAdmin";
 import { ROUTES } from "../constants/routes";
 import { AdminLayout } from "../layouts/AdminLayout";
 import { AuthLayout } from "../layouts/AuthLayout";
 import { PublicLayout } from "../layouts/PublicLayout";
 import { StudentLayout } from "../layouts/StudentLayout";
-import { AdminAuditLogPage } from "../pages/AdminAuditLogPage";
-import { AdminOverviewPage } from "../pages/AdminOverviewPage";
-import { AdminReportsPage } from "../pages/AdminReportsPage";
-import { AdminUsersPage } from "../pages/AdminUsersPage";
-import { BookmarksPage } from "../pages/BookmarksPage";
-import { CreateMoodPage } from "../pages/CreateMoodPage";
-import { FacultyFeedPage } from "../pages/FacultyFeedPage";
-import { FeedPage } from "../pages/FeedPage";
 import { LandingPage } from "../pages/LandingPage";
-import { LoginPage } from "../pages/LoginPage";
-import { MajorFeedPage } from "../pages/MajorFeedPage";
-import { MoodDetailPage } from "../pages/MoodDetailPage";
-import { NotificationsPage } from "../pages/NotificationsPage";
-import { RegisterPage } from "../pages/RegisterPage";
-import { SearchPage } from "../pages/SearchPage";
-import { StatisticsPage } from "../pages/StatisticsPage";
-import { TrendingPage } from "../pages/TrendingPage";
+import { QueryProvider } from "./QueryProvider";
+import { lazyRoute } from "./routeUtils";
+
+const LoginPage = lazyRoute(() => import("../pages/LoginPage"), "LoginPage");
+const RegisterPage = lazyRoute(() => import("../pages/RegisterPage"), "RegisterPage");
+const FeedPage = lazyRoute(() => import("../pages/FeedPage"), "FeedPage");
+const MoodDetailPage = lazyRoute(() => import("../pages/MoodDetailPage"), "MoodDetailPage");
+const FacultyFeedPage = lazyRoute(() => import("../pages/FacultyFeedPage"), "FacultyFeedPage");
+const MajorFeedPage = lazyRoute(() => import("../pages/MajorFeedPage"), "MajorFeedPage");
+const CreateMoodPage = lazyRoute(() => import("../pages/CreateMoodPage"), "CreateMoodPage");
+const BookmarksPage = lazyRoute(() => import("../pages/BookmarksPage"), "BookmarksPage");
+const SearchPage = lazyRoute(() => import("../pages/SearchPage"), "SearchPage");
+const StatisticsPage = lazyRoute(() => import("../pages/StatisticsPage"), "StatisticsPage");
+const TrendingPage = lazyRoute(() => import("../pages/TrendingPage"), "TrendingPage");
+const NotificationsPage = lazyRoute(
+  () => import("../pages/NotificationsPage"),
+  "NotificationsPage",
+);
+const AdminOverviewPage = lazyRoute(
+  () => import("../pages/AdminOverviewPage"),
+  "AdminOverviewPage",
+);
+const AdminReportsPage = lazyRoute(() => import("../pages/AdminReportsPage"), "AdminReportsPage");
+const AdminUsersPage = lazyRoute(() => import("../pages/AdminUsersPage"), "AdminUsersPage");
+const AdminAuditLogPage = lazyRoute(
+  () => import("../pages/AdminAuditLogPage"),
+  "AdminAuditLogPage",
+);
 
 export const router = createBrowserRouter([
   {
@@ -35,11 +47,7 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    element: (
-      <RedirectIfAuthenticated>
-        <AuthLayout />
-      </RedirectIfAuthenticated>
-    ),
+    element: <AuthLayout />,
     children: [
       {
         path: ROUTES.login,
@@ -52,7 +60,11 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    element: <StudentLayout />,
+    element: (
+      <QueryProvider>
+        <StudentLayout />
+      </QueryProvider>
+    ),
     children: [
       {
         path: ROUTES.feed,
@@ -75,7 +87,9 @@ export const router = createBrowserRouter([
   {
     element: (
       <RequireAuth>
-        <StudentLayout />
+        <QueryProvider>
+          <StudentLayout />
+        </QueryProvider>
       </RequireAuth>
     ),
     children: [
@@ -108,7 +122,9 @@ export const router = createBrowserRouter([
   {
     element: (
       <RequireAdmin>
-        <AdminLayout />
+        <QueryProvider>
+          <AdminLayout />
+        </QueryProvider>
       </RequireAdmin>
     ),
     children: [

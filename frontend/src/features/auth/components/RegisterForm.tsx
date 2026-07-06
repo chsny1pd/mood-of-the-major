@@ -73,29 +73,31 @@ export function RegisterForm() {
       ) : null}
 
       <div>
-        <label htmlFor="email" className="mb-1 block text-sm font-medium text-stone-700">
+        <label htmlFor="register-email" className="mb-1 block text-sm font-medium text-stone-700">
           Email
         </label>
         <input
-          id="email"
+          {...register("email")}
+          id="register-email"
           type="email"
           autoComplete="email"
+          aria-label="Email"
           className="w-full rounded-xl border border-stone-300 px-3 py-2 text-stone-900 outline-none ring-teal-700 focus:ring-2"
-          {...register("email")}
         />
         {errors.email ? <p className="mt-1 text-sm text-red-600">{errors.email.message}</p> : null}
       </div>
 
       <div>
-        <label htmlFor="password" className="mb-1 block text-sm font-medium text-stone-700">
+        <label htmlFor="register-password" className="mb-1 block text-sm font-medium text-stone-700">
           Password
         </label>
         <input
-          id="password"
+          {...register("password")}
+          id="register-password"
           type="password"
           autoComplete="new-password"
+          aria-label="Password"
           className="w-full rounded-xl border border-stone-300 px-3 py-2 text-stone-900 outline-none ring-teal-700 focus:ring-2"
-          {...register("password")}
         />
         {errors.password ? (
           <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>

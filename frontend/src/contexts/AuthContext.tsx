@@ -7,6 +7,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { flushSync } from "react-dom";
 import * as authService from "../services/authService";
 import type { UserProfile } from "../services/authService";
 import { clearAccessToken, getAccessToken } from "../utils/token";
@@ -39,7 +40,7 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(() => Boolean(getAccessToken()));
 
   const refreshProfile = useCallback(async () => {
     const token = getAccessToken();
@@ -53,11 +54,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (!getAccessToken()) {
+      return;
+    }
+
     void (async () => {
       try {
-        if (getAccessToken()) {
-          await refreshProfile();
-        }
+        await refreshProfile();
       } catch {
         clearAccessToken();
         setUser(null);
@@ -69,12 +72,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (email: string, password: string) => {
     const authUser = await authService.login({ email, password });
-    setUser(toInitialProfile(authUser));
-    try {
-      await refreshProfile();
-    } catch {
-      // Keep session from login response when profile enrichment fails.
-    }
+    flushSync(() => {
+      setUser(toInitialProfile(authUser));
+    });
+    void refreshProfile().catch(() => undefined);
   }, [refreshProfile]);
 
   const register = useCallback(
@@ -85,12 +86,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       majorId?: string;
     }) => {
       const authUser = await authService.register(input);
-      setUser(toInitialProfile(authUser));
-      try {
-        await refreshProfile();
-      } catch {
-        // Keep session from register response when profile enrichment fails.
-      }
+      flushSync(() => {
+        setUser(toInitialProfile(authUser));
+      });
+      void refreshProfile().catch(() => undefined);
     },
     [refreshProfile],
   );
