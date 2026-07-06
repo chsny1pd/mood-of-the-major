@@ -11,6 +11,15 @@ import * as authService from "../services/authService";
 import type { UserProfile } from "../services/authService";
 import { clearAccessToken, getAccessToken } from "../utils/token";
 
+function toInitialProfile(user: authService.AuthUser): UserProfile {
+  return {
+    ...user,
+    faculty: null,
+    major: null,
+    createdAt: new Date().toISOString(),
+  };
+}
+
 interface AuthContextValue {
   user: UserProfile | null;
   isAuthenticated: boolean;
@@ -59,8 +68,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [refreshProfile]);
 
   const login = useCallback(async (email: string, password: string) => {
-    await authService.login({ email, password });
-    await refreshProfile();
+    const authUser = await authService.login({ email, password });
+    setUser(toInitialProfile(authUser));
+    try {
+      await refreshProfile();
+    } catch {
+      // Keep session from login response when profile enrichment fails.
+    }
   }, [refreshProfile]);
 
   const register = useCallback(
@@ -70,8 +84,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       facultyId?: string;
       majorId?: string;
     }) => {
-      await authService.register(input);
-      await refreshProfile();
+      const authUser = await authService.register(input);
+      setUser(toInitialProfile(authUser));
+      try {
+        await refreshProfile();
+      } catch {
+        // Keep session from register response when profile enrichment fails.
+      }
     },
     [refreshProfile],
   );

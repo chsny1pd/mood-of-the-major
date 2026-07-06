@@ -184,6 +184,7 @@ export class MoodService {
 
     if (imageIds.length > 0) {
       await this.moodImages.linkToMood(imageIds, mood.id, userId);
+      return this.getMood(mood.id);
     }
 
     return mood;

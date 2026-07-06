@@ -1,10 +1,11 @@
 import "vitest";
 
-interface CustomMatchers<R = unknown> {
-  toHaveNoViolations(): R;
-}
-
 declare module "vitest" {
-  interface Assertion<T = unknown> extends CustomMatchers<T> {}
-  interface AsymmetricMatchersContaining extends CustomMatchers {}
+  interface Assertion<T = unknown> {
+    toHaveNoViolations(): T;
+  }
+
+  interface AsymmetricMatchersContaining {
+    toHaveNoViolations(): void;
+  }
 }
