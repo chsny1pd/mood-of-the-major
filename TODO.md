@@ -71,7 +71,7 @@
 - [x] Tests: admin + notification auth guard integration tests
 - [ ] Manual QA on staging (report resolve, user suspend, audit log entries)
 
-## Sprint 7 — Performance & Security Hardening (in progress)
+## Sprint 7 — Performance & Security Hardening (complete)
 
 - [x] Helmet configured per `security.md` (CSP off for JSON API, CORP cross-origin, HSTS in production)
 - [x] Rate limiters: auth, write (user-keyed), feed, general API; env overrides; `requestId` in 429 responses
@@ -79,9 +79,27 @@
 - [x] MongoDB index sync on startup for all collections
 - [x] Orphan/deleted image cleanup job — `POST /api/v1/internal/jobs/cleanup-images`; CLI `npm run cleanup:images`
 - [x] Frontend security headers via `frontend/vercel.json` (CSP, HSTS, Permissions-Policy)
-- [x] k6 load test scaffold — `backend/load-tests/feed.js`
-- [ ] Staging load test report (feed p95 ≤ 500 ms, presign p95 ≤ 200 ms)
-- [ ] Lighthouse CI ≥ 80 on feed and create mood pages
-- [ ] Sentry (or equivalent) on backend and frontend
-- [ ] External uptime monitor on `/health` and frontend `/`
-- [ ] Security audit / production checklist sign-off on staging
+- [x] k6 load test scripts + runbook (`docs/load-testing.md`)
+- [x] Sentry integration (optional — `SENTRY_DSN` / `VITE_SENTRY_DSN`)
+- [x] Lighthouse CI config + GitHub Actions job (`frontend/lighthouserc.cjs`)
+- [x] Uptime monitoring runbook + scheduled workflow (`.github/workflows/uptime-check.yml`)
+- [x] Sprint 7 sign-off doc (`docs/sprint-7-signoff.md`)
+- [ ] Staging load test report archived (ops — run k6 against staging)
+- [ ] Sentry DSN configured on Railway/Vercel (ops)
+- [ ] External uptime secrets set (`STAGING_API_URL`, `STAGING_FRONTEND_URL`)
+- [ ] Formal security audit / pentest (pre–Sprint 9)
+
+## Sprint 8 — Testing & Bug Fixes (in progress)
+
+- [x] Public DTO anonymity contract tests (`backend/tests/unit/anonymityContract.test.ts`)
+- [x] API error envelope contract tests (`backend/tests/integration/apiContract.test.ts`)
+- [x] Frontend unit tests: MoodCard anonymity, apiClient error mapping, RequireAuth guard
+- [x] Accessibility baseline: jest-axe on LandingPage; eslint-plugin-jsx-a11y in CI
+- [x] Playwright E2E suite: smoke + student journey (`e2e/tests/`)
+- [x] E2E + Lighthouse jobs in GitHub Actions CI
+- [ ] Backend integration tests with MongoDB service container (expand beyond auth guards)
+- [ ] Playwright admin report flow E2E
+- [ ] Playwright image upload E2E
+- [ ] Manual QA checklist on staging (`docs/testing-strategy.md`) — all items checked
+- [ ] Defect backlog triaged; P0/P1 closed
+- [ ] Rollback procedure tested on staging

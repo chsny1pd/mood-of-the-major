@@ -30,6 +30,7 @@ const baseSchema = z.object({
   RATE_LIMIT_GENERAL_MAX: z.coerce.number().int().positive().optional(),
   ORPHAN_IMAGE_TTL_HOURS: z.coerce.number().int().positive().default(24),
   IMAGE_CLEANUP_BATCH_SIZE: z.coerce.number().int().positive().default(100),
+  SENTRY_DSN: z.string().optional(),
 });
 
 export type Env = z.infer<typeof baseSchema>;

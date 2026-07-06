@@ -1,0 +1,25 @@
+name: Uptime Check
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    name: Synthetic uptime check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check API health
+        if: ${{ secrets.STAGING_API_URL != '' }}
+        run: |
+          curl --fail --retry 2 --retry-delay 5 "${{ secrets.STAGING_API_URL }}/health"
+          curl --fail --retry 2 --retry-delay 5 "${{ secrets.STAGING_API_URL }}/ready"
+
+      - name: Check frontend
+        if: ${{ secrets.STAGING_FRONTEND_URL != '' }}
+        run: curl --fail --retry 2 --retry-delay 5 "${{ secrets.STAGING_FRONTEND_URL }}/"
+
+      - name: Skip notice
+        if: ${{ secrets.STAGING_API_URL == '' && secrets.STAGING_FRONTEND_URL == '' }}
+        run: echo "No STAGING_API_URL or STAGING_FRONTEND_URL secrets configured — skipping checks."

@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import { AppError } from "../domain/errors/AppError.js";
 import type { Logger } from "../infrastructure/logging/logger.js";
+import { captureException } from "../infrastructure/monitoring/sentry.js";
 
 export function errorHandler(logger: Logger) {
   return (error: unknown, req: Request, res: Response, _next: NextFunction): void => {
@@ -23,6 +24,8 @@ export function errorHandler(logger: Logger) {
       requestId,
       message: error instanceof Error ? error.message : "Unknown error",
     });
+
+    captureException(error, { requestId, path: req.path, method: req.method });
 
     res.status(500).json({
       success: false,

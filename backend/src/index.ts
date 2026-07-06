@@ -2,9 +2,11 @@ import "dotenv/config";
 import { createApp } from "./app.js";
 import { createDependencies } from "./config/di.js";
 import { loadEnv } from "./config/env.js";
+import { initSentry } from "./infrastructure/monitoring/sentry.js";
 
 async function main(): Promise<void> {
   const env = loadEnv();
+  initSentry(env);
   const deps = createDependencies(env);
   const app = createApp(deps);
 
