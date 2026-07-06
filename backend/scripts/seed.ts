@@ -67,7 +67,7 @@ async function seed(): Promise<void> {
         isActive: true,
         sortOrder: faculty.sortOrder,
       },
-      { upsert: true, new: true, setDefaultsOnInsert: true },
+      { upsert: true, returnDocument: "after", setDefaultsOnInsert: true },
     );
 
     for (const major of faculty.majors) {
@@ -81,7 +81,7 @@ async function seed(): Promise<void> {
           isActive: true,
           sortOrder: major.sortOrder,
         },
-        { upsert: true, new: true, setDefaultsOnInsert: true },
+        { upsert: true, returnDocument: "after", setDefaultsOnInsert: true },
       );
     }
   }
@@ -98,7 +98,7 @@ async function seed(): Promise<void> {
         isActive: true,
         sortOrder: tag.sortOrder,
       },
-      { upsert: true, new: true, setDefaultsOnInsert: true },
+      { upsert: true, returnDocument: "after", setDefaultsOnInsert: true },
     );
   }
 

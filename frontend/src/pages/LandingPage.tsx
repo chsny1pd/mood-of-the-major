@@ -41,8 +41,8 @@ export function LandingPage() {
 
       <div className="mt-12 rounded-2xl border border-dashed border-teal-200 bg-teal-50/60 p-6">
         <p className="text-sm text-teal-900">
-          <span className="font-semibold">Sprint 1 foundation is live.</span> Authentication, feeds,
-          and posting arrive in upcoming sprints.
+          <span className="font-semibold">Authentication is live.</span> Create an account to access
+          your feed — browse anonymous moods or share your own.
         </p>
       </div>
     </section>

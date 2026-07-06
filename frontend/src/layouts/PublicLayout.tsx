@@ -10,7 +10,18 @@ export function PublicLayout() {
             Mood of the Major
           </Link>
           <nav className="flex items-center gap-3 text-sm">
-            <span className="rounded-full bg-stone-100 px-3 py-1 text-stone-600">Sprint 1</span>
+            <Link
+              to={ROUTES.login}
+              className="rounded-full px-3 py-1 text-stone-700 hover:bg-stone-100"
+            >
+              Sign in
+            </Link>
+            <Link
+              to={ROUTES.register}
+              className="rounded-full bg-teal-800 px-3 py-1 font-medium text-white hover:bg-teal-900"
+            >
+              Join
+            </Link>
           </nav>
         </div>
       </header>

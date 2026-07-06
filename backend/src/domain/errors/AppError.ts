@@ -28,3 +28,17 @@ export class ValidationError extends AppError {
     this.name = "ValidationError";
   }
 }
+
+export class AuthenticationError extends AppError {
+  constructor(message: string, code: string, statusCode = 401) {
+    super(message, { statusCode, code });
+    this.name = "AuthenticationError";
+  }
+}
+
+export class AuthorizationError extends AppError {
+  constructor(message = "Forbidden", code = "FORBIDDEN") {
+    super(message, { statusCode: 403, code });
+    this.name = "AuthorizationError";
+  }
+}

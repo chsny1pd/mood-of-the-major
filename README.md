@@ -455,14 +455,16 @@ npm run seed
 
 # Frontend (separate terminal)
 cd frontend
-cp .env.example .env
+cp .env.example .env   # uses Vite proxy to backend at /api/v1
 npm install
 npm run dev          # http://localhost:5173
 ```
 
+Try auth: **Join** → register → redirects to `/feed`. Sign out from header.
+
 **Quality checks:** `npm run lint`, `npm run typecheck`, `npm test`, `npm run build` in each package.
 
-### Current Phase: Sprint 1 Foundation (complete) → Sprint 2 Auth (next)
+### Current Phase: Sprint 2 Auth (complete) → Sprint 3 Mood Posting (next)
 
 1. Review this README and `docs/roadmap.md` for milestone scope.
 2. Track active tasks in `TODO.md`.
