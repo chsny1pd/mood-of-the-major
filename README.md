@@ -208,7 +208,7 @@ Mood of the Major follows **Clean Architecture**, separating concerns into disti
 
 ## Project Folder Overview
 
-This repository is organized around **documentation-first development**. Application source directories (`frontend/`, `backend/`) and CI workflows (`.github/workflows/`) are introduced during Sprint 1; task tracking (`TODO.md`, `PROJECT_AUDIT.md`) is added when implementation begins.
+This repository uses **documentation-first development** with application code in `frontend/` and `backend/`. CI runs via `.github/workflows/ci.yml`.
 
 ```
 mood-of-the-major/
@@ -216,6 +216,8 @@ mood-of-the-major/
 ├── README.md                  # This file — single source of truth
 ├── SPECS.md                   # Functional and non-functional specifications
 ├── DESIGN.md                  # UI/UX design principles and visual language
+├── frontend/                  # React 19 + Vite SPA
+├── backend/                   # Express + TypeScript API
 ├── TODO.md                    # Active development task tracker
 ├── PROJECT_AUDIT.md           # Periodic architecture and quality audits
 │
@@ -437,18 +439,34 @@ Full deployment procedures, environment variable catalogs, and rollback strategi
 
 ## Development Workflow
 
-### Getting Started (Future)
+### Getting Started
 
-Once the application codebase is initialized, setup instructions will be added here. Until then, development focuses on documentation and specification.
+**Prerequisites:** Node.js 20+, npm, MongoDB (local or Atlas)
 
-### Current Phase: Documentation & Planning
+```bash
+# Backend
+cd backend
+cp .env.example .env
+npm install
+npm run dev          # http://localhost:3000 — /health, /ready, /api/v1
 
-1. Review this README as the authoritative project overview.
-2. Contribute to `SPECS.md` and `docs/requirements.md` for detailed requirements.
-3. Expand `docs/architecture.md` with layer-specific design decisions.
-4. Define API contracts in `docs/api.md` before any endpoint implementation.
-5. Establish database modeling guidelines in `docs/database.md`.
-6. Configure `.cursor/rules/` to guide AI-assisted development.
+# Seed reference data (requires MongoDB running)
+npm run seed
+
+# Frontend (separate terminal)
+cd frontend
+cp .env.example .env
+npm install
+npm run dev          # http://localhost:5173
+```
+
+**Quality checks:** `npm run lint`, `npm run typecheck`, `npm test`, `npm run build` in each package.
+
+### Current Phase: Sprint 1 Foundation (complete) → Sprint 2 Auth (next)
+
+1. Review this README and `docs/roadmap.md` for milestone scope.
+2. Track active tasks in `TODO.md`.
+3. Follow `.cursor/rules/` and layer docs when implementing features.
 
 ### Branching Strategy
 

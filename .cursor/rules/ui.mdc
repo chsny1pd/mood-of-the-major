@@ -12,3 +12,4 @@ Follow [`DESIGN.md`](../../DESIGN.md) and [`docs/frontend.md`](../../docs/fronte
 - Handle loading, empty, and error states on data-fetching views.
 - Mobile-first responsive layouts; semantic color tokens for light/dark mode.
 - Sanitize user-generated content before render.
+
