@@ -1,5 +1,4 @@
 import type { Response } from "express";
-import type { StatisticsAggregationJob } from "../application/services/StatisticsAggregationJob.js";
 import type { StatisticsService } from "../application/services/StatisticsService.js";
 import type { TrendingService } from "../application/services/TrendingService.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -7,7 +6,6 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 export function createStatisticsController(
   statisticsService: StatisticsService,
   trendingService: TrendingService,
-  aggregationJob: StatisticsAggregationJob,
 ) {
   return {
     dashboard: asyncHandler(async (req, res: Response) => {
@@ -30,11 +28,6 @@ export function createStatisticsController(
       });
 
       res.status(200).json({ success: true, data });
-    }),
-
-    runAggregation: asyncHandler(async (_req, res: Response) => {
-      const result = await aggregationJob.run();
-      res.status(200).json({ success: true, data: result });
     }),
   };
 }

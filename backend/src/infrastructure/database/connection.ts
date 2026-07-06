@@ -4,17 +4,24 @@ import { DailyStatisticsModel } from "./models/DailyStatistics.js";
 import { EmotionStatisticsModel } from "./models/EmotionStatistics.js";
 import { BookmarkModel } from "./models/Bookmark.js";
 import { CommentModel } from "./models/Comment.js";
+import { FacultyModel } from "./models/Faculty.js";
+import { MajorModel } from "./models/Major.js";
+import { MoodImageModel } from "./models/MoodImage.js";
 import { MoodModel } from "./models/Mood.js";
 import { ReactionModel } from "./models/Reaction.js";
 import { ReportModel } from "./models/Report.js";
 import { AuditLogModel } from "./models/AuditLog.js";
 import { NotificationModel } from "./models/Notification.js";
+import { TagModel } from "./models/Tag.js";
+import { UserModel } from "./models/User.js";
+import { MoodTagModel } from "./models/MoodTag.js";
 
 export type DatabaseStatus = "disconnected" | "connecting" | "connected" | "disconnecting";
 
 async function syncModelIndexes(logger: Logger): Promise<void> {
   await Promise.all([
     MoodModel.syncIndexes(),
+    MoodImageModel.syncIndexes(),
     CommentModel.syncIndexes(),
     ReactionModel.syncIndexes(),
     BookmarkModel.syncIndexes(),
@@ -23,6 +30,11 @@ async function syncModelIndexes(logger: Logger): Promise<void> {
     NotificationModel.syncIndexes(),
     EmotionStatisticsModel.syncIndexes(),
     DailyStatisticsModel.syncIndexes(),
+    UserModel.syncIndexes(),
+    TagModel.syncIndexes(),
+    FacultyModel.syncIndexes(),
+    MajorModel.syncIndexes(),
+    MoodTagModel.syncIndexes(),
   ]);
   logger.info("MongoDB indexes synced");
 }

@@ -17,6 +17,7 @@ export function requestLogger(logger: Logger) {
         path: req.path,
         statusCode: res.statusCode,
         durationMs: Date.now() - startedAt,
+        ...(req.userId ? { userId: req.userId } : {}),
       });
     });
 

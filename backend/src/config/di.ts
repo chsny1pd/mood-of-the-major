@@ -10,6 +10,7 @@ import { ReportService } from "../application/services/ReportService.js";
 import { AdminService } from "../application/services/AdminService.js";
 import { NotificationService } from "../application/services/NotificationService.js";
 import { StatisticsAggregationJob } from "../application/services/StatisticsAggregationJob.js";
+import { ImageCleanupJob } from "../application/services/ImageCleanupJob.js";
 import { StatisticsService } from "../application/services/StatisticsService.js";
 import { TrendingService } from "../application/services/TrendingService.js";
 import { createAuthController } from "../controllers/authController.js";
@@ -23,6 +24,7 @@ import { createReportController } from "../controllers/reportController.js";
 import { createAdminController } from "../controllers/adminController.js";
 import { createNotificationController } from "../controllers/notificationController.js";
 import { createStatisticsController } from "../controllers/statisticsController.js";
+import { createJobController } from "../controllers/jobController.js";
 import { createTagController } from "../controllers/tagController.js";
 import { AggregationThresholdPolicy } from "../domain/services/AggregationThresholdPolicy.js";
 import { BcryptPasswordHasher } from "../infrastructure/auth/BcryptPasswordHasher.js";
@@ -52,6 +54,7 @@ import {
   createAuthenticateMiddleware,
   createOptionalAuthenticateMiddleware,
 } from "../middlewares/authenticate.js";
+import { createRateLimiters, type AppRateLimiters } from "../middlewares/rateLimitFactory.js";
 
 function resolveJwtSecret(env: Env): string {
   if (env.JWT_SECRET) {
@@ -92,6 +95,8 @@ export interface AppDependencies {
   reactionController: ReturnType<typeof createReactionController>;
   bookmarkController: ReturnType<typeof createBookmarkController>;
   reportController: ReturnType<typeof createReportController>;
+  jobController: ReturnType<typeof createJobController>;
+  rateLimiters: AppRateLimiters;
   authenticate: ReturnType<typeof createAuthenticateMiddleware>;
   optionalAuthenticate: ReturnType<typeof createOptionalAuthenticateMiddleware>;
   database: {
@@ -102,7 +107,8 @@ export interface AppDependencies {
 }
 
 export function createDependencies(env: Env): AppDependencies {
-  const logger = createLogger(env.LOG_LEVEL);
+  const logger = createLogger(env.LOG_LEVEL, env.NODE_ENV);
+  const rateLimiters = createRateLimiters(env, logger);
   const userRepository = new MongooseUserRepository();
   const facultyRepository = new MongooseFacultyRepository();
   const moodRepository = new MongooseMoodRepository();
@@ -170,15 +176,20 @@ export function createDependencies(env: Env): AppDependencies {
     emotionStatisticsRepository,
     thresholdPolicy,
   );
-  const statisticsController = createStatisticsController(
-    statisticsService,
-    trendingService,
-    aggregationJob,
+  const imageCleanupJob = new ImageCleanupJob(
+    moodImageRepository,
+    imageStorage,
+    env.ORPHAN_IMAGE_TTL_HOURS,
+    env.IMAGE_CLEANUP_BATCH_SIZE,
+    logger,
   );
+  const statisticsController = createStatisticsController(statisticsService, trendingService);
+  const jobController = createJobController(aggregationJob, imageCleanupJob);
 
   return {
     env,
     logger,
+    rateLimiters,
     authService,
     facultyService,
     moodService,
@@ -203,6 +214,7 @@ export function createDependencies(env: Env): AppDependencies {
     reactionController: createReactionController(reactionService),
     bookmarkController: createBookmarkController(bookmarkService),
     reportController: createReportController(reportService),
+    jobController,
     authenticate: createAuthenticateMiddleware(tokenService, userRepository),
     optionalAuthenticate: createOptionalAuthenticateMiddleware(tokenService, userRepository),
     database: {

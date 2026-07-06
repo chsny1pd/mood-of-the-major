@@ -1,6 +1,5 @@
 import { Router } from "express";
 import type { Dependencies } from "../config/di.js";
-import { commentRateLimiter } from "../middlewares/commentRateLimiter.js";
 import { authorize } from "../middlewares/authorize.js";
 import { validate } from "../middlewares/validate.js";
 import {
@@ -10,7 +9,7 @@ import {
 
 export function createCommentRoutes(deps: Dependencies): Router {
   const router = Router();
-  const { commentController, authenticate, optionalAuthenticate } = deps;
+  const { commentController, authenticate, optionalAuthenticate, rateLimiters } = deps;
 
   router.get(
     "/moods/:moodId/comments",
@@ -23,7 +22,7 @@ export function createCommentRoutes(deps: Dependencies): Router {
     "/moods/:moodId/comments",
     authenticate,
     authorize("student"),
-    commentRateLimiter,
+    rateLimiters.comment,
     validate(createCommentSchema),
     commentController.create,
   );

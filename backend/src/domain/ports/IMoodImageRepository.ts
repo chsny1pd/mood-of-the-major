@@ -8,4 +8,8 @@ export interface IMoodImageRepository {
   linkToMood(imageIds: string[], moodId: string, uploadedBy: string): Promise<void>;
   softDelete(id: string, uploadedBy: string): Promise<boolean>;
   softDeleteByMoodId(moodId: string): Promise<void>;
+  findUnlinkedOlderThan(cutoff: Date, limit: number): Promise<MoodImage[]>;
+  markOrphaned(id: string): Promise<boolean>;
+  findDeletedNeedingPurge(limit: number): Promise<MoodImage[]>;
+  hardDelete(id: string): Promise<boolean>;
 }

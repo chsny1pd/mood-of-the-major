@@ -18,7 +18,35 @@ function shouldLog(current: LogLevel, messageLevel: LogLevel): boolean {
   return levelOrder[messageLevel] >= levelOrder[current];
 }
 
-function write(level: LogLevel, message: string, meta?: Record<string, unknown>): void {
+function write(
+  level: LogLevel,
+  message: string,
+  meta: Record<string, unknown> | undefined,
+  jsonMode: boolean,
+): void {
+  if (jsonMode) {
+    const payload = {
+      timestamp: new Date().toISOString(),
+      level,
+      message,
+      ...meta,
+    };
+    const line = JSON.stringify(payload);
+
+    if (level === "error") {
+      console.error(line);
+      return;
+    }
+
+    if (level === "warn") {
+      console.warn(line);
+      return;
+    }
+
+    console.log(line);
+    return;
+  }
+
   const payload = meta ? `${message} ${JSON.stringify(meta)}` : message;
   const line = `[${new Date().toISOString()}] ${level.toUpperCase()} ${payload}`;
 
@@ -35,19 +63,21 @@ function write(level: LogLevel, message: string, meta?: Record<string, unknown>)
   console.log(line);
 }
 
-export function createLogger(level: LogLevel = "info"): Logger {
+export function createLogger(level: LogLevel = "info", nodeEnv = "development"): Logger {
+  const jsonMode = nodeEnv === "production" || nodeEnv === "staging";
+
   return {
     debug: (message, meta) => {
-      if (shouldLog(level, "debug")) write("debug", message, meta);
+      if (shouldLog(level, "debug")) write("debug", message, meta, jsonMode);
     },
     info: (message, meta) => {
-      if (shouldLog(level, "info")) write("info", message, meta);
+      if (shouldLog(level, "info")) write("info", message, meta, jsonMode);
     },
     warn: (message, meta) => {
-      if (shouldLog(level, "warn")) write("warn", message, meta);
+      if (shouldLog(level, "warn")) write("warn", message, meta, jsonMode);
     },
     error: (message, meta) => {
-      if (shouldLog(level, "error")) write("error", message, meta);
+      if (shouldLog(level, "error")) write("error", message, meta, jsonMode);
     },
   };
 }

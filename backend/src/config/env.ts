@@ -20,6 +20,16 @@ const baseSchema = z.object({
   SERVICE_API_KEY: z.string().optional(),
   BCRYPT_ROUNDS: z.coerce.number().int().min(10).max(15).default(12),
   ALLOWED_EMAIL_DOMAINS: z.string().optional(),
+  RATE_LIMIT_AUTH_WINDOW_MS: z.coerce.number().int().positive().optional(),
+  RATE_LIMIT_AUTH_MAX: z.coerce.number().int().positive().optional(),
+  RATE_LIMIT_WRITE_WINDOW_MS: z.coerce.number().int().positive().optional(),
+  RATE_LIMIT_WRITE_MAX: z.coerce.number().int().positive().optional(),
+  RATE_LIMIT_FEED_WINDOW_MS: z.coerce.number().int().positive().optional(),
+  RATE_LIMIT_FEED_MAX: z.coerce.number().int().positive().optional(),
+  RATE_LIMIT_GENERAL_WINDOW_MS: z.coerce.number().int().positive().optional(),
+  RATE_LIMIT_GENERAL_MAX: z.coerce.number().int().positive().optional(),
+  ORPHAN_IMAGE_TTL_HOURS: z.coerce.number().int().positive().default(24),
+  IMAGE_CLEANUP_BATCH_SIZE: z.coerce.number().int().positive().default(100),
 });
 
 export type Env = z.infer<typeof baseSchema>;

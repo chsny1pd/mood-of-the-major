@@ -1,9 +1,9 @@
 import express from "express";
 import cors from "cors";
-import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import type { Dependencies } from "./config/di.js";
 import { getCorsOrigins } from "./config/env.js";
+import { createHelmetMiddleware } from "./config/helmet.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import { requestLogger } from "./middlewares/requestLogger.js";
 import { createApiRoutes } from "./routes/index.js";
@@ -13,7 +13,7 @@ export function createApp(deps: Dependencies) {
   const app = express();
 
   app.disable("x-powered-by");
-  app.use(helmet());
+  app.use(createHelmetMiddleware(deps.env));
   app.use(
     cors({
       origin: getCorsOrigins(deps.env),

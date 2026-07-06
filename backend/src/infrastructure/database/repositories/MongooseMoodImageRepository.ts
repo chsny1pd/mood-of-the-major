@@ -106,4 +106,49 @@ export class MongooseMoodImageRepository implements IMoodImageRepository {
       { status: "deleted", deletedAt: new Date() },
     );
   }
+
+  async findUnlinkedOlderThan(cutoff: Date, limit: number): Promise<MoodImage[]> {
+    const docs = await MoodImageModel.find({
+      moodId: null,
+      status: { $in: ["pending", "confirmed"] },
+      deletedAt: null,
+      createdAt: { $lt: cutoff },
+    })
+      .sort({ createdAt: 1 })
+      .limit(limit)
+      .lean();
+
+    return docs.map(toMoodImage);
+  }
+
+  async markOrphaned(id: string): Promise<boolean> {
+    const result = await MoodImageModel.updateOne(
+      {
+        _id: id,
+        moodId: null,
+        status: { $in: ["pending", "confirmed"] },
+        deletedAt: null,
+      },
+      { status: "orphaned" },
+    );
+
+    return result.modifiedCount > 0;
+  }
+
+  async findDeletedNeedingPurge(limit: number): Promise<MoodImage[]> {
+    const docs = await MoodImageModel.find({
+      status: "deleted",
+      deletedAt: { $ne: null },
+    })
+      .sort({ deletedAt: 1 })
+      .limit(limit)
+      .lean();
+
+    return docs.map(toMoodImage);
+  }
+
+  async hardDelete(id: string): Promise<boolean> {
+    const result = await MoodImageModel.deleteOne({ _id: id });
+    return result.deletedCount > 0;
+  }
 }

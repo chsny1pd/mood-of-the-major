@@ -71,4 +71,17 @@
 - [x] Tests: admin + notification auth guard integration tests
 - [ ] Manual QA on staging (report resolve, user suspend, audit log entries)
 
-## Sprint 7 — Performance & Security Hardening (next)
+## Sprint 7 — Performance & Security Hardening (in progress)
+
+- [x] Helmet configured per `security.md` (CSP off for JSON API, CORP cross-origin, HSTS in production)
+- [x] Rate limiters: auth, write (user-keyed), feed, general API; env overrides; `requestId` in 429 responses
+- [x] Structured JSON logging in staging/production; `userId` in request finish logs when authenticated
+- [x] MongoDB index sync on startup for all collections
+- [x] Orphan/deleted image cleanup job — `POST /api/v1/internal/jobs/cleanup-images`; CLI `npm run cleanup:images`
+- [x] Frontend security headers via `frontend/vercel.json` (CSP, HSTS, Permissions-Policy)
+- [x] k6 load test scaffold — `backend/load-tests/feed.js`
+- [ ] Staging load test report (feed p95 ≤ 500 ms, presign p95 ≤ 200 ms)
+- [ ] Lighthouse CI ≥ 80 on feed and create mood pages
+- [ ] Sentry (or equivalent) on backend and frontend
+- [ ] External uptime monitor on `/health` and frontend `/`
+- [ ] Security audit / production checklist sign-off on staging

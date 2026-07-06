@@ -10,12 +10,16 @@ import { createMajorRoutes } from "./majorRoutes.js";
 import { createMoodRoutes } from "./moodRoutes.js";
 import { createReactionRoutes } from "./reactionRoutes.js";
 import { createReportRoutes } from "./reportRoutes.js";
-import { createStatisticsRoutes, createJobRoutes } from "./statisticsRoutes.js";
+import { createStatisticsRoutes } from "./statisticsRoutes.js";
+import { createJobRoutes } from "./jobRoutes.js";
 import { createNotificationRoutes } from "./notificationRoutes.js";
 import { createTagRoutes } from "./tagRoutes.js";
 
 export function createApiRoutes(deps: Dependencies): Router {
   const router = Router();
+  const { rateLimiters } = deps;
+
+  router.use(rateLimiters.general);
 
   router.use("/auth", createAuthRoutes(deps));
   router.use("/faculties", createFacultyRoutes(deps));

@@ -18,6 +18,7 @@
     "seed": "tsx scripts/seed.ts",
     "seed:sample-moods": "tsx scripts/seed-sample-moods.ts",
     "aggregate:statistics": "tsx scripts/run-aggregation.ts",
+    "cleanup:images": "tsx scripts/run-image-cleanup.ts",
     "qa:statistics": "tsx scripts/qa-statistics.ts",
     "promote:admin": "tsx scripts/promote-admin.ts"
   },

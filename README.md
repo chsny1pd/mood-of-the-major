@@ -464,7 +464,7 @@ Try auth: **Join** → register → redirects to `/feed`. Sign out from header.
 
 **Quality checks:** `npm run lint`, `npm run typecheck`, `npm test`, `npm run build` in each package.
 
-### Current Phase: Sprint 6 Admin Dashboard (complete) → Sprint 7 Hardening (next)
+### Current Phase: Sprint 7 Performance & Security Hardening (in progress)
 
 1. Review this README and `docs/roadmap.md` for milestone scope.
 2. Track active tasks in `TODO.md`.
@@ -480,6 +480,8 @@ npm run qa:statistics     # run aggregation job + verify dashboard output
 ```
 
 **Staging aggregation (cron or manual):** `POST /api/v1/internal/jobs/aggregate-statistics` with header `x-service-api-key: $SERVICE_API_KEY`. Schedule daily at 01:00 UTC on Railway.
+
+**Staging image cleanup (cron or manual):** `POST /api/v1/internal/jobs/cleanup-images` with the same service key. Schedule every 6 hours on Railway. Or run locally: `npm run cleanup:images`.
 
 ### Branching Strategy
 

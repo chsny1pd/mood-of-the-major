@@ -1,6 +1,5 @@
 import { Router } from "express";
 import type { Dependencies } from "../config/di.js";
-import { postRateLimiter } from "../middlewares/postRateLimiter.js";
 import { authorize } from "../middlewares/authorize.js";
 import { validate } from "../middlewares/validate.js";
 import { createMoodSchema, feedQuerySchema } from "../validators/moodSchemas.js";
@@ -9,9 +8,16 @@ import { trendingQuerySchema } from "../validators/statisticsSchemas.js";
 
 export function createMoodRoutes(deps: Dependencies): Router {
   const router = Router();
-  const { moodController, statisticsController, authenticate, optionalAuthenticate } = deps;
+  const { moodController, statisticsController, authenticate, optionalAuthenticate, rateLimiters } =
+    deps;
 
-  router.get("/feed", optionalAuthenticate, validate(feedQuerySchema, "query"), moodController.feed);
+  router.get(
+    "/feed",
+    optionalAuthenticate,
+    rateLimiters.feed,
+    validate(feedQuerySchema, "query"),
+    moodController.feed,
+  );
 
   router.get(
     "/search",
@@ -27,7 +33,7 @@ export function createMoodRoutes(deps: Dependencies): Router {
     "/",
     authenticate,
     authorize("student"),
-    postRateLimiter,
+    rateLimiters.post,
     validate(createMoodSchema),
     moodController.create,
   );

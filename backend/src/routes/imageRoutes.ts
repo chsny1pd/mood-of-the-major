@@ -1,20 +1,19 @@
 import express, { Router } from "express";
 import type { Dependencies } from "../config/di.js";
 import { MAX_IMAGE_SIZE_BYTES } from "../domain/constants/moodConstants.js";
-import { imageUploadRateLimiter } from "../middlewares/postRateLimiter.js";
 import { authorize } from "../middlewares/authorize.js";
 import { validate } from "../middlewares/validate.js";
 import { presignUploadSchema } from "../validators/imageSchemas.js";
 
 export function createImageRoutes(deps: Dependencies): Router {
   const router = Router();
-  const { imageController, authenticate, env } = deps;
+  const { imageController, authenticate, env, rateLimiters } = deps;
 
   router.post(
     "/upload-url",
     authenticate,
     authorize("student"),
-    imageUploadRateLimiter,
+    rateLimiters.imageUpload,
     validate(presignUploadSchema),
     imageController.requestUploadUrl,
   );
