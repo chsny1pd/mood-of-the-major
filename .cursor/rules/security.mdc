@@ -1,0 +1,15 @@
+---
+description: Security-first development
+globs: backend/**,frontend/**
+alwaysApply: false
+---
+
+# Security Rules
+
+Follow [`docs/security.md`](../../docs/security.md) and [`docs/authentication.md`](../../docs/authentication.md).
+
+- Fail closed on auth and validation errors.
+- Validate at API ingress (Zod); reject unknown fields on strict schemas.
+- bcrypt for passwords; JWT access token 15m; refresh via HttpOnly cookie.
+- Never commit secrets; never expose stack traces or R2 internals in API errors.
+- Rate-limit auth and write endpoints.

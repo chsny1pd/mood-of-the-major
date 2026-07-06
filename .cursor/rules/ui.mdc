@@ -1,0 +1,14 @@
+---
+description: UI/UX consistency with design spec
+globs: frontend/**
+alwaysApply: false
+---
+
+# UI Rules
+
+Follow [`DESIGN.md`](../../DESIGN.md) and [`docs/frontend.md`](../../docs/frontend.md).
+
+- Anonymous UI: no avatars, usernames, or author identity on public content.
+- Handle loading, empty, and error states on data-fetching views.
+- Mobile-first responsive layouts; semantic color tokens for light/dark mode.
+- Sanitize user-generated content before render.

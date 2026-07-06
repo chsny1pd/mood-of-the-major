@@ -313,9 +313,11 @@ Short access token lifetime supports stateless horizontal scaling without shared
 | **Server storage** | SHA-256 hash stored on `users` document | Enables revocation without new MongoDB collection |
 | **Rotation** | Issue new refresh token on every refresh; invalidate previous | Detects token reuse (potential theft) |
 
+**SPA register/login response:** JSON includes `accessToken` and `expiresIn` only. Refresh token is set via `Set-Cookie` — not in the JSON body (`api.md` Register/Login).
+
 ### User Document Extensions
 
-The following fields extend `users` for token lifecycle (document at implementation; sync `database.md` §1):
+Fields on `users` per `database.md` §1:
 
 | Field | Type | Purpose |
 |-------|------|---------|

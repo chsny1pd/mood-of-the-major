@@ -78,7 +78,7 @@ The schema uses a **hybrid approach** — normalized references for entities wit
 | **Statistics** | Background jobs write to `EmotionStatistics` and `DailyStatistics`; dashboard reads precomputed docs (`NFR-PERF-004`) |
 | **Text search** | MongoDB text index on `Moods.content` for `FR-SRCH-001`; compound filters use B-tree indexes |
 | **Sharding (future)** | Shard key candidate: `{ facultyId: 1, createdAt: 1 }` on `Moods` if single-university deployment outgrows one shard |
-| **Pagination** | All list queries use indexed sort fields; cursor pagination preferred on `(createdAt, _id)` when adopted (`OD-005`) |
+| **Pagination** | All list queries use indexed sort fields; **cursor pagination** on `(createdAt, _id)` per `docs/api.md` (`OD-005` resolved) |
 | **Connection pooling** | Mongoose pool sized per Railway instance; stateless API allows horizontal scale (`NFR-SCALE-003`) |
 
 ---
@@ -118,7 +118,7 @@ The schema uses a **hybrid approach** — normalized references for entities wit
 | 14 | `dailystatistics` | Time-bucketed daily rollups |
 | 15 | `auditlogs` | Append-only admin action audit trail |
 
-> **Mapping note:** SPECS mood categories (`FR-CAT-*`) are implemented as `tags` documents with `type: emotion`. The architecture document's `ICategoryRepository` port maps to the `tags` collection filtered by type.
+> **Mapping note:** SPECS mood categories (`FR-CAT-*`) are implemented as `tags` documents with `type: emotion`. The domain port is **`ITagRepository`**, implemented by `MongooseTagRepository` on the `tags` collection.
 
 ---
 
@@ -144,6 +144,9 @@ Stores authenticated user accounts. Identity exists for authentication, authoriz
 | `majorId` | ObjectId | | ✓ | `null` | User's affiliated major |
 | `status` | String | ✓ | | `active` | `active`, `suspended` |
 | `lastLoginAt` | Date | | ✓ | `null` | Updated on successful login |
+| `tokenVersion` | Number | ✓ | | `0` | Incremented on password change, logout-all, refresh reuse; invalidates access JWTs (`tv` claim) |
+| `refreshTokenHash` | String | | ✓ | `null` | SHA-256 hash of current valid refresh token (`docs/authentication.md`) |
+| `refreshTokenExpiresAt` | Date | | ✓ | `null` | Refresh token expiry (7-day sliding window) |
 | `notificationPreferences` | Object | | ✓ | `{}` | Phase 3 preferences (`FR-NOTIF-004`) |
 | `createdAt` | Date | ✓ | | auto | |
 | `updatedAt` | Date | ✓ | | auto | |
@@ -157,6 +160,9 @@ Stores authenticated user accounts. Identity exists for authentication, authoriz
 - `status`: enum `active` | `suspended`
 - `facultyId`: if present, must reference existing active `faculties` document
 - `majorId`: if present, must reference existing active `majors` document; `major.facultyId` should match `facultyId` when both set
+- `tokenVersion`: non-negative integer; incremented atomically on revocation events
+- `refreshTokenHash`: null when no active refresh session
+- `refreshTokenExpiresAt`: must be in the future when `refreshTokenHash` is set
 
 #### Indexes
 
@@ -190,7 +196,7 @@ Stores authenticated user accounts. Identity exists for authentication, authoriz
 - Only `active` users may authenticate (`BR-AUTH-001`)
 - `administrator` role required for moderation capabilities (`BR-AUTH-002`)
 - Suspended users cannot create content; existing content retention per `BR-CNT-004`
-- Email domain restriction TBD (`OD-014`) — enforced at application registration layer
+- Email domain restriction: optional `ALLOWED_EMAIL_DOMAINS` env var per `docs/authentication.md` (`OD-014` resolved)
 - Admin user queries may return `email` and affiliation; public endpoints never return other users' data
 
 ---
@@ -415,7 +421,7 @@ Stores **metadata only** for images uploaded to Cloudflare R2. No binary data (`
 
 - `objectKey`: unique, non-empty, matches R2 key pattern (no `..`, no leading `/`)
 - `mimeType`: must be in approved allowlist (`BR-IMG-001`)
-- `fileSizeBytes`: positive integer, ≤ configured max (TBD in `docs/cloudflare-r2.md`)
+- `fileSizeBytes`: positive integer, ≤ **5 MB** per `docs/cloudflare-r2.md` (`OD-006` resolved)
 - `status`: enum as listed
 - `moodId`: required when `status: confirmed` on published mood
 
@@ -1145,7 +1151,7 @@ auditlogs ──► users (adminId)
 | Feed p95 500ms (`NFR-PERF-001`) | Indexed sorts + denormalized counts; limit page size (default 20) |
 | Statistics p95 2s (`NFR-PERF-004`) | Read `emotionstatistics` / `dailystatistics`, not live scan of `moods` |
 | Write contention on popular moods | Atomic `$inc` on `reactionSummary` and `commentCount` |
-| Large skip offset pagination | Prefer cursor on `(createdAt, _id)` when `OD-005` resolves to cursor |
+| Large skip offset pagination | Avoid offset pagination; use cursor on `(createdAt, _id)` per `docs/requirements.md` (`OD-005`) |
 | Working set memory | Monitor Atlas metrics; archive old `dailystatistics` beyond 2 years to cold storage (future) |
 
 ---
@@ -1476,7 +1482,7 @@ All pipelines run as **scheduled background jobs** or **on-demand admin refresh*
 |-------|----------|
 | **Job write** | Set `meetsThreshold` on statistics documents during upsert |
 | **API read** | Return counts only when `meetsThreshold: true`; otherwise return category with suppressed counts |
-| **Minimum value** | Configured via `AGGREGATION_THRESHOLD_MIN` env var (`architecture.md`) — exact value TBD (`OD-010`) |
+| **Minimum value** | `AGGREGATION_THRESHOLD_MIN` env var; default **5** (`docs/security.md`, `OD-010` resolved) |
 
 ---
 

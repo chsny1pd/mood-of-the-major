@@ -271,14 +271,8 @@ The frontend is a **React 19 SPA** organized by **feature** with shared UI primi
 │    ├─ Hooks         Feature data and behavior hooks     │
 │    └─ Services      Feature API call wrappers           │
 ├─────────────────────────────────────────────────────────┤
-│  Shared                                           │
-│    ├─ Components  Navbar, MoodCard, Modal, etc.         │
-│    ├─ Hooks         useAuth, useDebounce, useTheme      │
-│    ├─ Contexts      Auth, theme (minimal global state)  │
-│    ├─ Services      Axios instance, API error mapper    │
-│    ├─ Utils         Date formatting, sanitization       │
-│    ├─ Types         Shared TypeScript interfaces        │
-│    └─ Assets        Icons, illustrations, fonts         │
+│  Cross-feature    components/, hooks/, services/,       │
+│                   contexts/, lib/, utils/, types/       │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -433,7 +427,7 @@ features/<feature-name>/
 | `admin` | All admin pages and moderation flows |
 | `upload` | Image upload component and hook |
 
-**Shared** module holds cross-feature components, hooks, contexts, and services.
+**Cross-feature directories** at `src/` root (`components/`, `hooks/`, `services/`, `contexts/`, `lib/`, `utils/`, `types/`, `constants/`) hold shared UI, auth, and API utilities per `frontend.md`.
 
 ---
 
@@ -534,7 +528,7 @@ Repositories implement **port interfaces** defined in the domain layer:
 | `IReactionRepository` | `MongooseReactionRepository` |
 | `IBookmarkRepository` | `MongooseBookmarkRepository` |
 | `IReportRepository` | `MongooseReportRepository` |
-| `ICategoryRepository` | `MongooseCategoryRepository` |
+| `ITagRepository` | `MongooseTagRepository` |
 | `IAuditLogRepository` | `MongooseAuditLogRepository` |
 
 Repositories encapsulate all Mongoose queries, projections, and aggregations. Schema details belong in `docs/database.md`.
@@ -575,7 +569,7 @@ Validation confirms **shape and type**. Domain services confirm **business rules
 | Utility | Purpose |
 |---------|---------|
 | **DTO mappers** | Domain entity → public API response (strip identity) |
-| **Pagination helpers** | Cursor/offset encoding (strategy TBD per `SPECS.md` OD-005) |
+| **Pagination helpers** | Cursor encoding/decoding per `docs/requirements.md` (`OD-005`: cursor-only) |
 | **Date/time** | UTC normalization (`BR-STAT-002`) |
 | **Async handler** | Wrap controllers for promise error propagation |
 
@@ -784,13 +778,13 @@ Apply optimistic updates only where rollback is safe and anonymity is preserved:
 
 | Category | HTTP status | Example |
 |----------|-------------|---------|
-| **Validation** | 400 | Invalid mood category, missing required field |
+| **Validation** | 422 | Invalid mood category, missing required field (`VALIDATION_FAILED`) |
 | **Authentication** | 401 | Missing or expired JWT |
 | **Authorization** | 403 | Student accessing admin route |
 | **Not found** | 404 | Mood deleted or never existed |
 | **Conflict** | 409 | Duplicate report within cooldown |
 | **Rate limit** | 429 | Too many login attempts |
-| **Domain rule** | 422 | Aggregation threshold not met (or 200 with empty payload — TBD in API doc) |
+| **Domain rule** | 422 or 200 | Business rule violation (`422`) or statistics below threshold (`200` with `meetsThreshold: false` per `api.md`) |
 | **Internal** | 500 | Unexpected failure |
 
 #### Error Response Envelope
@@ -818,7 +812,7 @@ Controller does not catch (async wrapper)
 Global errorHandler middleware
         │
         ├── DomainError → mapped status + envelope
-        ├── ValidationError → 400 + details
+        ├── ValidationError → 422 + details
         └── Unknown → 500 + generic message; full error logged server-side
 ```
 
@@ -1044,17 +1038,16 @@ frontend/
 │   │   ├── upload/
 │   │   └── admin/
 │   │
-│   ├── shared/
-│   │   ├── components/      # Navbar, MoodCard, Modal, Pagination, etc.
-│   │   ├── hooks/
-│   │   ├── contexts/        # AuthContext, ThemeContext
-│   │   ├── services/        # apiClient, feature service wrappers
-│   │   ├── utils/           # sanitize, format, token helpers
-│   │   ├── types/           # api, domain, auth types
-│   │   └── constants/
-│   │
-│   ├── assets/              # Fonts, illustrations, icons
-│   └── styles/              # Tailwind entry, global CSS variables
+│   ├── components/            # Shared cross-feature UI (Navbar, MoodCard, Modal, …)
+│   ├── hooks/                 # useAuth, useTheme, useDisclosure, …
+│   ├── services/              # apiClient, moodService, authService, …
+│   ├── contexts/              # AuthContext, ThemeContext
+│   ├── lib/                   # queryClient, axios factory
+│   ├── utils/                 # sanitize, format, token, errors
+│   ├── types/                 # api, domain, auth types
+│   ├── constants/             # routes, queryKeys, errorMessages
+│   ├── assets/                # Fonts, illustrations, icons
+│   └── styles/                # Tailwind entry, global CSS variables
 │
 ├── index.html
 ├── vite.config.ts
@@ -1067,8 +1060,8 @@ frontend/
 **Organization rules:**
 
 - `pages/` import from `features/` and `layouts/` — pages stay thin.
-- `shared/components/` holds cross-feature UI from `DESIGN.md` §Component Design.
-- Feature folders do not import from sibling features directly; shared code goes to `shared/`.
+- `components/` holds cross-feature UI from `DESIGN.md` §Component Design (see `frontend.md`).
+- Feature folders do not import from sibling features directly; shared code goes to `components/`, `hooks/`, `services/`, etc.
 - Colocate feature tests under `features/<name>/__tests__/` or `frontend/tests/`.
 
 ### Backend Structure
@@ -1206,8 +1199,8 @@ Introduce when schema duplication becomes a maintenance burden. Not required for
 | [`README.md`](../README.md) | Authoritative project overview and stack |
 | [`SPECS.md`](../SPECS.md) | Requirements this architecture must satisfy |
 | [`DESIGN.md`](../DESIGN.md) | UI pages and components mapped to frontend structure |
-| [`docs/api.md`](./api.md) | REST endpoint contracts (to be authored) |
-| [`docs/database.md`](./database.md) | Mongoose schemas and indexes (to be authored) |
+| [`docs/api.md`](./api.md) | REST endpoint contracts |
+| [`docs/database.md`](./database.md) | Mongoose schemas and indexes |
 | [`docs/authentication.md`](./authentication.md) | JWT and refresh strategy |
 | [`docs/cloudflare-r2.md`](./cloudflare-r2.md) | R2 bucket and presigned URL configuration |
 | [`docs/security.md`](./security.md) | Threat model and policies |
@@ -1216,17 +1209,7 @@ Introduce when schema duplication becomes a maintenance burden. Not required for
 
 ### Architectural Decision Records
 
-Significant deviations from this document or the README stack must be recorded here as ADRs:
-
-| ADR | Title | Status |
-|-----|-------|--------|
-| ADR-001 | Clean Architecture with Express and React | Accepted |
-| ADR-002 | Stateless JWT authentication | Accepted |
-| ADR-003 | Private R2 bucket with presigned URLs | Accepted |
-| ADR-004 | TanStack Query for server state | Accepted |
-| ADR-005 | TypeScript on frontend and backend | Accepted |
-| ADR-006 | Feature-based frontend organization | Accepted |
-| ADR-007 | Repository pattern for all database access | Accepted |
+Significant stack and boundary decisions are recorded in **[`docs/adr.md`](./adr.md)** (ADR-001 through ADR-015). Do not maintain a duplicate ADR index in this file — update `adr.md` when decisions change.
 
 ---
 

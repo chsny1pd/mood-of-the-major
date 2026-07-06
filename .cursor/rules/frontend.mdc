@@ -1,0 +1,14 @@
+---
+description: Frontend structure and state management
+globs: frontend/**
+alwaysApply: false
+---
+
+# Frontend Rules
+
+Follow [`docs/frontend.md`](../../docs/frontend.md).
+
+- Folder layout: `src/app/`, `pages/`, `layouts/`, `features/`, plus top-level `components/`, `hooks/`, `services/`, `contexts/`, `lib/`, `utils/`, `types/`, `constants/`.
+- TanStack Query for all API/server state; AuthContext for session only.
+- No raw Axios in components; use `services/` wrappers.
+- Refresh token: HttpOnly cookie only — never `localStorage`.

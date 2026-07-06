@@ -1,0 +1,14 @@
+---
+description: Clean Architecture layer boundaries for Mood of the Major
+globs: backend/**,frontend/**
+alwaysApply: false
+---
+
+# Architecture Rules
+
+Follow [`docs/architecture.md`](../../docs/architecture.md) and [`docs/adr.md`](../../docs/adr.md).
+
+- Backend: Delivery → Application → Domain ← Infrastructure. Domain must not import Express, Mongoose, or R2 SDKs.
+- Frontend: Pages → layouts → feature hooks/components → shared `components/`, `hooks/`, `services/`. No business rules in UI.
+- Anonymity is enforced in API mappers and services — not only by hiding fields in React.
+- ADR numbering: use [`docs/adr.md`](../../docs/adr.md) as the authoritative log.

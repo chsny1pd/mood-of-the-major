@@ -684,7 +684,7 @@ Per `architecture.md`, `api.md`, and `security.md` Error Exposure Strategy.
 
 | Type | HTTP | Source |
 |------|------|--------|
-| `ValidationError` | 400 / 422 | Middleware or service |
+| `ValidationError` | 422 | Middleware or service |
 | `DomainError` | 403 / 404 / 409 / 422 | Application service |
 | `AuthenticationError` | 401 | `authenticate` middleware |
 | `AuthorizationError` | 403 | `authorize` or service ownership |

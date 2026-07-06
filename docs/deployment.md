@@ -125,7 +125,7 @@ Development uses `.env` files (gitignored) for local secrets. Never use producti
 | **TLS** | HTTPS enforced |
 | **CORS** | Staging Vercel origin only (`security.md` CORS) |
 | **Log level** | `info` |
-| **Deploy trigger** | Merge to `develop` branch (if used) or manual promote from CI |
+| **Deploy trigger** | Vercel/Railway preview or staging deploy on PR; production on merge to `main`. Optional `develop` integration branch is not required in v1. |
 | **Data** | Seed data; no production user data |
 
 Staging validates integrations end-to-end before production promotion — auth flows, R2 upload, feeds, statistics, admin routes.
@@ -291,9 +291,9 @@ A failed startup must not serve partial traffic. Railway restarts the process on
 | **R2 access** | Outbound HTTPS to Cloudflare R2 S3-compatible endpoint |
 | **CORS** | `CORS_ALLOWED_ORIGINS` must match Vercel frontend URL exactly |
 
-### Background Jobs (Future)
+### Background Jobs
 
-Scheduled tasks (statistics aggregation, orphan image cleanup) are not part of initial Railway web service deployment (`backend.md` Background Jobs). Future options:
+Scheduled background work (statistics aggregation, orphan image cleanup, trending recalculation) is introduced per `docs/roadmap.md` — **Sprint 5** for statistics jobs, **Sprint 7** for R2 orphan cleanup and hardening. The initial Railway web service does not run cron until those sprints; protect future job endpoints with a service API key.
 
 | Model | Fit |
 |-------|-----|

@@ -44,9 +44,9 @@ This document covers:
 
 This document does **not** cover:
 
-- API endpoint definitions (see `docs/api.md` — to be authored)
-- Database schemas or collection designs (see `docs/database.md` — to be authored)
-- UI mockups or visual design (see `DESIGN.md` — to be authored)
+- API endpoint definitions (see [`docs/api.md`](./docs/api.md))
+- Database schemas or collection designs (see [`docs/database.md`](./docs/database.md))
+- UI mockups or visual design (see [`DESIGN.md`](./DESIGN.md))
 - Application source code
 
 ### 1.3 Audience
@@ -67,10 +67,10 @@ This document does **not** cover:
 |----------|--------------|
 | [`README.md`](./README.md) | **Primary source of truth** — goals, stack, architecture, roadmap |
 | `SPECS.md` (this file) | Formal requirements derived from README |
-| [`docs/requirements.md`](./docs/requirements.md) | Extended requirements detail (future) |
+| [`docs/requirements.md`](./docs/requirements.md) | Extended business rules and resolved open decisions |
 | [`docs/architecture.md`](./docs/architecture.md) | Architectural decisions and layer design |
-| [`docs/api.md`](./docs/api.md) | API contracts (future) |
-| [`docs/database.md`](./docs/database.md) | Data modeling (future) |
+| [`docs/api.md`](./docs/api.md) | REST API contracts |
+| [`docs/database.md`](./docs/database.md) | MongoDB data modeling |
 | [`docs/security.md`](./docs/security.md) | Threat model and security policies |
 | [`docs/authentication.md`](./docs/authentication.md) | Auth flows and JWT strategy |
 | [`docs/cloudflare-r2.md`](./docs/cloudflare-r2.md) | Image storage configuration |
@@ -156,16 +156,16 @@ All implementation must follow **Clean Architecture** as defined in `README.md`:
 | Capability | Guest | Student | Advisor | Admin |
 |------------|:-----:|:-------:|:-------:|:-----:|
 | Register / login | — | ✓ | ✓ | ✓ |
-| View mood feed | TBD | ✓ | ✓ | ✓ |
+| View mood feed | ✓ (limited) | ✓ | ✓ | ✓ |
 | Create anonymous post | — | ✓ | — | — |
 | Upload image to post | — | ✓ | — | — |
-| Comment on post | — | ✓ | — | ✓ |
-| React to post/comment | — | ✓ | — | ✓ |
-| Bookmark post | — | ✓ | — | ✓ |
-| Search and filter posts | TBD | ✓ | ✓ | ✓ |
-| View faculty/major feeds | TBD | ✓ | ✓ | ✓ |
+| Comment on post | — | ✓ | — | — |
+| React to post/comment | — | ✓ | — | — |
+| Bookmark post | — | ✓ | — | — |
+| Search and filter posts | Feed filters only | ✓ | ✓ | ✓ |
+| View faculty/major feeds | ✓ (limited) | ✓ | ✓ | ✓ |
 | View statistics dashboard | — | TBD | ✓ | ✓ |
-| View trending emotions | TBD | ✓ | ✓ | ✓ |
+| View trending emotions | ✓ (threshold-gated) | ✓ | ✓ | ✓ |
 | Report content | — | ✓ | ✓ | ✓ |
 | Receive notifications | — | ✓ | TBD | ✓ |
 | Moderate content | — | — | — | ✓ |
@@ -173,7 +173,7 @@ All implementation must follow **Clean Architecture** as defined in `README.md`:
 | Manage users | — | — | — | ✓ |
 | Access identity-linked audit data | — | — | — | ✓ (logged) |
 
-Legend: ✓ = allowed, — = not allowed, TBD = access level to be defined in feature specification.
+Legend: ✓ = allowed, — = not allowed, TBD = access level to be defined in feature specification. Guest feed limits and public read scope: [`docs/requirements.md`](./docs/requirements.md) (OD-002). Student-only engagement writes (comment, react, bookmark): [`docs/api.md`](./docs/api.md), [`docs/authentication.md`](./docs/authentication.md).
 
 ---
 
@@ -224,7 +224,7 @@ Requirements use the ID format `FR-<domain>-<nnn>`. Priority: **P0** (must-have 
 | FR-FEED-002 | P0 | The system shall provide a **Faculty Feed** filtered to posts associated with a selected faculty. |
 | FR-FEED-003 | P0 | The system shall provide a **Major Feed** filtered to posts associated with a selected major. |
 | FR-FEED-004 | P0 | All feeds shall return posts without author identity exposed to end users. |
-| FR-FEED-005 | P0 | All feeds shall support pagination (cursor- or offset-based — strategy TBD in `docs/api.md`). |
+| FR-FEED-005 | P0 | All feeds shall support cursor-based pagination per `docs/api.md` (`limit`, `cursor`, `meta.nextCursor`). |
 | FR-FEED-006 | P1 | Feeds shall display mood category, faculty/major context, reaction counts, and comment counts per post. |
 | FR-FEED-007 | P1 | The Mood Feed shall support personalization based on the authenticated student's faculty/major affiliation. |
 | FR-FEED-008 | P2 | Feeds shall support sorting options (e.g., newest, most reacted) where defined in `docs/api.md`. |
@@ -692,24 +692,31 @@ Per README — the following are explicitly excluded from the initial release:
 
 ## 14. Open Decisions
 
-The following items are intentionally marked TBD and must be resolved in downstream documents before implementation of the affected feature.
+Resolved decisions are documented in [`docs/requirements.md`](./docs/requirements.md) and the target documents listed below. Remove resolved rows from this table when reconciling specs.
+
+### Resolved
+
+| ID | Resolution | Authoritative document |
+|----|------------|----------------------|
+| OD-001 | TypeScript confirmed for frontend and backend | `NFR-MAINT-005` |
+| OD-002 | Public guest read on feeds/trending with capped `limit`; search requires auth | `docs/requirements.md`, `docs/api.md` |
+| OD-003 | Opaque refresh token; HttpOnly cookie; hash on `users` | `docs/authentication.md` |
+| OD-005 | Cursor pagination on list endpoints | `docs/api.md` |
+| OD-006 | Max 4 images/post; 5 MB per image | `docs/cloudflare-r2.md` |
+| OD-010 | `AGGREGATION_THRESHOLD_MIN` default **5** | `docs/security.md` |
+| OD-012 | Post edit window **24 hours** | `docs/api.md` |
+| OD-013 | Faculty/major optional on posts; profile defaults | `docs/requirements.md` |
+| OD-014 | Optional `ALLOWED_EMAIL_DOMAINS` env restriction | `docs/authentication.md` |
+
+### Open
 
 | ID | Decision | Target document | Blocking phase |
 |----|----------|-----------------|----------------|
-| OD-001 | TypeScript confirmation as project standard | This spec (recommended: yes) | Phase 1 |
-| OD-002 | Guest/unauthenticated feed access level | `docs/requirements.md` | Phase 1 |
-| OD-003 | JWT refresh token strategy | `docs/authentication.md` | Phase 1 |
 | OD-004 | Comment model: threaded vs. flat | `docs/requirements.md` | Phase 2 |
-| OD-005 | Pagination strategy: cursor vs. offset | `docs/api.md` | Phase 2 |
-| OD-006 | Maximum images per post and file size limits | `docs/cloudflare-r2.md` | Phase 2 |
-| OD-007 | Predefined reaction types | `docs/requirements.md` | Phase 2 |
+| OD-007 | Predefined reaction types (admin configurability scope) | `docs/requirements.md` | Phase 2 |
 | OD-008 | Notification triggers and channels | `docs/requirements.md` | Phase 3 |
 | OD-009 | Student access to statistics dashboard | `docs/requirements.md` | Phase 3 |
-| OD-010 | Minimum aggregation threshold value | `docs/security.md` | Phase 3 |
 | OD-011 | Advisor role: distinct role vs. admin permission | `docs/authentication.md` | Phase 3 |
-| OD-012 | Post edit window duration | `docs/requirements.md` | Phase 2 |
-| OD-013 | Faculty/major association: required vs. optional on posts | `docs/requirements.md` | Phase 1 |
-| OD-014 | University email domain restriction for registration | `docs/authentication.md` | Phase 1 |
 
 ---
 

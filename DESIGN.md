@@ -649,7 +649,7 @@ Landing (/)
 
 **Anatomy:** Previous/next controls, page indicator or "Load more" button, optional page size (admin tables).
 
-**Variants:** Numbered pages (offset) or cursor "Load more" (strategy TBD per `SPECS.md` OD-005).
+**Variants:** Cursor-based "Load more" with opaque `cursor` and `meta.hasMore` per `docs/requirements.md` (`OD-005`).
 
 **States:** First page, middle, last page, loading next page.
 

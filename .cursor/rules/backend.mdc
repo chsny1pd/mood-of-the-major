@@ -1,0 +1,14 @@
+---
+description: Backend layering and conventions
+globs: backend/**
+alwaysApply: false
+---
+
+# Backend Rules
+
+Follow [`docs/backend.md`](../../docs/backend.md) and [`docs/project-conventions.md`](../../docs/project-conventions.md).
+
+- Thin controllers; business logic in `application/services/`.
+- All MongoDB access through repository ports — no Mongoose in controllers or routes.
+- Use `ITagRepository` for mood categories (`tags` collection), not a separate categories collection.
+- Public DTOs must exclude `authorId`, `userId`, and `email`.

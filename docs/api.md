@@ -243,7 +243,7 @@ HTTP `200` with suppressed data:
 |----------|-------|
 | **Header** | `Authorization: Bearer <accessToken>` |
 | **Access token TTL** | 15 minutes (configurable) |
-| **Refresh token** | HttpOnly cookie or body per `docs/authentication.md` (`OD-003`) |
+| **Refresh token** | HttpOnly, Secure, SameSite=Strict cookie on register/login/refresh (`docs/authentication.md`). **Not** returned in JSON for browser clients. Optional `refreshToken` in response body only for non-browser API clients (mobile future). |
 | **Claims** | `sub` (userId), `role`, `iat`, `exp` |
 | **Validation** | Every protected route before business logic (`BR-AUTH-003`) |
 
@@ -332,16 +332,17 @@ Response headers: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Res
     },
     "tokens": {
       "accessToken": "eyJhbGciOiJIUzI1NiIs...",
-      "expiresIn": 900,
-      "refreshToken": "rt_..."
+      "expiresIn": 900
     }
   }
 }
 ```
 
-**Error Responses:** `400`, `422` (`EMAIL_ALREADY_EXISTS`, `VALIDATION_FAILED`), `429`
+**Response headers (browser clients):** `Set-Cookie: refreshToken=<opaque>; HttpOnly; Secure; SameSite=Strict; Path=/api/v1/auth` (exact cookie name/path at implementation — must match `authentication.md`).
 
-**Business Rules:** Password hashed with bcrypt before persist (`FR-AUTH-003`). Default role `student`.
+**Business Rules:** Password hashed with bcrypt before persist (`FR-AUTH-003`). Default role `student`. Refresh token is **not** included in the JSON body for SPA clients.
+
+**Error Responses:** `400`, `422` (`EMAIL_ALREADY_EXISTS`, `VALIDATION_FAILED`), `429`
 
 **Related Collections:** `users`, `faculties`, `majors`
 
@@ -368,7 +369,7 @@ Response headers: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Res
 
 **Validation Rules:** `email` and `password` required.
 
-**Success Response:** `200` — Same token shape as register.
+**Success Response:** `200` — Same token shape as register (access token in JSON; refresh token via HttpOnly cookie for browser clients).
 
 **Error Responses:** `401` (`AUTH_INVALID_CREDENTIALS` — generic message, no email enumeration), `403` (`ACCOUNT_SUSPENDED`), `429`
 
@@ -1052,15 +1053,23 @@ All public mood responses use this shape — **no author identity**:
 
 | | |
 |---|---|
-| **Purpose** | Most recent moods (alias for feed with fixed sort) |
+| **Purpose** | Compact recent-mood preview (landing widgets, optional client shortcut) |
 | **Method** | `GET` |
 | **Endpoint** | `/api/v1/moods/recent` |
 | **Authentication** | Optional |
 | **Authorization** | Public |
 
-**Request Parameters:** `limit` (default 10, max 20), `facultyId`, `majorId`
+**Request Parameters:**
 
-**Success Response:** `200` — Mood array without cursor (fixed small set).
+| Param | Type | Description |
+|-------|------|-------------|
+| `limit`, `cursor` | | Cursor pagination; default `limit` 10, max 20 |
+| `facultyId`, `majorId` | | Optional scope filters |
+| `sort` | string | Default `newest` |
+
+**Success Response:** `200` — Paginated anonymous moods with `meta.nextCursor` and `meta.hasMore` (same envelope as `/moods/feed`).
+
+**Business Rules:** Same anonymity and guest `limit` cap as feed (`OD-002`). Prefer `/moods/feed` for full feed UX; this endpoint is optional for small preview surfaces.
 
 **Related Collections:** `moods`
 

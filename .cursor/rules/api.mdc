@@ -1,0 +1,14 @@
+---
+description: REST API design and contracts
+globs: backend/**/routes/**,backend/**/controllers/**,backend/**/validators/**
+alwaysApply: false
+---
+
+# API Rules
+
+Follow [`docs/api.md`](../../docs/api.md).
+
+- Prefix: `/api/v1`; success envelope `{ success, data, meta? }`; errors `{ success: false, error: { code, message, details?, requestId } }`.
+- Validation failures: HTTP **422** with `VALIDATION_FAILED`.
+- Cursor pagination on list endpoints (`limit`, `cursor`, `meta.nextCursor`).
+- Public mood/comment DTOs: no identity fields.

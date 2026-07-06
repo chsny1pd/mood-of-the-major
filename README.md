@@ -91,7 +91,7 @@ The application is built following **Clean Architecture** principles and product
 | **Bookmark System** | Save posts for personal reference. |
 | **Search** | Full-text or filtered search across posts and metadata. |
 | **Filtering** | Filter by faculty, major, mood category, date range, and other criteria. |
-| **Pagination** | Cursor- or offset-based pagination for all list endpoints and feeds. |
+| **Pagination** | Cursor-based pagination on all list endpoints and feeds. |
 
 ### Analytics & Administration
 
@@ -208,7 +208,7 @@ Mood of the Major follows **Clean Architecture**, separating concerns into disti
 
 ## Project Folder Overview
 
-This repository is organized around **documentation-first development**. The structure below reflects planning, specification, and AI guidance assets — not application source code. Source code directories will be introduced in a later phase.
+This repository is organized around **documentation-first development**. Application source directories (`frontend/`, `backend/`) and CI workflows (`.github/workflows/`) are introduced during Sprint 1; task tracking (`TODO.md`, `PROJECT_AUDIT.md`) is added when implementation begins.
 
 ```
 mood-of-the-major/
@@ -220,8 +220,8 @@ mood-of-the-major/
 ├── PROJECT_AUDIT.md           # Periodic architecture and quality audits
 │
 ├── docs/                      # Detailed technical documentation
+│   ├── requirements.md        # Business rules and resolved open decisions
 │   ├── project-overview.md    # Extended project context and vision
-│   ├── requirements.md        # Formal requirements (functional & non-functional)
 │   ├── architecture.md        # Deep-dive architecture decisions and diagrams
 │   ├── database.md            # Data modeling guidelines and conventions
 │   ├── api.md                 # API design standards and endpoint catalog

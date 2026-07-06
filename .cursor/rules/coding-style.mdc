@@ -1,0 +1,14 @@
+---
+description: General coding and git conventions
+globs: "**/*"
+alwaysApply: true
+---
+
+# Coding Style
+
+Follow [`docs/project-conventions.md`](../../docs/project-conventions.md) and [`README.md`](../../README.md).
+
+- TypeScript strict mode; Prettier + ESLint enforced in CI.
+- Conventional Commits; minimal focused diffs.
+- Match existing naming: `camelCase` variables, `PascalCase` components/classes, kebab-case doc filenames.
+- Update relevant `docs/` when behavior or API contracts change.
