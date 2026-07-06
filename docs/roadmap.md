@@ -652,7 +652,6 @@ Deploy to production, execute post-launch verification, and complete operational
 - [ ] GitHub Actions `deploy-production.yml` — deploy after CI green
 - [ ] External uptime monitoring active
 - [ ] Post-deploy smoke test script executed and archived
-- [ ] v1.0 release tag and release notes published
 - [ ] Incident response contact and on-call rotation defined
 
 #### Definition of Done
@@ -664,7 +663,7 @@ Deploy to production, execute post-launch verification, and complete operational
 - Admin moderation path verified on production with test administrator account.
 - No P0 defects open; P1 defects accepted and documented.
 - Rollback tested and documented in runbook.
-- **v1.0 declared live.**
+- **Production live.**
 
 #### Risks
 

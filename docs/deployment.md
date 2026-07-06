@@ -1162,7 +1162,23 @@ Track monthly spend per platform. Alert on unexpected R2 storage growth (orphan 
 
 ## Production Checklist
 
-Consolidated pre-launch checklist from `security.md` Production Checklist, `backend.md`, `frontend.md`, and `cloudflare-r2.md`. Complete all items before serving end users.
+Consolidated pre-launch checklist from `security.md` Production Checklist, `backend.md`, `frontend.md`, and `cloudflare-r2.md`. Complete all items before serving end users in a **commercial or high-traffic production** launch.
+
+### Classroom project scope
+
+**Mood of the Major** is deployed as a **classroom / academic demo**. The full checklist below remains the engineering reference; the **required subset** for this project is smaller.
+
+| Required for classroom | Waived (document only) |
+|------------------------|-------------------------|
+| Railway prod: `NODE_ENV=production`, JWT secrets, CORS = Vercel prod URL | Dedicated staging environment |
+| Vercel prod: `VITE_API_BASE_URL` → Railway API | Custom domains |
+| Atlas with backups; R2 private bucket + prod CORS | Branch protection, rollback drills |
+| CI green; post-deploy smoke on production | Uptime monitors, Sentry DSN, pentest |
+| Manual QA on local (or production smoke) | k6 staging benchmarks, incident on-call |
+
+**Sign-off record:** [`docs/production-checklist-audit.md`](./production-checklist-audit.md) (updated when platform config is confirmed).
+
+For a future commercial launch, walk every unchecked item in the sections below.
 
 ### Infrastructure
 

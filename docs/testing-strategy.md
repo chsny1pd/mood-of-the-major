@@ -703,7 +703,7 @@ Assert accessible names on: Navbar links, ReactionPicker, Modal, AccountMenu, Mo
 
 ## Manual QA Checklist
 
-Execute on **staging** before production promotion. Complements automated tests with design and UX verification.
+Execute on **staging** before production promotion in a full commercial launch. For the **classroom deployment**, execution on **local** (`npm run dev`) with production smoke test is sufficient — see [`docs/production-checklist-audit.md`](./production-checklist-audit.md). Complements automated tests with design and UX verification.
 
 ### Authentication and Session
 

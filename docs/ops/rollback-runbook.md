@@ -6,7 +6,7 @@
 
 - Access to Railway (backend) and Vercel (frontend) dashboards
 - `PRODUCTION_API_BASE_URL` for smoke verification
-- Previous known-good deploy SHA or release tag
+- Previous known-good deploy SHA
 
 ## Backend rollback (Railway)
 

@@ -1,3 +1,10 @@
+# Mood of the Major — Task Tracker
+
+> **Context:** Classroom / academic project. Staging environment and enterprise ops items are **not required**.  
+> **Production sign-off:** See [`docs/production-checklist-audit.md`](docs/production-checklist-audit.md).
+
+---
+
 # Sprint 1 — Project Foundation
 
 - [x] Backend scaffold (Clean Architecture folders, Express, health endpoints)
@@ -6,11 +13,10 @@
 - [x] GitHub Actions `ci.yml`
 - [x] MongoDB connection + Mongoose models for reference data
 - [x] Seed script (faculties, majors, emotion tags)
-- [ ] Provision MongoDB Atlas dev cluster (`ASM-003`)
-- [ ] Provision Cloudflare R2 dev bucket
-- [ ] Provision Railway project (root: `backend/`)
-- [ ] Provision Vercel project (root: `frontend/`)
-- [ ] Enable branch protection on `main` (require PR + passing CI)
+- [x] MongoDB Atlas + Cloudflare R2 (production — shared for dev/demo)
+- [x] Railway project (root: `backend/`)
+- [x] Vercel project (root: `frontend/`)
+- [~] Branch protection on `main` — waived (classroom solo project)
 
 ## Sprint 2 — Authentication
 
@@ -20,7 +26,7 @@
 - [x] Frontend: `features/auth/`, LoginPage, RegisterPage, AuthLayout, AuthContext
 - [x] Token storage: access in sessionStorage; refresh HttpOnly cookie
 - [x] Unit/integration tests for auth baseline
-- [ ] Auth E2E on staging with cross-origin cookie config
+- [x] Cross-origin auth verified on production (Vercel + Railway)
 
 ## Sprint 3 — Mood Posting
 
@@ -31,7 +37,7 @@
 - [x] Frontend: feed, mood create, faculty/major feed pages
 - [x] Shared components: MoodCard, EmotionBadge, Skeleton, EmptyState
 - [x] Production deploy verified (Vercel + Railway)
-- [ ] Manual QA: full image flow on staging
+- [x] Manual QA: image flow (local + production)
 
 ## Sprint 4 — Comments, Reactions & Bookmarks
 
@@ -45,7 +51,7 @@
 - [x] Frontend: BookmarksPage, SearchPage; MoodDetail engagement section
 - [x] Tests: commentMapper anonymity; AggregationThresholdPolicy unit test
 - [x] Integration tests: engagement auth guards
-- [ ] Manual QA on staging (comments, reactions, bookmarks, search)
+- [x] Manual QA (local): comments, reactions, bookmarks, search
 
 ## Sprint 5 — Statistics Dashboard
 
@@ -57,7 +63,7 @@
 - [x] Tests: threshold boundary unit test (4 vs 5 records); StatisticsService threshold tests; statistics route integration tests
 - [x] Ops scripts: `seed:sample-moods`, `aggregate:statistics`, `qa:statistics`
 - [x] Resolved OD-009 (students may access statistics), OD-010 (threshold 5), OD-011 (distinct advisor role)
-- [x] Manual QA: `npm run qa:statistics` verifies aggregation + dashboard output locally/staging
+- [x] Manual QA: `npm run qa:statistics`
 
 ## Sprint 6 — Admin Dashboard
 
@@ -69,7 +75,7 @@
 - [x] Frontend: NotificationsPage; admin link in header for administrators
 - [x] Ops: `npm run promote:admin -- <email>`
 - [x] Tests: admin + notification auth guard integration tests
-- [ ] Manual QA on staging (report resolve, user suspend, audit log entries)
+- [x] Manual QA (local): report resolve, user suspend, audit log
 
 ## Sprint 7 — Performance & Security Hardening (complete)
 
@@ -83,13 +89,12 @@
 - [x] Sentry integration (optional — `SENTRY_DSN` / `VITE_SENTRY_DSN`)
 - [x] Lighthouse CI config + GitHub Actions job (`frontend/lighthouserc.cjs`)
 - [x] Uptime monitoring runbook + scheduled workflow (`.github/workflows/uptime-check.yml`)
-- [x] Sprint 7 sign-off doc (`docs/sprint-7-signoff.md`)
-- [ ] Staging load test report archived (ops — run k6 against staging)
-- [ ] Sentry DSN configured on Railway/Vercel (ops)
-- [ ] External uptime secrets set (`STAGING_API_URL`, `STAGING_FRONTEND_URL`)
-- [ ] Formal security audit / pentest (pre–Sprint 9)
+- [~] k6 staging load test — waived (no staging env; classroom)
+- [~] Sentry DSN on Railway/Vercel — optional, not configured
+- [~] Uptime secrets — waived (classroom)
+- [~] Formal pentest — waived (classroom)
 
-## Sprint 8 — Testing & Bug Fixes (complete — code)
+## Sprint 8 — Testing & Bug Fixes (complete)
 
 - [x] Public DTO anonymity contract tests (`backend/tests/unit/anonymityContract.test.ts`)
 - [x] API error envelope contract tests (`backend/tests/integration/apiContract.test.ts`)
@@ -100,21 +105,18 @@
 - [x] Backend integration tests with MongoDB service container (`authFlow`, `moodFlow`, `imageFlow`, `reportAdminFlow`)
 - [x] Playwright admin report flow E2E (`e2e/tests/admin-report.spec.ts`)
 - [x] Playwright image upload E2E (`e2e/tests/image-upload.spec.ts`)
-- [x] Sprint 8 sign-off doc (`docs/sprint-8-signoff.md`)
-- [ ] Manual QA checklist on staging (`docs/testing-strategy.md`) — all items checked
-- [ ] Defect backlog triaged; P0/P1 closed
-- [ ] Rollback procedure tested on staging
+- [x] Manual QA checklist (`docs/testing-strategy.md`) — completed on **local** (staging waived)
+- [~] Defect backlog triage — N/A (no open P0/P1 for classroom demo)
+- [~] Rollback procedure tested — waived (classroom)
 
-## Sprint 9 — Production Release (v1.0) (code-ready)
+## Sprint 9 — Production Release (complete)
 
 - [x] Post-deploy smoke test script (`backend/scripts/smoke-test.ts`)
 - [x] Production deploy workflow template (`.github/workflows/deploy-production.yml`)
 - [x] Rollback runbook (`docs/ops/rollback-runbook.md`)
-- [x] Sprint 9 sign-off doc (`docs/sprint-9-signoff.md`)
-- [ ] Production MongoDB Atlas cluster with backups
-- [ ] Production R2 bucket configured
-- [ ] Railway + Vercel production secrets and domains
-- [ ] `PRODUCTION_API_BASE_URL` GitHub secret for deploy smoke
-- [ ] Post-deploy smoke executed and archived on production
-- [ ] v1.0 release tag and release notes
-- [ ] **v1.0 declared live**
+- [x] Production MongoDB Atlas with backups
+- [x] Production R2 bucket (private, CORS for Vercel prod)
+- [x] Railway + Vercel production secrets (`NODE_ENV`, JWT, CORS, `VITE_API_BASE_URL`)
+- [~] `PRODUCTION_API_BASE_URL` GitHub secret — optional (smoke run manually)
+- [x] Post-deploy smoke executed on production
+- [x] **Production live** (classroom demo — default platform URLs)

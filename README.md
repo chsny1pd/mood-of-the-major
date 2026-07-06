@@ -464,9 +464,9 @@ Try auth: **Join** → register → redirects to `/feed`. Sign out from header.
 
 **Quality checks:** `npm run lint`, `npm run typecheck`, `npm test`, `npm run build` in each package.
 
-### Current Phase: Sprint 9 Production Release (code-ready)
+### Current Phase: Production deployed (classroom demo)
 
-Sprint 7–8 code deliverables are complete. Remaining work is staging/production ops — see `docs/sprint-8-signoff.md` and `docs/sprint-9-signoff.md`.
+Sprint 1–9 deliverables are complete. Production runs on Railway + Vercel; sign-off is in `docs/production-checklist-audit.md`.
 
 1. Review this README and `docs/roadmap.md` for milestone scope.
 2. Track active tasks in `TODO.md`.
