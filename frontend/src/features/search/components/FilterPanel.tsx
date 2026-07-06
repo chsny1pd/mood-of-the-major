@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "../../../constants/queryKeys";
 import { fetchFaculties, fetchMajors } from "../../../services/referenceService";
@@ -10,7 +11,7 @@ interface FilterPanelProps {
   showSort?: boolean;
 }
 
-export function FilterPanel({ filters, onChange, showSort = true }: FilterPanelProps) {
+export const FilterPanel = memo(function FilterPanel({ filters, onChange, showSort = true }: FilterPanelProps) {
   const tagsQuery = useQuery({
     queryKey: queryKeys.emotionTags,
     queryFn: fetchEmotionTags,
@@ -139,4 +140,4 @@ export function FilterPanel({ filters, onChange, showSort = true }: FilterPanelP
       </label>
     </div>
   );
-}
+});

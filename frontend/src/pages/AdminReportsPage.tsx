@@ -1,16 +1,21 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { memo, useCallback, useState } from "react";
 import { EmptyState } from "../components/EmptyState";
 import { queryKeys } from "../constants/queryKeys";
 import { fetchAdminReports, resolveReport, type AdminReportItem } from "../services/adminService";
 import { getApiErrorMessage } from "../services/apiClient";
 
+const pendingReportsQueryKey = queryKeys.adminReports({ status: "pending" });
+
+type AdminReportsResponse = Awaited<ReturnType<typeof fetchAdminReports>>;
+
 export function AdminReportsPage() {
   const queryClient = useQueryClient();
   const [resolvingId, setResolvingId] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   const reportsQuery = useQuery({
-    queryKey: queryKeys.adminReports({ status: "pending" }),
+    queryKey: pendingReportsQueryKey,
     queryFn: () => fetchAdminReports({ status: "pending" }),
   });
 
@@ -24,12 +29,53 @@ export function AdminReportsPage() {
       status: "resolved_removed" | "resolved_dismissed" | "resolved_warned";
       removeContent?: boolean;
     }) => resolveReport(reportId, { status, removeContent }),
-    onSuccess: async () => {
+    onMutate: async ({ reportId }) => {
+      setActionError(null);
+      await queryClient.cancelQueries({ queryKey: queryKeys.adminReports() });
+
+      const previous = queryClient.getQueryData<AdminReportsResponse>(pendingReportsQueryKey);
+
+      if (previous) {
+        const nextReports = previous.data.filter((report) => report.id !== reportId);
+        queryClient.setQueryData<AdminReportsResponse>(pendingReportsQueryKey, {
+          ...previous,
+          data: nextReports,
+          meta: {
+            ...previous.meta,
+            pendingCount: Math.max(0, (previous.meta.pendingCount ?? previous.data.length) - 1),
+          },
+        });
+      }
+
+      return { previous };
+    },
+    onError: (error, _variables, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(pendingReportsQueryKey, context.previous);
+      }
+      setActionError(getApiErrorMessage(error, "Could not update report."));
       setResolvingId(null);
+    },
+    onSuccess: () => {
+      setResolvingId(null);
+    },
+    onSettled: async () => {
       await queryClient.invalidateQueries({ queryKey: queryKeys.adminReports() });
       await queryClient.invalidateQueries({ queryKey: queryKeys.adminDashboard });
     },
   });
+
+  const handleResolve = useCallback(
+    (
+      reportId: string,
+      status: "resolved_removed" | "resolved_dismissed" | "resolved_warned",
+      removeContent?: boolean,
+    ) => {
+      setResolvingId(reportId);
+      void resolveMutation.mutate({ reportId, status, removeContent });
+    },
+    [resolveMutation],
+  );
 
   if (reportsQuery.isLoading) {
     return <p className="text-stone-500">Loading report queue...</p>;
@@ -52,6 +98,12 @@ export function AdminReportsPage() {
       <h1 className="text-2xl font-bold text-stone-900">Report queue</h1>
       <p className="mt-1 text-sm text-stone-600">{pendingCount} pending report(s)</p>
 
+      {actionError ? (
+        <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          {actionError}
+        </p>
+      ) : null}
+
       {reports.length === 0 ? (
         <div className="mt-8">
           <EmptyState title="Queue is clear" description="No pending reports need review." />
@@ -63,10 +115,7 @@ export function AdminReportsPage() {
               key={report.id}
               report={report}
               isResolving={resolvingId === report.id && resolveMutation.isPending}
-              onResolve={(status, removeContent) => {
-                setResolvingId(report.id);
-                void resolveMutation.mutate({ reportId: report.id, status, removeContent });
-              }}
+              onResolve={handleResolve}
             />
           ))}
         </ul>
@@ -75,7 +124,7 @@ export function AdminReportsPage() {
   );
 }
 
-function ReportRow({
+const ReportRow = memo(function ReportRow({
   report,
   isResolving,
   onResolve,
@@ -83,6 +132,7 @@ function ReportRow({
   report: AdminReportItem;
   isResolving: boolean;
   onResolve: (
+    reportId: string,
     status: "resolved_removed" | "resolved_dismissed" | "resolved_warned",
     removeContent?: boolean,
   ) => void;
@@ -106,7 +156,7 @@ function ReportRow({
           <button
             type="button"
             disabled={isResolving}
-            onClick={() => onResolve("resolved_dismissed")}
+            onClick={() => onResolve(report.id, "resolved_dismissed")}
             className="rounded-md border border-stone-300 px-3 py-1 text-sm hover:bg-stone-50 disabled:opacity-50"
           >
             Dismiss
@@ -114,7 +164,7 @@ function ReportRow({
           <button
             type="button"
             disabled={isResolving}
-            onClick={() => onResolve("resolved_removed", true)}
+            onClick={() => onResolve(report.id, "resolved_removed", true)}
             className="rounded-md bg-red-700 px-3 py-1 text-sm text-white hover:bg-red-800 disabled:opacity-50"
           >
             Remove content
@@ -123,4 +173,4 @@ function ReportRow({
       </div>
     </li>
   );
-}
+});

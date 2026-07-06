@@ -11,8 +11,10 @@ export const queryKeys = {
   emotionTags: ["tags", "emotions"] as const,
   imageUrl: (imageId: string) => ["images", "url", imageId] as const,
   adminDashboard: ["admin", "dashboard"] as const,
-  adminReports: (params?: unknown) => ["admin", "reports", params] as const,
-  adminUsers: (params?: unknown) => ["admin", "users", params] as const,
+  adminReports: (params?: unknown) =>
+    params === undefined ? (["admin", "reports"] as const) : (["admin", "reports", params] as const),
+  adminUsers: (params?: unknown) =>
+    params === undefined ? (["admin", "users"] as const) : (["admin", "users", params] as const),
   adminAuditLogs: (params?: unknown) => ["admin", "audit-logs", params] as const,
   notifications: (params?: unknown) => ["notifications", params] as const,
 };

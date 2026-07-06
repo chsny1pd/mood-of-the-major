@@ -8,11 +8,10 @@ import {
   type ReactNode,
 } from "react";
 import { flushSync } from "react-dom";
-import * as authService from "../services/authService";
-import type { UserProfile } from "../services/authService";
+import type { AuthUser, UserProfile } from "../services/authService";
 import { clearAccessToken, getAccessToken } from "../utils/token";
 
-function toInitialProfile(user: authService.AuthUser): UserProfile {
+function toInitialProfile(user: AuthUser): UserProfile {
   return {
     ...user,
     faculty: null,
@@ -49,7 +48,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const profile = await authService.fetchMe();
+    const { fetchMe } = await import("../services/authService");
+    const profile = await fetchMe();
     setUser(profile);
   }, []);
 
@@ -71,7 +71,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [refreshProfile]);
 
   const login = useCallback(async (email: string, password: string) => {
-    const authUser = await authService.login({ email, password });
+    const { login: loginRequest } = await import("../services/authService");
+    const authUser = await loginRequest({ email, password });
     flushSync(() => {
       setUser(toInitialProfile(authUser));
     });
@@ -85,7 +86,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       facultyId?: string;
       majorId?: string;
     }) => {
-      const authUser = await authService.register(input);
+      const { register: registerRequest } = await import("../services/authService");
+      const authUser = await registerRequest(input);
       flushSync(() => {
         setUser(toInitialProfile(authUser));
       });
@@ -96,7 +98,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(async () => {
     try {
-      await authService.logout();
+      const { logout: logoutRequest } = await import("../services/authService");
+      await logoutRequest();
     } finally {
       clearAccessToken();
       setUser(null);

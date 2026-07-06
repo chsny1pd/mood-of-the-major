@@ -28,6 +28,9 @@ function MoodImage({ imageId }: { imageId: string }) {
     <img
       src={imageQuery.data}
       alt=""
+      width={800}
+      height={192}
+      decoding="async"
       className="h-48 w-full rounded-xl object-cover"
       loading="lazy"
     />

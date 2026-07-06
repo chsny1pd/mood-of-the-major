@@ -5,6 +5,10 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   build: {
+    target: "es2022",
+    modulePreload: {
+      polyfill: false,
+    },
     rollupOptions: {
       output: {
         manualChunks(id) {
@@ -24,8 +28,20 @@ export default defineConfig({
             return "router";
           }
 
-          if (id.includes("react-dom") || id.includes("/react/")) {
-            return "vendor";
+          if (id.includes("react-dom")) {
+            return "react-dom";
+          }
+
+          if (id.includes("/react/")) {
+            return "react";
+          }
+
+          if (id.includes("axios")) {
+            return "http";
+          }
+
+          if (id.includes("zod") || id.includes("@hookform")) {
+            return "forms";
           }
 
           if (id.includes("@sentry")) {
