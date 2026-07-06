@@ -26,3 +26,14 @@ export async function fetchMajors(facultyId: string): Promise<MajorOption[]> {
   );
   return response.data.data;
 }
+
+export interface MajorDetail extends MajorOption {
+  faculty: { id: string; name: string; slug: string } | null;
+}
+
+export async function fetchMajor(majorIdOrSlug: string): Promise<MajorDetail> {
+  const response = await apiClient.get<{ success: true; data: MajorDetail }>(
+    `/majors/${majorIdOrSlug}`,
+  );
+  return response.data.data;
+}

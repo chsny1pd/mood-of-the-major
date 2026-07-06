@@ -22,5 +22,14 @@ export function createFacultyController(facultyService: FacultyService) {
         data: majors,
       });
     }),
+
+    getMajor: asyncHandler(async (req, res: Response) => {
+      const major = await facultyService.getActiveMajor(String(req.params.majorId));
+
+      res.status(200).json({
+        success: true,
+        data: major,
+      });
+    }),
   };
 }

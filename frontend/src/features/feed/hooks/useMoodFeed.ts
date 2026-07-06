@@ -12,6 +12,10 @@ type FeedScope =
   | { type: "faculty"; facultyId: string; params?: FeedParams }
   | { type: "major"; majorId: string; params?: FeedParams };
 
+interface UseMoodFeedOptions {
+  enabled?: boolean;
+}
+
 async function fetchPage(scope: FeedScope, cursor?: string) {
   const params = { ...("params" in scope ? scope.params : {}), cursor };
 
@@ -26,7 +30,7 @@ async function fetchPage(scope: FeedScope, cursor?: string) {
   return fetchMoodFeed(params);
 }
 
-export function useMoodFeed(scope: FeedScope) {
+export function useMoodFeed(scope: FeedScope, options: UseMoodFeedOptions = {}) {
   const scopeKey =
     scope.type === "global"
       ? "global"
@@ -39,5 +43,6 @@ export function useMoodFeed(scope: FeedScope) {
     initialPageParam: undefined as string | undefined,
     queryFn: ({ pageParam }) => fetchPage(scope, pageParam),
     getNextPageParam: (lastPage) => (lastPage.meta.hasMore ? lastPage.meta.nextCursor : undefined),
+    enabled: options.enabled ?? true,
   });
 }

@@ -5,8 +5,9 @@ import { feedQuerySchema } from "../validators/moodSchemas.js";
 
 export function createMajorRoutes(deps: Dependencies): Router {
   const router = Router();
-  const { moodController, optionalAuthenticate } = deps;
+  const { moodController, facultyController, optionalAuthenticate } = deps;
 
+  router.get("/:majorId", facultyController.getMajor);
   router.get(
     "/:majorId/moods",
     optionalAuthenticate,

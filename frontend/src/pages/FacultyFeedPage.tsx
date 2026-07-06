@@ -10,12 +10,14 @@ import { fetchFaculties } from "../services/referenceService";
 export function FacultyFeedPage() {
   const { facultyId = "" } = useParams();
   const facultiesQuery = useQuery({ queryKey: ["faculties"], queryFn: fetchFaculties });
-  const faculty = facultiesQuery.data?.find((item) => item.id === facultyId || item.slug === facultyId);
-  const feedQuery = useMoodFeed({
-    type: "faculty",
-    facultyId: faculty?.id ?? facultyId,
-    params: { facultyId: faculty?.id ?? facultyId },
-  });
+  const faculty = facultiesQuery.data?.find(
+    (item) => item.id === facultyId || item.slug === facultyId,
+  );
+
+  const feedQuery = useMoodFeed(
+    { type: "faculty", facultyId },
+    { enabled: Boolean(facultyId) },
+  );
   const moods = feedQuery.data?.pages.flatMap((page) => page.data) ?? [];
 
   return (
@@ -33,6 +35,16 @@ export function FacultyFeedPage() {
             <MoodCardSkeleton />
             <MoodCardSkeleton />
           </>
+        ) : feedQuery.isError ? (
+          <EmptyState
+            title="Faculty not found"
+            description="This faculty does not exist or is inactive."
+            action={
+              <Link to={ROUTES.feed} className="text-sm font-medium text-teal-800 hover:underline">
+                Back to feed
+              </Link>
+            }
+          />
         ) : moods.length === 0 ? (
           <EmptyState title="No moods in this faculty yet" description="Check back later or share your own." />
         ) : (

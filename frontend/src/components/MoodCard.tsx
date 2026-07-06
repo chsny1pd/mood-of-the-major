@@ -31,7 +31,22 @@ export function MoodCard({ mood }: { mood: AnonymousMood }) {
       <div className="mb-3 flex flex-wrap items-center gap-2">
         {primaryTag ? <EmotionBadge name={primaryTag.name} isPrimary /> : null}
         {mood.faculty ? (
-          <span className="text-xs text-stone-500">{mood.faculty.name}</span>
+          <Link
+            to={ROUTES.facultyFeed(mood.faculty.slug)}
+            className="text-xs text-teal-700 hover:underline"
+            onClick={(event) => event.stopPropagation()}
+          >
+            {mood.faculty.name}
+          </Link>
+        ) : null}
+        {mood.major ? (
+          <Link
+            to={ROUTES.majorFeed(mood.major.slug)}
+            className="text-xs text-teal-700 hover:underline"
+            onClick={(event) => event.stopPropagation()}
+          >
+            {mood.major.name}
+          </Link>
         ) : null}
         <span className="ml-auto text-xs text-stone-400">{formatRelativeTime(mood.createdAt)}</span>
       </div>

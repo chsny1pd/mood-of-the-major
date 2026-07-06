@@ -2,6 +2,10 @@ import type { IFacultyRepository, FacultySummary } from "../../../domain/ports/I
 import { FacultyModel } from "../models/Faculty.js";
 import { MajorModel } from "../models/Major.js";
 
+function isObjectId(value: string): boolean {
+  return /^[a-f\d]{24}$/i.test(value);
+}
+
 export class MongooseFacultyRepository implements IFacultyRepository {
   async findAllActive(): Promise<FacultySummary[]> {
     const faculties = await FacultyModel.find({ isActive: true })
@@ -28,8 +32,12 @@ export class MongooseFacultyRepository implements IFacultyRepository {
     return summaries;
   }
 
-  async findActiveById(id: string) {
-    const faculty = await FacultyModel.findOne({ _id: id, isActive: true }).lean();
+  async findActiveById(idOrSlug: string) {
+    const filter = isObjectId(idOrSlug)
+      ? { _id: idOrSlug, isActive: true }
+      : { slug: idOrSlug.toLowerCase(), isActive: true };
+
+    const faculty = await FacultyModel.findOne(filter).lean();
     if (!faculty) return null;
 
     return {
@@ -39,8 +47,12 @@ export class MongooseFacultyRepository implements IFacultyRepository {
     };
   }
 
-  async findActiveMajorByIdOnly(majorId: string) {
-    const major = await MajorModel.findOne({ _id: majorId, isActive: true }).lean();
+  async findActiveMajorByIdOnly(majorIdOrSlug: string) {
+    const filter = isObjectId(majorIdOrSlug)
+      ? { _id: majorIdOrSlug, isActive: true }
+      : { slug: majorIdOrSlug.toLowerCase(), isActive: true };
+
+    const major = await MajorModel.findOne(filter).lean();
     if (!major) return null;
 
     return {
@@ -69,8 +81,11 @@ export class MongooseFacultyRepository implements IFacultyRepository {
     };
   }
 
-  async findActiveMajorsByFacultyId(facultyId: string) {
-    const majors = await MajorModel.find({ facultyId, isActive: true })
+  async findActiveMajorsByFacultyId(facultyIdOrSlug: string) {
+    const faculty = await this.findActiveById(facultyIdOrSlug);
+    if (!faculty) return [];
+
+    const majors = await MajorModel.find({ facultyId: faculty.id, isActive: true })
       .sort({ sortOrder: 1, name: 1 })
       .lean();
 
@@ -82,7 +97,10 @@ export class MongooseFacultyRepository implements IFacultyRepository {
     }));
   }
 
-  async countActiveMajorsByFacultyId(facultyId: string): Promise<number> {
-    return MajorModel.countDocuments({ facultyId, isActive: true });
+  async countActiveMajorsByFacultyId(facultyIdOrSlug: string): Promise<number> {
+    const faculty = await this.findActiveById(facultyIdOrSlug);
+    if (!faculty) return 0;
+
+    return MajorModel.countDocuments({ facultyId: faculty.id, isActive: true });
   }
 }
