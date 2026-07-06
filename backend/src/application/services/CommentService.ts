@@ -25,10 +25,12 @@ export interface CommentListInput {
   limit?: number;
   cursor?: string;
   sort?: "oldest" | "newest";
+  viewerUserId?: string;
 }
 
 export interface CommentListResult {
   items: Comment[];
+  ownedCommentIds: Set<string>;
   meta: {
     limit: number;
     nextCursor: string | null;
@@ -64,8 +66,16 @@ export class CommentService {
       limit,
     );
 
+    const ownedCommentIds = input.viewerUserId
+      ? await this.comments.findOwnedCommentIds(
+          items.map((item) => item.id),
+          input.viewerUserId,
+        )
+      : new Set<string>();
+
     return {
       items,
+      ownedCommentIds,
       meta: {
         limit,
         nextCursor: pagination.nextCursor,

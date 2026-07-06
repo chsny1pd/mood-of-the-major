@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import type { Logger } from "../logging/logger.js";
+import { DailyStatisticsModel } from "./models/DailyStatistics.js";
+import { EmotionStatisticsModel } from "./models/EmotionStatistics.js";
 import { BookmarkModel } from "./models/Bookmark.js";
 import { CommentModel } from "./models/Comment.js";
 import { MoodModel } from "./models/Mood.js";
@@ -15,6 +17,8 @@ async function syncModelIndexes(logger: Logger): Promise<void> {
     ReactionModel.syncIndexes(),
     BookmarkModel.syncIndexes(),
     ReportModel.syncIndexes(),
+    EmotionStatisticsModel.syncIndexes(),
+    DailyStatisticsModel.syncIndexes(),
   ]);
   logger.info("MongoDB indexes synced");
 }

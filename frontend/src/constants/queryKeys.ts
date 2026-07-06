@@ -6,6 +6,8 @@ export const queryKeys = {
   reactions: (targetType: string, targetId: string) => ["reactions", targetType, targetId] as const,
   bookmarks: (params?: unknown) => ["bookmarks", params] as const,
   bookmarkStatus: (moodId: string) => ["bookmarks", "status", moodId] as const,
+  statisticsDashboard: (params: unknown) => ["statistics", "dashboard", params] as const,
+  trending: (params: unknown) => ["statistics", "trending", params] as const,
   emotionTags: ["tags", "emotions"] as const,
   imageUrl: (imageId: string) => ["images", "url", imageId] as const,
 };

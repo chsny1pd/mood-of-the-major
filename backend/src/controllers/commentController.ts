@@ -13,11 +13,16 @@ export function createCommentController(commentService: CommentService) {
         limit: query.limit ? Number(query.limit) : undefined,
         cursor: query.cursor ? String(query.cursor) : undefined,
         sort: query.sort as "oldest" | "newest" | undefined,
+        viewerUserId: req.userId,
       });
 
       res.status(200).json({
         success: true,
-        data: result.items.map(toAnonymousCommentDto),
+        data: result.items.map((comment) =>
+          toAnonymousCommentDto(comment, {
+            isOwner: result.ownedCommentIds.has(comment.id) ? true : undefined,
+          }),
+        ),
         meta: result.meta,
       });
     }),

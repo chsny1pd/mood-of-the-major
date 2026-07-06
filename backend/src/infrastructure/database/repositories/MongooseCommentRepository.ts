@@ -115,6 +115,21 @@ export class MongooseCommentRepository implements ICommentRepository {
     return count > 0;
   }
 
+  async findOwnedCommentIds(commentIds: string[], authorId: string): Promise<Set<string>> {
+    if (commentIds.length === 0) {
+      return new Set();
+    }
+
+    const docs = await CommentModel.find({
+      _id: { $in: commentIds },
+      authorId,
+    })
+      .select("_id")
+      .lean();
+
+    return new Set(docs.map((doc) => doc._id.toString()));
+  }
+
   async adjustReactionSummary(
     commentId: string,
     reactionType: string,

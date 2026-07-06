@@ -8,6 +8,8 @@ export interface FeedParams {
   tagSlug?: string;
   facultyId?: string;
   majorId?: string;
+  from?: string;
+  to?: string;
 }
 
 export async function fetchMoodFeed(params: FeedParams = {}): Promise<PaginatedMoods> {

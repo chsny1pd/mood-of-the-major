@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { EmotionBadge } from "./EmotionBadge";
+import { BookmarkIconButton } from "../features/bookmarks/components/BookmarkIconButton";
 import { ROUTES } from "../constants/routes";
 import { REACTION_TYPES } from "../types/engagement";
 import type { AnonymousMood } from "../types/mood";
@@ -19,7 +20,13 @@ function formatRelativeTime(isoDate: string): string {
   return `${diffDays}d ago`;
 }
 
-export function MoodCard({ mood }: { mood: AnonymousMood }) {
+export function MoodCard({
+  mood,
+  showBookmark = false,
+}: {
+  mood: AnonymousMood;
+  showBookmark?: boolean;
+}) {
   const primaryTag = mood.tags.find((tag) => tag.isPrimary) ?? mood.tags[0];
   const totalReactions = REACTION_TYPES.reduce(
     (sum, reaction) => sum + (mood.reactionSummary[reaction.type] ?? 0),
@@ -48,7 +55,10 @@ export function MoodCard({ mood }: { mood: AnonymousMood }) {
             {mood.major.name}
           </Link>
         ) : null}
-        <span className="ml-auto text-xs text-stone-400">{formatRelativeTime(mood.createdAt)}</span>
+        <span className="ml-auto flex items-center gap-1">
+          {showBookmark ? <BookmarkIconButton moodId={mood.id} /> : null}
+          <span className="text-xs text-stone-400">{formatRelativeTime(mood.createdAt)}</span>
+        </span>
       </div>
 
       <Link to={ROUTES.moodDetail(mood.id)} className="block">

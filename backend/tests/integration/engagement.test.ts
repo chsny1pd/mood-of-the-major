@@ -53,4 +53,11 @@ describe("Engagement routes", () => {
     expect(response.status).toBe(401);
     expect(response.body.error.code).toBe("AUTH_REQUIRED");
   });
+
+  it("GET /api/v1/statistics/dashboard requires authentication", async () => {
+    const response = await request(app).get("/api/v1/statistics/dashboard");
+
+    expect(response.status).toBe(401);
+    expect(response.body.error.code).toBe("AUTH_REQUIRED");
+  });
 });

@@ -17,6 +17,7 @@ const baseSchema = z.object({
   R2_BUCKET_NAME: z.string().optional(),
   R2_PUBLIC_BASE_URL: z.string().optional(),
   AGGREGATION_THRESHOLD_MIN: z.coerce.number().int().positive().default(5),
+  SERVICE_API_KEY: z.string().optional(),
   BCRYPT_ROUNDS: z.coerce.number().int().min(10).max(15).default(12),
   ALLOWED_EMAIL_DOMAINS: z.string().optional(),
 });

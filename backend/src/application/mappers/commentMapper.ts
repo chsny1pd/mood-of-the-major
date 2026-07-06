@@ -7,10 +7,14 @@ export interface AnonymousCommentDto {
   depth: number;
   reactionSummary: Record<string, number>;
   createdAt: string;
+  isOwner?: boolean;
 }
 
-export function toAnonymousCommentDto(comment: Comment): AnonymousCommentDto {
-  return {
+export function toAnonymousCommentDto(
+  comment: Comment,
+  options?: { isOwner?: boolean },
+): AnonymousCommentDto {
+  const dto: AnonymousCommentDto = {
     id: comment.id,
     content: comment.content,
     parentId: comment.parentId,
@@ -18,6 +22,12 @@ export function toAnonymousCommentDto(comment: Comment): AnonymousCommentDto {
     reactionSummary: comment.reactionSummary,
     createdAt: comment.createdAt.toISOString(),
   };
+
+  if (options?.isOwner) {
+    dto.isOwner = true;
+  }
+
+  return dto;
 }
 
 export function assertNoCommentIdentityFields(dto: AnonymousCommentDto): void {

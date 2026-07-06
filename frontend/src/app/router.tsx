@@ -14,6 +14,8 @@ import { MajorFeedPage } from "../pages/MajorFeedPage";
 import { MoodDetailPage } from "../pages/MoodDetailPage";
 import { RegisterPage } from "../pages/RegisterPage";
 import { SearchPage } from "../pages/SearchPage";
+import { StatisticsPage } from "../pages/StatisticsPage";
+import { TrendingPage } from "../pages/TrendingPage";
 
 export const router = createBrowserRouter([
   {
@@ -81,6 +83,14 @@ export const router = createBrowserRouter([
       {
         path: ROUTES.search,
         element: <SearchPage />,
+      },
+      {
+        path: ROUTES.statistics,
+        element: <StatisticsPage />,
+      },
+      {
+        path: ROUTES.trending,
+        element: <TrendingPage />,
       },
     ],
   },

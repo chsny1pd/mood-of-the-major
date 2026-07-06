@@ -33,14 +33,28 @@
 - [x] Production deploy verified (Vercel + Railway)
 - [ ] Manual QA: full image flow on staging
 
-## Sprint 4 — Comments, Reactions & Bookmarks (in progress)
+## Sprint 4 — Comments, Reactions & Bookmarks
 
 - [x] Backend: CommentService, ReactionService, BookmarkService, ReportService, mood search
 - [x] Backend: API routes for comments, reactions, bookmarks, search, reports
 - [x] Backend: Mongoose models/repos for comments, reactions, bookmarks, reports
 - [x] Backend: comment rate limiter; denormalized reactionSummary / commentCount updates
 - [x] Frontend: comments, reactions, bookmarks, search, report UI
+- [x] Frontend: FilterPanel, search filters/pagination, MoodCard bookmark toggle
+- [x] Frontend: comment reply/delete/report UI; bookmarks pagination
 - [x] Frontend: BookmarksPage, SearchPage; MoodDetail engagement section
-- [x] Tests: commentMapper anonymity unit test
+- [x] Tests: commentMapper anonymity; AggregationThresholdPolicy unit test
 - [x] Integration tests: engagement auth guards
 - [ ] Manual QA on staging (comments, reactions, bookmarks, search)
+
+## Sprint 5 — Statistics Dashboard (in progress)
+
+- [x] Backend: StatisticsService, TrendingService, statistics repositories
+- [x] Backend: `GET /statistics/dashboard`, `GET /moods/trending`
+- [x] Backend: AggregationThresholdPolicy; daily aggregation job endpoint
+- [x] Frontend: `features/statistics/` — DistributionChart, TimeSeriesChart, ScopeSelector
+- [x] Frontend: StatisticsPage, TrendingPage; ChartContainer threshold empty states
+- [x] Tests: threshold boundary unit test (4 vs 5 records)
+- [ ] Run aggregation job on staging after mood data exists
+- [ ] Manual QA: statistics and trending pages with seeded aggregates
+- [ ] Resolve OD-009/OD-010/OD-011 (student access policy, threshold value, advisor role)

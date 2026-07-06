@@ -24,6 +24,7 @@ export interface AnonymousComment {
   depth: number;
   reactionSummary: Record<string, number>;
   createdAt: string;
+  isOwner?: boolean;
 }
 
 export interface PaginatedComments {

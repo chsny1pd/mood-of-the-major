@@ -27,6 +27,18 @@ export function StudentLayout() {
                 >
                   Saved
                 </Link>
+                <Link
+                  to={ROUTES.statistics}
+                  className="hidden text-stone-600 hover:text-teal-800 sm:inline"
+                >
+                  Stats
+                </Link>
+                <Link
+                  to={ROUTES.trending}
+                  className="hidden text-stone-600 hover:text-teal-800 sm:inline"
+                >
+                  Trending
+                </Link>
               </>
             ) : null}
             {user ? (

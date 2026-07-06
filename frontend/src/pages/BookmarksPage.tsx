@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { MoodCard } from "../components/MoodCard";
 import { EmptyState } from "../components/EmptyState";
@@ -8,10 +8,14 @@ import { ROUTES } from "../constants/routes";
 import { fetchBookmarks } from "../services/bookmarkService";
 
 export function BookmarksPage() {
-  const bookmarksQuery = useQuery({
+  const bookmarksQuery = useInfiniteQuery({
     queryKey: queryKeys.bookmarks(),
-    queryFn: () => fetchBookmarks(),
+    initialPageParam: undefined as string | undefined,
+    queryFn: ({ pageParam }) => fetchBookmarks({ cursor: pageParam }),
+    getNextPageParam: (lastPage) => (lastPage.meta.hasMore ? lastPage.meta.nextCursor : undefined),
   });
+
+  const moods = bookmarksQuery.data?.pages.flatMap((page) => page.data) ?? [];
 
   return (
     <section className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
@@ -33,7 +37,7 @@ export function BookmarksPage() {
             </Link>
           }
         />
-      ) : bookmarksQuery.data?.data.length === 0 ? (
+      ) : moods.length === 0 ? (
         <EmptyState
           title="No saved moods"
           description="Bookmark posts from the mood detail page."
@@ -45,9 +49,20 @@ export function BookmarksPage() {
         />
       ) : (
         <div className="mt-8 space-y-4">
-          {bookmarksQuery.data?.data.map((mood) => (
-            <MoodCard key={mood.id} mood={mood} />
+          {moods.map((mood) => (
+            <MoodCard key={mood.id} mood={mood} showBookmark />
           ))}
+
+          {bookmarksQuery.hasNextPage ? (
+            <button
+              type="button"
+              onClick={() => void bookmarksQuery.fetchNextPage()}
+              disabled={bookmarksQuery.isFetchingNextPage}
+              className="w-full rounded-xl border border-stone-300 px-4 py-2 text-sm text-stone-700 hover:bg-stone-100 disabled:opacity-60"
+            >
+              {bookmarksQuery.isFetchingNextPage ? "Loading..." : "Load more"}
+            </button>
+          ) : null}
         </div>
       )}
     </section>

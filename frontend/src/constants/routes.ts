@@ -6,6 +6,8 @@ export const ROUTES = {
   create: "/create",
   bookmarks: "/bookmarks",
   search: "/search",
+  statistics: "/statistics",
+  trending: "/trending",
   moodDetail: (moodId: string) => `/mood/${moodId}`,
   facultyFeed: (facultyId: string) => `/faculty/${facultyId}`,
   majorFeed: (majorId: string) => `/major/${majorId}`,

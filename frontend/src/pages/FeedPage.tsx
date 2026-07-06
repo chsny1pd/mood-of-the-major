@@ -1,12 +1,16 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { MoodCard } from "../components/MoodCard";
 import { EmptyState } from "../components/EmptyState";
 import { MoodCardSkeleton } from "../components/Skeleton";
 import { ROUTES } from "../constants/routes";
+import { FilterPanel } from "../features/search/components/FilterPanel";
+import { DEFAULT_MOOD_FILTERS, type MoodFilters } from "../features/search/types";
 import { useMoodFeed } from "../features/feed/hooks/useMoodFeed";
 
 export function FeedPage() {
-  const feedQuery = useMoodFeed({ type: "global" });
+  const [filters, setFilters] = useState<MoodFilters>(DEFAULT_MOOD_FILTERS);
+  const feedQuery = useMoodFeed({ type: "global", params: filters });
   const moods = feedQuery.data?.pages.flatMap((page) => page.data) ?? [];
 
   return (
@@ -24,8 +28,10 @@ export function FeedPage() {
         </Link>
       </div>
 
+      <FilterPanel filters={filters} onChange={setFilters} />
+
       {feedQuery.isLoading ? (
-        <div className="space-y-4">
+        <div className="mt-6 space-y-4">
           <MoodCardSkeleton />
           <MoodCardSkeleton />
         </div>
@@ -57,9 +63,9 @@ export function FeedPage() {
           }
         />
       ) : (
-        <div className="space-y-4">
+        <div className="mt-6 space-y-4">
           {moods.map((mood) => (
-            <MoodCard key={mood.id} mood={mood} />
+            <MoodCard key={mood.id} mood={mood} showBookmark />
           ))}
 
           {feedQuery.hasNextPage ? (

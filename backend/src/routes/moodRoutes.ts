@@ -5,10 +5,11 @@ import { authorize } from "../middlewares/authorize.js";
 import { validate } from "../middlewares/validate.js";
 import { createMoodSchema, feedQuerySchema } from "../validators/moodSchemas.js";
 import { searchQuerySchema } from "../validators/engagementSchemas.js";
+import { trendingQuerySchema } from "../validators/statisticsSchemas.js";
 
 export function createMoodRoutes(deps: Dependencies): Router {
   const router = Router();
-  const { moodController, authenticate, optionalAuthenticate } = deps;
+  const { moodController, statisticsController, authenticate, optionalAuthenticate } = deps;
 
   router.get("/feed", optionalAuthenticate, validate(feedQuerySchema, "query"), moodController.feed);
 
@@ -19,6 +20,8 @@ export function createMoodRoutes(deps: Dependencies): Router {
     validate(searchQuerySchema, "query"),
     moodController.search,
   );
+
+  router.get("/trending", validate(trendingQuerySchema, "query"), statisticsController.trending);
 
   router.post(
     "/",

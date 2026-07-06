@@ -16,5 +16,6 @@ export interface ICommentRepository {
   softDelete(commentId: string): Promise<boolean>;
   isAuthor(commentId: string, authorId: string): Promise<boolean>;
   findActiveByIdOnMood(commentId: string, moodId: string): Promise<Comment | null>;
+  findOwnedCommentIds(commentIds: string[], authorId: string): Promise<Set<string>>;
   adjustReactionSummary(commentId: string, reactionType: string, delta: number): Promise<Record<string, number>>;
 }

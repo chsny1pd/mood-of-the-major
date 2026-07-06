@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../../../constants/queryKeys";
-import { createComment, fetchComments } from "../../../services/commentService";
+import { createComment, deleteComment, fetchComments } from "../../../services/commentService";
 import { useAuth } from "../../../contexts/AuthContext";
 import { Link } from "react-router-dom";
 import { ROUTES } from "../../../constants/routes";
 import { ReactionBar } from "../../reactions/components/ReactionBar";
+import { ReportModal } from "../../report/components/ReportModal";
 import { getApiErrorMessage } from "../../../services/apiClient";
 
 interface CommentSectionProps {
@@ -16,17 +17,26 @@ export function CommentSection({ moodId }: CommentSectionProps) {
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
   const [content, setContent] = useState("");
+  const [replyToId, setReplyToId] = useState<string | null>(null);
+  const [reportCommentId, setReportCommentId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const commentsQuery = useQuery({
+  const commentsQuery = useInfiniteQuery({
     queryKey: queryKeys.moodComments(moodId),
-    queryFn: () => fetchComments(moodId),
+    initialPageParam: undefined as string | undefined,
+    queryFn: ({ pageParam }) => fetchComments(moodId, { cursor: pageParam }),
+    getNextPageParam: (lastPage) => (lastPage.meta.hasMore ? lastPage.meta.nextCursor : undefined),
   });
 
   const mutation = useMutation({
-    mutationFn: () => createComment(moodId, { content: content.trim() }),
+    mutationFn: () =>
+      createComment(moodId, {
+        content: content.trim(),
+        parentId: replyToId,
+      }),
     onSuccess: () => {
       setContent("");
+      setReplyToId(null);
       setError(null);
       void queryClient.invalidateQueries({ queryKey: queryKeys.moodComments(moodId) });
       void queryClient.invalidateQueries({ queryKey: queryKeys.moodDetail(moodId) });
@@ -36,7 +46,16 @@ export function CommentSection({ moodId }: CommentSectionProps) {
     },
   });
 
-  const comments = commentsQuery.data?.data ?? [];
+  const deleteMutation = useMutation({
+    mutationFn: (commentId: string) => deleteComment(commentId),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.moodComments(moodId) });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.moodDetail(moodId) });
+    },
+  });
+
+  const comments = commentsQuery.data?.pages.flatMap((page) => page.data) ?? [];
+  const replyTarget = replyToId ? comments.find((comment) => comment.id === replyToId) : null;
 
   return (
     <section className="mt-8">
@@ -53,6 +72,18 @@ export function CommentSection({ moodId }: CommentSectionProps) {
           }}
           className="mb-6 space-y-2"
         >
+          {replyTarget ? (
+            <p className="text-sm text-stone-600">
+              Replying to comment…{" "}
+              <button
+                type="button"
+                onClick={() => setReplyToId(null)}
+                className="font-medium text-teal-800 hover:underline"
+              >
+                Cancel
+              </button>
+            </p>
+          ) : null}
           <textarea
             value={content}
             onChange={(event) => setContent(event.target.value)}
@@ -67,7 +98,7 @@ export function CommentSection({ moodId }: CommentSectionProps) {
             disabled={mutation.isPending || !content.trim()}
             className="rounded-xl bg-teal-800 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-900 disabled:opacity-60"
           >
-            {mutation.isPending ? "Posting..." : "Post comment"}
+            {mutation.isPending ? "Posting..." : replyToId ? "Post reply" : "Post comment"}
           </button>
         </form>
       ) : (
@@ -97,14 +128,63 @@ export function CommentSection({ moodId }: CommentSectionProps) {
               <p className="whitespace-pre-wrap text-stone-800">{comment.content}</p>
               <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
                 <ReactionBar targetType="comment" targetId={comment.id} compact />
-                <time className="text-xs text-stone-400">
-                  {new Date(comment.createdAt).toLocaleString()}
-                </time>
+                <div className="flex flex-wrap items-center gap-2 text-xs">
+                  {isAuthenticated ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setReplyToId(comment.id)}
+                        className="text-teal-800 hover:underline"
+                      >
+                        Reply
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setReportCommentId(comment.id)}
+                        className="text-stone-500 hover:text-red-700"
+                      >
+                        Report
+                      </button>
+                      {comment.isOwner ? (
+                        <button
+                          type="button"
+                          onClick={() => deleteMutation.mutate(comment.id)}
+                          disabled={deleteMutation.isPending}
+                          className="text-red-700 hover:underline disabled:opacity-60"
+                        >
+                          Delete
+                        </button>
+                      ) : null}
+                    </>
+                  ) : null}
+                  <time className="text-stone-400">
+                    {new Date(comment.createdAt).toLocaleString()}
+                  </time>
+                </div>
               </div>
             </li>
           ))}
         </ul>
       )}
+
+      {commentsQuery.hasNextPage ? (
+        <button
+          type="button"
+          onClick={() => void commentsQuery.fetchNextPage()}
+          disabled={commentsQuery.isFetchingNextPage}
+          className="mt-4 w-full rounded-xl border border-stone-300 px-4 py-2 text-sm text-stone-700 hover:bg-stone-100 disabled:opacity-60"
+        >
+          {commentsQuery.isFetchingNextPage ? "Loading..." : "Load more comments"}
+        </button>
+      ) : null}
+
+      {reportCommentId ? (
+        <ReportModal
+          targetType="comment"
+          targetId={reportCommentId}
+          onClose={() => setReportCommentId(null)}
+        />
+      ) : null}
     </section>
   );
 }
