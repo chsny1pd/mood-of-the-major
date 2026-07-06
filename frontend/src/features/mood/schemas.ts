@@ -12,4 +12,15 @@ export const createMoodSchema = z.object({
   primaryTagId: z.string().min(1, "Pick a primary emotion."),
 });
 
+export const updateMoodSchema = z.object({
+  content: z
+    .string()
+    .trim()
+    .min(1, "Share what's on your mind.")
+    .max(5000, "Keep your post under 5000 characters."),
+  tagIds: z.array(z.string()).min(1, "Pick at least one emotion."),
+  primaryTagId: z.string().min(1, "Pick a primary emotion."),
+});
+
 export type CreateMoodFormValues = z.infer<typeof createMoodSchema>;
+export type UpdateMoodFormValues = z.infer<typeof updateMoodSchema>;

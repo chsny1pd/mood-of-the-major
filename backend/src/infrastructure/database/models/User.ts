@@ -3,6 +3,8 @@ import { Schema, model, type InferSchemaType, type Types } from "mongoose";
 const userSchema = new Schema(
   {
     email: { type: String, required: true, trim: true, lowercase: true },
+    studentId: { type: String, trim: true, uppercase: true, default: null },
+    yearOfStudy: { type: Number, min: 1, max: 8, default: null },
     passwordHash: { type: String, required: true },
     role: {
       type: String,
@@ -30,6 +32,10 @@ const userSchema = new Schema(
 userSchema.index(
   { email: 1 },
   { unique: true, partialFilterExpression: { deletedAt: null } },
+);
+userSchema.index(
+  { studentId: 1 },
+  { unique: true, partialFilterExpression: { deletedAt: null, studentId: { $type: "string" } } },
 );
 userSchema.index({ role: 1, status: 1 });
 userSchema.index({ facultyId: 1, majorId: 1 });

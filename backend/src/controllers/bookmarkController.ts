@@ -50,7 +50,7 @@ export function createBookmarkController(bookmarkService: BookmarkService) {
 
       res.status(200).json({
         success: true,
-        data: result.items.map(toAnonymousMoodDto),
+        data: result.items.map((item) => toAnonymousMoodDto(item)),
         meta: result.meta,
       });
     }),

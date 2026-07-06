@@ -5,6 +5,8 @@ export function toAuthUserDto(user: User) {
   return {
     id: user.id,
     email: user.email,
+    studentId: user.studentId,
+    yearOfStudy: user.yearOfStudy,
     role: user.role,
     facultyId: user.facultyId,
     majorId: user.majorId,
@@ -15,6 +17,8 @@ export function toUserProfileDto(profile: UserProfile) {
   return {
     id: profile.id,
     email: profile.email,
+    studentId: profile.studentId,
+    yearOfStudy: profile.yearOfStudy,
     role: profile.role,
     facultyId: profile.facultyId,
     majorId: profile.majorId,

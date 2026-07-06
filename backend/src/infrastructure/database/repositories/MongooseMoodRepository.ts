@@ -5,6 +5,7 @@ import type {
   MoodSearchQuery,
   MoodWithRelations,
   AdminMoodListQuery,
+  UpdateMoodInput,
 } from "../../../domain/ports/IMoodRepository.js";
 import { FacultyModel } from "../models/Faculty.js";
 import { MajorModel } from "../models/Major.js";
@@ -188,6 +189,39 @@ export class MongooseMoodRepository implements IMoodRepository {
 
     const hydrated = await hydrateMoods([moodDoc.toObject()]);
     return hydrated[0]!;
+  }
+
+  async updateActive(moodId: string, input: UpdateMoodInput): Promise<MoodWithRelations | null> {
+    const existing = await MoodModel.findOne({
+      _id: moodId,
+      status: "active",
+      deletedAt: null,
+    }).lean();
+
+    if (!existing) return null;
+
+    const now = new Date();
+
+    await MoodModel.updateOne(
+      { _id: moodId },
+      {
+        content: input.content,
+        primaryTagId: input.primaryTagId,
+        editedAt: now,
+        lastActivityAt: now,
+      },
+    );
+
+    await MoodTagModel.deleteMany({ moodId });
+    await MoodTagModel.insertMany(
+      input.tagIds.map((tagId) => ({
+        moodId,
+        tagId,
+        isPrimary: tagId === input.primaryTagId,
+      })),
+    );
+
+    return this.findById(moodId);
   }
 
   async findById(id: string): Promise<MoodWithRelations | null> {

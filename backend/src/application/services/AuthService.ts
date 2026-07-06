@@ -13,6 +13,8 @@ import type { Env } from "../../config/env.js";
 export interface RegisterInput {
   email: string;
   password: string;
+  studentId: string;
+  yearOfStudy: number;
   facultyId?: string;
   majorId?: string;
 }
@@ -40,6 +42,8 @@ export interface RefreshResult {
 export interface UserProfile {
   id: string;
   email: string;
+  studentId: string | null;
+  yearOfStudy: number | null;
   role: User["role"];
   facultyId: string | null;
   majorId: string | null;
@@ -59,6 +63,7 @@ export class AuthService {
 
   async register(input: RegisterInput): Promise<AuthResult> {
     const email = input.email.trim().toLowerCase();
+    const studentId = input.studentId.trim().toUpperCase();
     this.assertEmailAllowed(email);
     await this.validateAffiliation(input.facultyId, input.majorId);
 
@@ -71,9 +76,20 @@ export class AuthService {
       });
     }
 
+    const existingStudentId = await this.users.findByStudentId(studentId);
+    if (existingStudentId) {
+      throw new AppError("Student ID already registered", {
+        statusCode: 422,
+        code: "STUDENT_ID_ALREADY_EXISTS",
+        details: [{ field: "studentId", message: "An account with this student ID already exists." }],
+      });
+    }
+
     const passwordHash = await this.passwordHasher.hash(input.password);
     const user = await this.users.create({
       email,
+      studentId,
+      yearOfStudy: input.yearOfStudy,
       passwordHash,
       facultyId: input.facultyId ?? null,
       majorId: input.majorId ?? null,
@@ -194,6 +210,8 @@ export class AuthService {
     return {
       id: user.id,
       email: user.email,
+      studentId: user.studentId,
+      yearOfStudy: user.yearOfStudy,
       role: user.role,
       facultyId: user.facultyId,
       majorId: user.majorId,

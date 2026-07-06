@@ -35,6 +35,18 @@ export const feedQuerySchema = z
   })
   .strict();
 
+export const updateMoodSchema = z
+  .object({
+    content: z
+      .string()
+      .trim()
+      .min(MOOD_CONTENT_MIN_LENGTH, "Content is required.")
+      .max(MOOD_CONTENT_MAX_LENGTH, `Content must be at most ${MOOD_CONTENT_MAX_LENGTH} characters.`),
+    tagIds: z.array(objectIdSchema).min(1, "At least one tag is required."),
+    primaryTagId: objectIdSchema,
+  })
+  .strict();
+
 export const moodIdParamSchema = z.object({
   moodId: objectIdSchema,
 });

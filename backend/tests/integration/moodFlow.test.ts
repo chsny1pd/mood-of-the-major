@@ -76,6 +76,47 @@ describe.skipIf(!mongoAvailable)("Mood flow (integration)", () => {
 
     expect(detail.status).toBe(200);
     expect(detail.body.data.id).toBe(moodId);
+    expect(detail.body.data.isOwner).toBe(true);
+    expect(detail.body.data.canEdit).toBe(true);
     expect(JSON.stringify(detail.body.data)).not.toContain("authorId");
+  });
+
+  it("updates and deletes own mood", async () => {
+    const email = `mood-crud-${Date.now()}@test.local`;
+    const { accessToken } = await registerStudent(ctx.app, email);
+    const updatedContent = "Updated after talking to friends.";
+
+    const create = await request(ctx.app)
+      .post("/api/v1/moods")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        content: "Original mood content for CRUD test.",
+        tagIds: [stressTagId],
+        primaryTagId: stressTagId,
+      });
+
+    const moodId = create.body.data.id as string;
+
+    const update = await request(ctx.app)
+      .patch(`/api/v1/moods/${moodId}`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        content: updatedContent,
+        tagIds: [stressTagId],
+        primaryTagId: stressTagId,
+      });
+
+    expect(update.status).toBe(200);
+    expect(update.body.data.content).toBe(updatedContent);
+    expect(update.body.data.editedAt).toBeTruthy();
+
+    const deleted = await request(ctx.app)
+      .delete(`/api/v1/moods/${moodId}`)
+      .set("Authorization", `Bearer ${accessToken}`);
+
+    expect(deleted.status).toBe(200);
+
+    const gone = await request(ctx.app).get(`/api/v1/moods/${moodId}`);
+    expect(gone.status).toBe(404);
   });
 });

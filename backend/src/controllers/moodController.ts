@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import type { CreateMoodServiceInput, MoodService } from "../application/services/MoodService.js";
+import type { CreateMoodServiceInput, MoodService, UpdateMoodServiceInput } from "../application/services/MoodService.js";
 import { toAnonymousMoodDto } from "../application/mappers/moodMapper.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { AuthenticationError } from "../domain/errors/AppError.js";
@@ -36,10 +36,39 @@ export function createMoodController(moodService: MoodService) {
 
     getById: asyncHandler(async (req, res: Response) => {
       const mood = await moodService.getMood(String(req.params.moodId));
+      const viewerFlags = moodService.getViewerFlags(
+        mood,
+        req.userId,
+        req.userRole === "administrator",
+      );
 
       res.status(200).json({
         success: true,
-        data: toAnonymousMoodDto(mood),
+        data: toAnonymousMoodDto(mood, viewerFlags),
+      });
+    }),
+
+    update: asyncHandler(async (req, res: Response) => {
+      if (!req.userId) {
+        throw new AuthenticationError("Authentication required", "AUTH_REQUIRED");
+      }
+
+      const mood = await moodService.updateMood(
+        req.userId,
+        String(req.params.moodId),
+        req.body as UpdateMoodServiceInput,
+        req.userRole === "administrator",
+      );
+
+      const viewerFlags = moodService.getViewerFlags(
+        mood,
+        req.userId,
+        req.userRole === "administrator",
+      );
+
+      res.status(200).json({
+        success: true,
+        data: toAnonymousMoodDto(mood, viewerFlags),
       });
     }),
 
@@ -65,7 +94,7 @@ export function createMoodController(moodService: MoodService) {
 
       res.status(200).json({
         success: true,
-        data: result.items.map(toAnonymousMoodDto),
+        data: result.items.map((item) => toAnonymousMoodDto(item)),
         meta: result.meta,
       });
     }),
@@ -75,7 +104,7 @@ export function createMoodController(moodService: MoodService) {
 
       res.status(200).json({
         success: true,
-        data: result.items.map(toAnonymousMoodDto),
+        data: result.items.map((item) => toAnonymousMoodDto(item)),
         meta: result.meta,
       });
     }),
@@ -85,7 +114,7 @@ export function createMoodController(moodService: MoodService) {
 
       res.status(200).json({
         success: true,
-        data: result.items.map(toAnonymousMoodDto),
+        data: result.items.map((item) => toAnonymousMoodDto(item)),
         meta: result.meta,
       });
     }),
@@ -105,7 +134,7 @@ export function createMoodController(moodService: MoodService) {
 
       res.status(200).json({
         success: true,
-        data: result.items.map(toAnonymousMoodDto),
+        data: result.items.map((item) => toAnonymousMoodDto(item)),
         meta: result.meta,
       });
     }),

@@ -8,6 +8,8 @@ test.describe("Student journey", () => {
 
     await page.goto("/register");
     await page.getByLabel("Email").fill(email);
+    await page.getByLabel("Student ID").fill(`E2E${Date.now().toString(36).slice(-8).toUpperCase()}`);
+    await page.getByLabel("Year of study").selectOption("2");
     await page.getByLabel("Password").fill(password);
     await page.getByRole("button", { name: "Create account" }).click();
 
@@ -31,6 +33,8 @@ test.describe("Student journey", () => {
 
     await page.goto("/register");
     await page.getByLabel("Email").fill(email);
+    await page.getByLabel("Student ID").fill(`E2E${Date.now().toString(36).slice(-8).toUpperCase()}`);
+    await page.getByLabel("Year of study").selectOption("2");
     await page.getByLabel("Password").fill(password);
     await page.getByRole("button", { name: "Create account" }).click();
     await expect(page).toHaveURL(/\/feed/, { timeout: 15_000 });

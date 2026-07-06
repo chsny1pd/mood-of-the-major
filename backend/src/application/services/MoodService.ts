@@ -5,6 +5,7 @@ import {
   MAX_IMAGES_PER_MOOD,
   MOOD_CONTENT_MAX_LENGTH,
   MOOD_CONTENT_MIN_LENGTH,
+  MOOD_EDIT_WINDOW_MS,
 } from "../../domain/constants/moodConstants.js";
 import { SEARCH_QUERY_MIN_LENGTH } from "../../domain/constants/engagementConstants.js";
 import {
@@ -27,6 +28,12 @@ export interface CreateMoodServiceInput {
   tagIds: string[];
   primaryTagId: string;
   imageIds?: string[];
+}
+
+export interface UpdateMoodServiceInput {
+  content: string;
+  tagIds: string[];
+  primaryTagId: string;
 }
 
 export interface FeedQueryInput extends Omit<MoodFeedFilters, "from" | "to"> {
@@ -198,6 +205,109 @@ export class MoodService {
     }
 
     return mood;
+  }
+
+  getViewerFlags(
+    mood: MoodWithRelations,
+    userId: string | undefined,
+    isAdmin = false,
+  ): { isOwner?: true; canEdit?: true } {
+    if (!userId) {
+      return {};
+    }
+
+    if (mood.authorId !== userId && !isAdmin) {
+      return {};
+    }
+
+    const withinEditWindow =
+      isAdmin || Date.now() <= mood.createdAt.getTime() + MOOD_EDIT_WINDOW_MS;
+
+    return {
+      isOwner: mood.authorId === userId ? true : undefined,
+      canEdit: withinEditWindow ? true : undefined,
+    };
+  }
+
+  private validateMoodContentAndTags(input: {
+    content: string;
+    tagIds: string[];
+    primaryTagId: string;
+  }): string {
+    const content = input.content.trim();
+
+    if (content.length < MOOD_CONTENT_MIN_LENGTH || content.length > MOOD_CONTENT_MAX_LENGTH) {
+      throw new ValidationError("Invalid content", [
+        {
+          field: "content",
+          message: `Content must be between ${MOOD_CONTENT_MIN_LENGTH} and ${MOOD_CONTENT_MAX_LENGTH} characters.`,
+        },
+      ]);
+    }
+
+    if (input.tagIds.length === 0) {
+      throw new ValidationError("Tags required", [
+        { field: "tagIds", message: "At least one emotion tag is required." },
+      ]);
+    }
+
+    if (!input.tagIds.includes(input.primaryTagId)) {
+      throw new ValidationError("Invalid primary tag", [
+        { field: "primaryTagId", message: "Primary tag must be included in tagIds." },
+      ]);
+    }
+
+    return content;
+  }
+
+  private async assertActiveTags(tagIds: string[]): Promise<void> {
+    const activeTags = await this.tags.findActiveByIds(tagIds);
+
+    if (activeTags.length !== tagIds.length) {
+      throw new ValidationError("Invalid tags", [
+        { field: "tagIds", message: "One or more tags are invalid or inactive." },
+      ]);
+    }
+  }
+
+  async updateMood(
+    userId: string,
+    moodId: string,
+    input: UpdateMoodServiceInput,
+    isAdmin = false,
+  ): Promise<MoodWithRelations> {
+    const mood = await this.moods.findById(moodId);
+
+    if (!mood) {
+      throw new AppError("Mood not found", { statusCode: 404, code: "NOT_FOUND" });
+    }
+
+    if (!isAdmin) {
+      const isOwner = await this.moods.isAuthor(moodId, userId);
+
+      if (!isOwner) {
+        throw new AuthorizationError("You can only edit your own moods", "NOT_OWNER");
+      }
+
+      if (Date.now() > mood.createdAt.getTime() + MOOD_EDIT_WINDOW_MS) {
+        throw new AuthorizationError("Edit window has expired", "EDIT_WINDOW_EXPIRED");
+      }
+    }
+
+    const content = this.validateMoodContentAndTags(input);
+    await this.assertActiveTags(input.tagIds);
+
+    const updated = await this.moods.updateActive(moodId, {
+      content,
+      tagIds: input.tagIds,
+      primaryTagId: input.primaryTagId,
+    });
+
+    if (!updated) {
+      throw new AppError("Mood not found", { statusCode: 404, code: "NOT_FOUND" });
+    }
+
+    return updated;
   }
 
   async deleteMood(userId: string, moodId: string, isAdmin = false): Promise<{ message: string }> {

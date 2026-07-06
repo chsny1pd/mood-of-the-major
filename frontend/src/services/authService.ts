@@ -4,6 +4,8 @@ import { setAccessToken } from "../utils/token";
 export interface AuthUser {
   id: string;
   email: string;
+  studentId: string | null;
+  yearOfStudy: number | null;
   role: "student" | "administrator" | "advisor";
   facultyId: string | null;
   majorId: string | null;
@@ -25,6 +27,8 @@ interface AuthResponse {
 
 export async function register(input: {
   email: string;
+  studentId: string;
+  yearOfStudy: number;
   password: string;
   facultyId?: string;
   majorId?: string;

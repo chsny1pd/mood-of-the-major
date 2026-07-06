@@ -1,0 +1,228 @@
+{
+  "info": {
+    "name": "Mood of the Major API",
+    "description": "REST API collection for Mood of the Major (SAIG Web project).\n\nSet `baseUrl` (default: http://localhost:3000/api/v1) and `accessToken` after login.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000/api/v1" },
+    { "key": "accessToken", "value": "" },
+    { "key": "moodId", "value": "" },
+    { "key": "stressTagId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "GET /health",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/../health"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"student@example.com\",\n  \"studentId\": \"6512345678\",\n  \"yearOfStudy\": 2,\n  \"password\": \"SecurePass1\",\n  \"facultyId\": \"\",\n  \"majorId\": \"\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/register"
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const json = pm.response.json();",
+                  "  pm.collectionVariables.set('accessToken', json.data.tokens.accessToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"student@example.com\",\n  \"password\": \"SecurePass1\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/auth/me"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/auth/logout"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Moods",
+      "item": [
+        {
+          "name": "Create Mood",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('moodId', pm.response.json().data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Feeling stressed about finals week.\",\n  \"tagIds\": [\"{{stressTagId}}\"],\n  \"primaryTagId\": \"{{stressTagId}}\"\n}"
+            },
+            "url": "{{baseUrl}}/moods"
+          }
+        },
+        {
+          "name": "Feed",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/moods/feed?limit=20&sort=newest",
+              "host": ["{{baseUrl}}"],
+              "path": ["moods", "feed"],
+              "query": [
+                { "key": "limit", "value": "20" },
+                { "key": "sort", "value": "newest" },
+                { "key": "tagSlug", "value": "stress", "disabled": true },
+                { "key": "majorId", "value": "", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Mood",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/moods/{{moodId}}"
+          }
+        },
+        {
+          "name": "Update Mood",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Updated — feeling a bit better after talking to friends.\",\n  \"tagIds\": [\"{{stressTagId}}\"],\n  \"primaryTagId\": \"{{stressTagId}}\"\n}"
+            },
+            "url": "{{baseUrl}}/moods/{{moodId}}"
+          }
+        },
+        {
+          "name": "Delete Mood",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/moods/{{moodId}}"
+          }
+        },
+        {
+          "name": "Search Moods",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/moods/search?q=finals&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["moods", "search"],
+              "query": [
+                { "key": "q", "value": "finals" },
+                { "key": "limit", "value": "20" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Statistics",
+      "item": [
+        {
+          "name": "Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/statistics/dashboard?scope=platform&period=30d",
+              "host": ["{{baseUrl}}"],
+              "path": ["statistics", "dashboard"],
+              "query": [
+                { "key": "scope", "value": "platform" },
+                { "key": "period", "value": "30d" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Trending",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/moods/trending?limit=10"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reference",
+      "item": [
+        {
+          "name": "List Faculties",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/faculties"
+          }
+        },
+        {
+          "name": "Emotion Tags",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tags/emotions"
+          }
+        }
+      ]
+    }
+  ]
+}

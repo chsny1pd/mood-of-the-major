@@ -1,5 +1,6 @@
 import { lazy, Suspense, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { AnimatedMoodItem, AnimatedMoodList } from "../components/AnimatedMoodList";
 import { MoodCard } from "../components/MoodCard";
 import { EmptyState } from "../components/EmptyState";
 import { MoodCardSkeleton } from "../components/Skeleton";
@@ -77,9 +78,11 @@ export function FeedPage() {
           }
         />
       ) : (
-        <div className="mt-6 space-y-4">
+        <AnimatedMoodList>
           {moods.map((mood) => (
-            <MoodCard key={mood.id} mood={mood} showBookmark />
+            <AnimatedMoodItem key={mood.id}>
+              <MoodCard mood={mood} showBookmark />
+            </AnimatedMoodItem>
           ))}
 
           {feedQuery.hasNextPage ? (
@@ -92,7 +95,7 @@ export function FeedPage() {
               {feedQuery.isFetchingNextPage ? "Loading..." : "Load more"}
             </button>
           ) : null}
-        </div>
+        </AnimatedMoodList>
       )}
     </section>
   );

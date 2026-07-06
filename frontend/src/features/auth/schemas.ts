@@ -7,6 +7,17 @@ export const loginSchema = z.object({
 
 export const registerSchema = z.object({
   email: z.string().trim().email("Enter a valid email"),
+  studentId: z
+    .string()
+    .trim()
+    .min(5, "Student ID must be at least 5 characters")
+    .max(20, "Student ID must be at most 20 characters")
+    .regex(/^[A-Za-z0-9]+$/, "Student ID may only contain letters and numbers"),
+  yearOfStudy: z
+    .number({ error: "Select your year of study" })
+    .int("Year must be a whole number")
+    .min(1, "Select your year of study")
+    .max(8, "Year must be at most 8"),
   password: z
     .string()
     .min(8, "Password must be at least 8 characters")

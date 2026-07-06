@@ -78,4 +78,11 @@ describe("Public DTO anonymity contract", () => {
     expectNoIdentityKeys(dto);
     expect(dto.isOwner).toBe(true);
   });
+
+  it("mood DTO with isOwner still excludes author identity", () => {
+    const dto = toAnonymousMoodDto(sampleMood, { isOwner: true, canEdit: true });
+    expectNoIdentityKeys(dto);
+    expect(dto.isOwner).toBe(true);
+    expect(dto.canEdit).toBe(true);
+  });
 });

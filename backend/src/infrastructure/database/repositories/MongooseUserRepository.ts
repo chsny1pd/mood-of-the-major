@@ -6,6 +6,8 @@ import { escapeRegex } from "../../../utils/escapeRegex.js";
 function mapUser(doc: {
   _id: { toString(): string };
   email: string;
+  studentId?: string | null;
+  yearOfStudy?: number | null;
   passwordHash: string;
   role: User["role"];
   facultyId?: { toString(): string } | null;
@@ -22,6 +24,8 @@ function mapUser(doc: {
   return {
     id: doc._id.toString(),
     email: doc.email,
+    studentId: doc.studentId ?? null,
+    yearOfStudy: doc.yearOfStudy ?? null,
     passwordHash: doc.passwordHash,
     role: doc.role,
     facultyId: doc.facultyId ? doc.facultyId.toString() : null,
@@ -43,6 +47,14 @@ export class MongooseUserRepository implements IUserRepository {
     return doc ? mapUser(doc) : null;
   }
 
+  async findByStudentId(studentId: string): Promise<User | null> {
+    const doc = await UserModel.findOne({
+      studentId: studentId.toUpperCase(),
+      deletedAt: null,
+    });
+    return doc ? mapUser(doc) : null;
+  }
+
   async findById(id: string): Promise<User | null> {
     const doc = await UserModel.findOne({ _id: id, deletedAt: null });
     return doc ? mapUser(doc) : null;
@@ -56,6 +68,8 @@ export class MongooseUserRepository implements IUserRepository {
   async create(input: CreateUserInput): Promise<User> {
     const doc = await UserModel.create({
       email: input.email.toLowerCase(),
+      studentId: input.studentId ? input.studentId.toUpperCase() : null,
+      yearOfStudy: input.yearOfStudy ?? null,
       passwordHash: input.passwordHash,
       role: input.role ?? "student",
       facultyId: input.facultyId ?? null,

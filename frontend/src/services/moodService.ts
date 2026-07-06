@@ -1,5 +1,5 @@
 import { apiClient } from "./apiClient";
-import type { AnonymousMood, CreateMoodPayload, PaginatedMoods } from "../types/mood";
+import type { AnonymousMood, CreateMoodPayload, PaginatedMoods, UpdateMoodPayload } from "../types/mood";
 
 export interface FeedParams {
   limit?: number;
@@ -52,6 +52,14 @@ export async function fetchMoodById(moodId: string): Promise<AnonymousMood> {
 
 export async function createMood(payload: CreateMoodPayload): Promise<AnonymousMood> {
   const response = await apiClient.post<{ success: true; data: AnonymousMood }>("/moods", payload);
+  return response.data.data;
+}
+
+export async function updateMood(moodId: string, payload: UpdateMoodPayload): Promise<AnonymousMood> {
+  const response = await apiClient.patch<{ success: true; data: AnonymousMood }>(
+    `/moods/${moodId}`,
+    payload,
+  );
   return response.data.data;
 }
 

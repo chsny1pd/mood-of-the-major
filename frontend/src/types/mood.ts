@@ -19,6 +19,8 @@ export interface AnonymousMood {
   createdAt: string;
   lastActivityAt: string;
   editedAt: string | null;
+  isOwner?: boolean;
+  canEdit?: boolean;
 }
 
 export interface PaginatedMoods {
@@ -37,6 +39,12 @@ export interface CreateMoodPayload {
   tagIds: string[];
   primaryTagId: string;
   imageIds?: string[];
+}
+
+export interface UpdateMoodPayload {
+  content: string;
+  tagIds: string[];
+  primaryTagId: string;
 }
 
 export interface PresignUploadResponse {

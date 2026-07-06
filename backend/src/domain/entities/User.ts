@@ -4,6 +4,8 @@ export type UserStatus = "active" | "suspended";
 export interface User {
   id: string;
   email: string;
+  studentId: string | null;
+  yearOfStudy: number | null;
   passwordHash: string;
   role: UserRole;
   facultyId: string | null;
@@ -21,6 +23,8 @@ export interface User {
 export interface CreateUserInput {
   email: string;
   passwordHash: string;
+  studentId?: string | null;
+  yearOfStudy?: number | null;
   role?: UserRole;
   facultyId?: string | null;
   majorId?: string | null;

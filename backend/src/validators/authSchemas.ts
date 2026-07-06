@@ -5,6 +5,18 @@ const objectIdPattern = /^[a-f\d]{24}$/i;
 export const registerSchema = z
   .object({
     email: z.string().trim().email().max(254).toLowerCase(),
+    studentId: z
+      .string()
+      .trim()
+      .min(5, "Student ID must be at least 5 characters")
+      .max(20, "Student ID must be at most 20 characters")
+      .regex(/^[A-Za-z0-9]+$/, "Student ID may only contain letters and numbers")
+      .transform((value) => value.toUpperCase()),
+    yearOfStudy: z.coerce
+      .number()
+      .int("Year must be a whole number")
+      .min(1, "Year must be at least 1")
+      .max(8, "Year must be at most 8"),
     password: z
       .string()
       .min(8, "Password must be at least 8 characters")

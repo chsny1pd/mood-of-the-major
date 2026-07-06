@@ -9,5 +9,8 @@ export const FEED_DEFAULT_LIMIT = 20;
 export const FEED_MAX_LIMIT = 50;
 export const GUEST_FEED_MAX_LIMIT = 10;
 
+/** Time window in which the mood author may edit their post (24 hours). */
+export const MOOD_EDIT_WINDOW_MS = 24 * 60 * 60 * 1000;
+
 export const PRESIGNED_UPLOAD_TTL_SECONDS = 15 * 60;
 export const SIGNED_DOWNLOAD_TTL_SECONDS = 60 * 60;

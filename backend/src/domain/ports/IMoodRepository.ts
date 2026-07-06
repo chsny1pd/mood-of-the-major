@@ -42,8 +42,15 @@ export interface AdminMoodListQuery {
   cursorId?: string;
 }
 
+export interface UpdateMoodInput {
+  content: string;
+  tagIds: string[];
+  primaryTagId: string;
+}
+
 export interface IMoodRepository {
   create(input: CreateMoodInput): Promise<MoodWithRelations>;
+  updateActive(moodId: string, input: UpdateMoodInput): Promise<MoodWithRelations | null>;
   findById(id: string): Promise<MoodWithRelations | null>;
   findByIdIncludingRemoved(id: string): Promise<MoodWithRelations | null>;
   findActiveFeed(query: MoodFeedQuery): Promise<MoodWithRelations[]>;

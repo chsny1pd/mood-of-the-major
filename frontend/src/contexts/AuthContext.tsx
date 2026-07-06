@@ -27,6 +27,8 @@ interface AuthContextValue {
   login: (email: string, password: string) => Promise<void>;
   register: (input: {
     email: string;
+    studentId: string;
+    yearOfStudy: number;
     password: string;
     facultyId?: string;
     majorId?: string;
@@ -82,6 +84,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = useCallback(
     async (input: {
       email: string;
+      studentId: string;
+      yearOfStudy: number;
       password: string;
       facultyId?: string;
       majorId?: string;

@@ -116,7 +116,13 @@ export async function registerStudent(
   email: string,
   password = "TestPass1",
 ): Promise<{ accessToken: string; userId: string }> {
-  const response = await request(app).post("/api/v1/auth/register").send({ email, password });
+  const studentId = `ST${Date.now().toString(36).slice(-8).toUpperCase()}`;
+  const response = await request(app).post("/api/v1/auth/register").send({
+    email,
+    password,
+    studentId,
+    yearOfStudy: 2,
+  });
 
   if (response.status !== 201 || !response.body.success) {
     throw new Error(

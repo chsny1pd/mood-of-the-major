@@ -50,6 +50,8 @@ export function RegisterForm() {
     try {
       await registerUser({
         email: values.email,
+        studentId: values.studentId,
+        yearOfStudy: values.yearOfStudy,
         password: values.password,
         facultyId: values.facultyId || undefined,
         majorId: values.majorId || undefined,
@@ -85,6 +87,46 @@ export function RegisterForm() {
           className="w-full rounded-xl border border-stone-300 px-3 py-2 text-stone-900 outline-none ring-teal-700 focus:ring-2"
         />
         {errors.email ? <p className="mt-1 text-sm text-red-600">{errors.email.message}</p> : null}
+      </div>
+
+      <div>
+        <label htmlFor="register-student-id" className="mb-1 block text-sm font-medium text-stone-700">
+          Student ID
+        </label>
+        <input
+          {...register("studentId")}
+          id="register-student-id"
+          type="text"
+          autoComplete="off"
+          aria-label="Student ID"
+          placeholder="e.g. 6512345678"
+          className="w-full rounded-xl border border-stone-300 px-3 py-2 text-stone-900 outline-none ring-teal-700 focus:ring-2"
+        />
+        {errors.studentId ? (
+          <p className="mt-1 text-sm text-red-600">{errors.studentId.message}</p>
+        ) : null}
+      </div>
+
+      <div>
+        <label htmlFor="register-year" className="mb-1 block text-sm font-medium text-stone-700">
+          Year of study
+        </label>
+        <select
+          id="register-year"
+          aria-label="Year of study"
+          className="w-full rounded-xl border border-stone-300 px-3 py-2 text-stone-900 outline-none ring-teal-700 focus:ring-2"
+          {...register("yearOfStudy", { valueAsNumber: true })}
+        >
+          <option value="">Select year</option>
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((year) => (
+            <option key={year} value={year}>
+              Year {year}
+            </option>
+          ))}
+        </select>
+        {errors.yearOfStudy ? (
+          <p className="mt-1 text-sm text-red-600">{errors.yearOfStudy.message}</p>
+        ) : null}
       </div>
 
       <div>

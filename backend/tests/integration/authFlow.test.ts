@@ -59,7 +59,7 @@ describe.skipIf(!mongoAvailable)("Auth flow (integration)", () => {
 
     const duplicate = await request(ctx.app)
       .post("/api/v1/auth/register")
-      .send({ email, password: "TestPass1" });
+      .send({ email, password: "TestPass1", studentId: "ST99999999", yearOfStudy: 2 });
 
     expect(duplicate.status).toBe(422);
     expect(duplicate.body.error.code).toBe("EMAIL_ALREADY_EXISTS");

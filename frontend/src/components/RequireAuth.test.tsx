@@ -49,6 +49,8 @@ describe("RequireAuth", () => {
       user: {
         id: "u1",
         email: "test@example.com",
+        studentId: "6512345678",
+        yearOfStudy: 2,
         role: "student",
         facultyId: null,
         majorId: null,
