@@ -3,7 +3,7 @@ import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-q
 import { useTranslation } from "react-i18next";
 import { queryKeys } from "../../../constants/queryKeys";
 import { createComment, deleteComment, fetchComments } from "../../../services/commentService";
-import { useAuth } from "../../../contexts/AuthContext";
+import { useAuth } from "../../../hooks/useAuth";
 import { Link } from "react-router-dom";
 import { ROUTES } from "../../../constants/routes";
 import { ReactionBar } from "../../reactions/components/ReactionBar";

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { addBookmark, fetchBookmarkStatus, removeBookmark } from "../../../services/bookmarkService";
 import { queryKeys } from "../../../constants/queryKeys";
 import { getApiErrorMessage } from "../../../services/apiClient";
-import { useAuth } from "../../../contexts/AuthContext";
+import { useAuth } from "../../../hooks/useAuth";
 import { Link } from "react-router-dom";
 import { ROUTES } from "../../../constants/routes";
 

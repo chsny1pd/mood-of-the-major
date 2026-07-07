@@ -10,7 +10,7 @@ vi.mock("../contexts/AuthContext", () => ({
   useAuth: vi.fn(),
 }));
 
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 
 const authMockBase = {
   profileMeta: { displayName: null, avatarUrl: null },

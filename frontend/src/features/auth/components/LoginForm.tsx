@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "../../../contexts/AuthContext";
+import { useAuth } from "../../../hooks/useAuth";
 import { ROUTES } from "../../../constants/routes";
 import { getApiErrorMessage, getApiFieldErrors } from "../../../services/apiClient";
 import { loginSchema, type LoginFormValues } from "../schemas";

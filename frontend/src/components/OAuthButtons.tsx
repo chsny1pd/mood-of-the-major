@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import { isOAuthConfigured } from "../lib/oauth";
 import { ROUTES } from "../constants/routes";
 import { Button } from "./ui/Button";

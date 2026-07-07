@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { addBookmark, fetchBookmarkStatus, removeBookmark } from "../../../services/bookmarkService";
 import { queryKeys } from "../../../constants/queryKeys";
-import { useAuth } from "../../../contexts/AuthContext";
+import { useAuth } from "../../../hooks/useAuth";
 
 interface BookmarkIconButtonProps {
   moodId: string;

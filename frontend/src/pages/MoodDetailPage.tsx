@@ -17,7 +17,7 @@ import { useLocalizedName } from "../lib/useLocalizedName";
 import { fetchSignedImageUrl } from "../services/imageService";
 import { deleteMood, fetchMoodById } from "../services/moodService";
 import { getApiErrorMessage } from "../services/apiClient";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 
 function MoodImage({ imageId }: { imageId: string }) {
   const imageQuery = useQuery({

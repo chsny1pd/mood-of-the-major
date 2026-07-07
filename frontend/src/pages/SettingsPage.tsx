@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
-import { useTheme } from "../contexts/ThemeContext";
+import { useAuth } from "../hooks/useAuth";
+import { useTheme } from "../hooks/useTheme";
 import { LANGUAGE_STORAGE_KEY } from "../lib/i18n";
 import { ROUTES } from "../constants/routes";
 import { SettingsCard } from "../components/SettingsCard";

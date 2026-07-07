@@ -56,7 +56,7 @@ async function promoteGitHubAdmin(): Promise<void> {
     ...noreplyCandidates(githubUser.login.toLowerCase(), githubUser.id),
   ];
 
-  let user =
+  const user =
     (await UserModel.findOneAndUpdate(
       {
         deletedAt: null,

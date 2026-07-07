@@ -5,24 +5,9 @@ import { EmotionBadge } from "./EmotionBadge";
 import { BookmarkIconButton } from "../features/bookmarks/components/BookmarkIconButton";
 import { ROUTES } from "../constants/routes";
 import { useLocalizedName } from "../lib/useLocalizedName";
+import { useRelativeTime } from "../hooks/useRelativeTime";
 import { REACTION_TYPES } from "../types/engagement";
 import type { AnonymousMood } from "../types/mood";
-
-function useRelativeTime(isoDate: string): string {
-  const { t } = useTranslation();
-  const date = new Date(isoDate);
-  const diffMs = Date.now() - date.getTime();
-  const diffMinutes = Math.floor(diffMs / 60000);
-
-  if (diffMinutes < 1) return t("time.justNow");
-  if (diffMinutes < 60) return t("time.minutesAgo", { count: diffMinutes });
-
-  const diffHours = Math.floor(diffMinutes / 60);
-  if (diffHours < 24) return t("time.hoursAgo", { count: diffHours });
-
-  const diffDays = Math.floor(diffHours / 24);
-  return t("time.daysAgo", { count: diffDays });
-}
 
 export const MoodCard = memo(function MoodCard({
   mood,

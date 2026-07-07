@@ -8,7 +8,7 @@ import {
 } from "../../../types/engagement";
 import { queryKeys } from "../../../constants/queryKeys";
 import { fetchReactions, removeReaction, upsertReaction } from "../../../services/reactionService";
-import { useAuth } from "../../../contexts/AuthContext";
+import { useAuth } from "../../../hooks/useAuth";
 import { Link } from "react-router-dom";
 import { ROUTES } from "../../../constants/routes";
 

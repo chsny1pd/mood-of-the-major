@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { useTheme, type ThemeMode } from "../contexts/ThemeContext";
+import { useTheme } from "../hooks/useTheme";
+import type { ThemeMode } from "../contexts/theme-context";
 import {
   DropdownMenu,
   DropdownMenuItem,

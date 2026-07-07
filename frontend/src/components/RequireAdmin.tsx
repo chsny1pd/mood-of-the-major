@@ -1,7 +1,7 @@
 import { Navigate, useLocation } from "react-router-dom";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import { ROUTES } from "../constants/routes";
 
 export function RequireAdmin({ children }: { children: ReactNode }) {
