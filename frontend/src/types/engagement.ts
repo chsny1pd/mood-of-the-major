@@ -1,21 +1,29 @@
 export const REACTION_TYPES = [
-  { type: "empathy", label: "Empathy", emoji: "💙" },
-  { type: "support", label: "Support", emoji: "🤝" },
-  { type: "relate", label: "Relate", emoji: "🫂" },
-  { type: "solidarity", label: "Solidarity", emoji: "✊" },
+  { type: "empathy", emoji: "💙" },
+  { type: "support", emoji: "🤝" },
+  { type: "relate", emoji: "🫂" },
+  { type: "solidarity", emoji: "✊" },
 ] as const;
 
 export type ReactionType = (typeof REACTION_TYPES)[number]["type"];
 
 export const REPORT_REASONS = [
-  { code: "harassment", label: "Harassment" },
-  { code: "spam", label: "Spam" },
-  { code: "self_harm", label: "Self harm" },
-  { code: "hate_speech", label: "Hate speech" },
-  { code: "other", label: "Other" },
+  { code: "harassment" },
+  { code: "spam" },
+  { code: "self_harm" },
+  { code: "hate_speech" },
+  { code: "other" },
 ] as const;
 
 export type ReportReasonCode = (typeof REPORT_REASONS)[number]["code"];
+
+export function getReactionTranslationKey(type: ReactionType): string {
+  return `engagement.reactions.${type}`;
+}
+
+export function getReportReasonTranslationKey(code: ReportReasonCode): string {
+  return `engagement.reportReasons.${code}`;
+}
 
 export interface AnonymousComment {
   id: string;

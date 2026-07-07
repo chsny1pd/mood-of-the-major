@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   Bar,
   BarChart,
@@ -7,6 +8,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useLocalizedName } from "../../../lib/useLocalizedName";
 import type { DistributionItem } from "../../../types/statistics";
 
 interface DistributionChartProps {
@@ -14,15 +16,18 @@ interface DistributionChartProps {
 }
 
 export function DistributionChart({ data }: DistributionChartProps) {
+  const { t } = useTranslation();
+  const localizedName = useLocalizedName();
+
   const chartData = data
     .filter((item) => item.meetsThreshold && item.moodCount !== null)
     .map((item) => ({
-      name: item.tag.name,
+      name: localizedName(item.tag),
       count: item.moodCount ?? 0,
     }));
 
   if (chartData.length === 0) {
-    return <p className="text-sm text-stone-500">No distribution data for this scope.</p>;
+    return <p className="text-sm text-stone-500">{t("charts.noDistributionData")}</p>;
   }
 
   return (

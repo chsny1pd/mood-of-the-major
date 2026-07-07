@@ -3,6 +3,7 @@ import { apiClient } from "./apiClient";
 export interface FacultyOption {
   id: string;
   name: string;
+  nameTh: string | null;
   slug: string;
   code: string | null;
   majorCount: number;
@@ -11,6 +12,7 @@ export interface FacultyOption {
 export interface MajorOption {
   id: string;
   name: string;
+  nameTh: string | null;
   slug: string;
   code: string | null;
 }
@@ -28,7 +30,7 @@ export async function fetchMajors(facultyId: string): Promise<MajorOption[]> {
 }
 
 export interface MajorDetail extends MajorOption {
-  faculty: { id: string; name: string; slug: string } | null;
+  faculty: { id: string; name: string; nameTh: string | null; slug: string } | null;
 }
 
 export async function fetchMajor(majorIdOrSlug: string): Promise<MajorDetail> {

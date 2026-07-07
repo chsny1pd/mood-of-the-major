@@ -1,5 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { REACTION_TYPES, type ReactionType, type ReactionView } from "../../../types/engagement";
+import { useTranslation } from "react-i18next";
+import {
+  REACTION_TYPES,
+  getReactionTranslationKey,
+  type ReactionType,
+  type ReactionView,
+} from "../../../types/engagement";
 import { queryKeys } from "../../../constants/queryKeys";
 import { fetchReactions, removeReaction, upsertReaction } from "../../../services/reactionService";
 import { useAuth } from "../../../contexts/AuthContext";
@@ -13,6 +19,7 @@ interface ReactionBarProps {
 }
 
 export function ReactionBar({ targetType, targetId, compact = false }: ReactionBarProps) {
+  const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
 
@@ -80,6 +87,7 @@ export function ReactionBar({ targetType, targetId, compact = false }: ReactionB
       {REACTION_TYPES.map((reaction) => {
         const count = data.reactionSummary[reaction.type] ?? 0;
         const isActive = data.userReaction === reaction.type;
+        const label = t(getReactionTranslationKey(reaction.type));
 
         return (
           <button
@@ -92,7 +100,7 @@ export function ReactionBar({ targetType, targetId, compact = false }: ReactionB
                 ? "border-teal-600 bg-teal-50 text-teal-900"
                 : "border-stone-200 bg-white text-stone-600 hover:border-teal-300"
             } disabled:cursor-not-allowed disabled:opacity-60`}
-            title={reaction.label}
+            title={label}
           >
             <span>{reaction.emoji}</span>
             {count > 0 ? <span>{count}</span> : null}
@@ -101,7 +109,7 @@ export function ReactionBar({ targetType, targetId, compact = false }: ReactionB
       })}
       {!isAuthenticated ? (
         <Link to={ROUTES.login} className="self-center text-xs text-stone-500 hover:text-teal-800">
-          Log in to react
+          {t("engagement.logInToReact")}
         </Link>
       ) : null}
     </div>

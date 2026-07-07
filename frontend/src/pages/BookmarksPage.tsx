@@ -22,7 +22,7 @@ export function BookmarksPage() {
   return (
     <section className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
       <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-100">{t("bookmarks.pageTitle")}</h1>
-      <p className="mt-1 text-sm text-stone-600">Posts you bookmarked for later.</p>
+      <p className="mt-1 text-sm text-stone-600">{t("bookmarks.description")}</p>
 
       {bookmarksQuery.isLoading ? (
         <div className="mt-8 space-y-4">
@@ -31,21 +31,21 @@ export function BookmarksPage() {
         </div>
       ) : bookmarksQuery.isError ? (
         <EmptyState
-          title="Could not load bookmarks"
-          description="Please try again later."
+          title={t("bookmarks.loadErrorTitle")}
+          description={t("bookmarks.loadErrorDescription")}
           action={
             <Link to={ROUTES.feed} className="text-sm font-medium text-teal-800 hover:underline">
-              Back to feed
+              {t("bookmarks.backToFeed")}
             </Link>
           }
         />
       ) : moods.length === 0 ? (
         <EmptyState
-          title="No saved moods"
-          description="Bookmark posts from the mood detail page."
+          title={t("bookmarks.emptyTitle")}
+          description={t("bookmarks.emptyDescription")}
           action={
             <Link to={ROUTES.feed} className="text-sm font-medium text-teal-800 hover:underline">
-              Browse feed
+              {t("bookmarks.browseFeed")}
             </Link>
           }
         />
@@ -62,7 +62,7 @@ export function BookmarksPage() {
               disabled={bookmarksQuery.isFetchingNextPage}
               className="w-full rounded-xl border border-stone-300 px-4 py-2 text-sm text-stone-700 hover:bg-stone-100 disabled:opacity-60"
             >
-              {bookmarksQuery.isFetchingNextPage ? "Loading..." : "Load more"}
+              {bookmarksQuery.isFetchingNextPage ? t("common.loading") : t("feed.loadMore")}
             </button>
           ) : null}
         </div>

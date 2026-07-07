@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { EmotionBadge } from "../components/EmotionBadge";
 import { EmptyState } from "../components/EmptyState";
@@ -12,6 +13,7 @@ import { BookmarkButton } from "../features/bookmarks/components/BookmarkButton"
 import { EditMoodForm } from "../features/mood/components/EditMoodForm";
 import { ReactionBar } from "../features/reactions/components/ReactionBar";
 import { ReportModal } from "../features/report/components/ReportModal";
+import { useLocalizedName } from "../lib/useLocalizedName";
 import { fetchSignedImageUrl } from "../services/imageService";
 import { deleteMood, fetchMoodById } from "../services/moodService";
 import { getApiErrorMessage } from "../services/apiClient";
@@ -41,6 +43,8 @@ function MoodImage({ imageId }: { imageId: string }) {
 }
 
 export function MoodDetailPage() {
+  const { t } = useTranslation();
+  const localizedName = useLocalizedName();
   const { moodId = "" } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -76,11 +80,11 @@ export function MoodDetailPage() {
     return (
       <section className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
         <EmptyState
-          title="Mood not found"
-          description="This post may have been removed or does not exist."
+          title={t("moodDetail.notFoundTitle")}
+          description={t("moodDetail.notFoundDescription")}
           action={
             <Link to={ROUTES.feed} className="text-sm font-medium text-teal-800 hover:underline">
-              Back to feed
+              {t("moodDetail.backToFeed")}
             </Link>
           }
         />
@@ -91,7 +95,7 @@ export function MoodDetailPage() {
   const mood = moodQuery.data;
 
   const handleDelete = () => {
-    if (!window.confirm("Delete this mood? This cannot be undone.")) {
+    if (!window.confirm(t("moodDetail.deleteConfirm"))) {
       return;
     }
 
@@ -101,7 +105,7 @@ export function MoodDetailPage() {
   return (
     <section className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
       <Link to={ROUTES.feed} className="text-sm text-teal-800 hover:underline">
-        ← Back to feed
+        ← {t("moodDetail.backToFeed")}
       </Link>
 
       <motion.article
@@ -123,14 +127,20 @@ export function MoodDetailPage() {
           <>
             <div className="mb-4 flex flex-wrap gap-2">
               {mood.tags.map((tag) => (
-                <EmotionBadge key={tag.id} name={tag.name} isPrimary={tag.isPrimary} />
+                <EmotionBadge
+                  key={tag.id}
+                  name={localizedName(tag)}
+                  isPrimary={tag.isPrimary}
+                />
               ))}
             </div>
 
             <p className="whitespace-pre-wrap text-lg text-stone-800">{mood.content}</p>
 
             {mood.editedAt ? (
-              <p className="mt-2 text-xs text-stone-400">Edited {new Date(mood.editedAt).toLocaleString()}</p>
+              <p className="mt-2 text-xs text-stone-400">
+                {t("moodDetail.edited", { date: new Date(mood.editedAt).toLocaleString() })}
+              </p>
             ) : null}
 
             {mood.images.length > 0 ? (
@@ -142,8 +152,8 @@ export function MoodDetailPage() {
             ) : null}
 
             <div className="mt-6 flex flex-wrap gap-3 text-sm text-stone-500">
-              {mood.faculty ? <span>{mood.faculty.name}</span> : null}
-              {mood.major ? <span>{mood.major.name}</span> : null}
+              {mood.faculty ? <span>{localizedName(mood.faculty)}</span> : null}
+              {mood.major ? <span>{localizedName(mood.major)}</span> : null}
               <span>{new Date(mood.createdAt).toLocaleString()}</span>
             </div>
 
@@ -159,7 +169,7 @@ export function MoodDetailPage() {
                   onClick={() => setIsEditing(true)}
                   className="text-sm text-teal-800 hover:underline"
                 >
-                  Edit
+                  {t("moodDetail.edit")}
                 </button>
               ) : null}
               {mood.isOwner ? (
@@ -169,7 +179,7 @@ export function MoodDetailPage() {
                   disabled={deleteMutation.isPending}
                   className="text-sm text-red-700 hover:underline disabled:opacity-60"
                 >
-                  {deleteMutation.isPending ? "Deleting..." : "Delete"}
+                  {deleteMutation.isPending ? t("moodDetail.deleting") : t("moodDetail.delete")}
                 </button>
               ) : null}
               {isAuthenticated ? (
@@ -179,14 +189,14 @@ export function MoodDetailPage() {
                   onClick={() => setShowReport(true)}
                   className="text-sm text-stone-500 hover:text-red-700"
                 >
-                  Report
+                  {t("moodDetail.report")}
                 </button>
               ) : null}
             </div>
 
             {deleteMutation.isError ? (
               <p className="mt-3 text-sm text-red-600">
-                {getApiErrorMessage(deleteMutation.error, "Could not delete mood.")}
+                {getApiErrorMessage(deleteMutation.error, t("moodDetail.deleteError"))}
               </p>
             ) : null}
           </>

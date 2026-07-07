@@ -1,9 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslation } from "react-i18next";
 import { queryKeys } from "../../../constants/queryKeys";
 import { getApiErrorMessage, getApiFieldErrors } from "../../../services/apiClient";
 import { fetchEmotionTags } from "../../../services/tagService";
+import { useLocalizedName } from "../../../lib/useLocalizedName";
 import { updateMoodSchema, type UpdateMoodFormValues } from "../schemas";
 import type { AnonymousMood } from "../../../types/mood";
 
@@ -14,6 +16,8 @@ interface EditMoodFormProps {
 }
 
 export function EditMoodForm({ mood, onCancel, onSaved }: EditMoodFormProps) {
+  const { t } = useTranslation();
+  const localizedName = useLocalizedName();
   const tagsQuery = useQuery({
     queryKey: queryKeys.emotionTags,
     queryFn: fetchEmotionTags,
@@ -61,7 +65,7 @@ export function EditMoodForm({ mood, onCancel, onSaved }: EditMoodFormProps) {
       Object.entries(fieldErrors).forEach(([field, message]) => {
         setError(field as keyof UpdateMoodFormValues, { message });
       });
-      setError("root", { message: getApiErrorMessage(error, "Could not save changes.") });
+      setError("root", { message: getApiErrorMessage(error, t("moodForm.saveError")) });
     }
   });
 
@@ -75,7 +79,7 @@ export function EditMoodForm({ mood, onCancel, onSaved }: EditMoodFormProps) {
 
       <div>
         <label htmlFor="edit-content" className="mb-1 block text-sm font-medium text-stone-700">
-          Your mood
+          {t("moodForm.yourMood")}
         </label>
         <textarea
           id="edit-content"
@@ -87,9 +91,9 @@ export function EditMoodForm({ mood, onCancel, onSaved }: EditMoodFormProps) {
       </div>
 
       <div>
-        <p className="mb-2 text-sm font-medium text-stone-700">Emotions</p>
+        <p className="mb-2 text-sm font-medium text-stone-700">{t("moodForm.emotions")}</p>
         {tagsQuery.isLoading ? (
-          <p className="text-sm text-stone-500">Loading tags...</p>
+          <p className="text-sm text-stone-500">{t("moodForm.loadingTags")}</p>
         ) : (
           <div className="flex flex-wrap gap-2">
             {(tagsQuery.data ?? []).map((tag) => {
@@ -110,7 +114,7 @@ export function EditMoodForm({ mood, onCancel, onSaved }: EditMoodFormProps) {
                       : "bg-stone-100 text-stone-700 hover:bg-stone-200"
                   }`}
                 >
-                  {tag.name}
+                  {localizedName(tag)}
                   {isPrimary ? " ★" : ""}
                 </button>
               );
@@ -126,14 +130,14 @@ export function EditMoodForm({ mood, onCancel, onSaved }: EditMoodFormProps) {
           disabled={isSubmitting}
           className="rounded-xl bg-teal-800 px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-900 disabled:opacity-60"
         >
-          {isSubmitting ? "Saving..." : "Save changes"}
+          {isSubmitting ? t("moodForm.saving") : t("moodForm.saveChanges")}
         </button>
         <button
           type="button"
           onClick={onCancel}
           className="rounded-xl border border-stone-300 px-4 py-2 text-sm text-stone-700 hover:bg-stone-100"
         >
-          Cancel
+          {t("common.cancel")}
         </button>
       </div>
     </form>

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../../contexts/AuthContext";
 import { ROUTES } from "../../../constants/routes";
 import { queryKeys } from "../../../constants/queryKeys";
@@ -10,10 +11,13 @@ import { getApiErrorMessage, getApiFieldErrors } from "../../../services/apiClie
 import { fetchEmotionTags } from "../../../services/tagService";
 import { createMood } from "../../../services/moodService";
 import { fetchFaculties, fetchMajors } from "../../../services/referenceService";
+import { useLocalizedName } from "../../../lib/useLocalizedName";
 import { useImageUpload } from "../../upload/hooks/useImageUpload";
 import { createMoodSchema, type CreateMoodFormValues } from "../schemas";
 
 export function CreateMoodForm() {
+  const { t } = useTranslation();
+  const localizedName = useLocalizedName();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [formError, setFormError] = useState<string | null>(null);
@@ -95,7 +99,7 @@ export function CreateMoodForm() {
       Object.entries(fieldErrors).forEach(([field, message]) => {
         setError(field as keyof CreateMoodFormValues, { message });
       });
-      setFormError(getApiErrorMessage(error, "Could not publish your mood."));
+      setFormError(getApiErrorMessage(error, t("moodForm.publishError")));
     }
   });
 
@@ -109,22 +113,22 @@ export function CreateMoodForm() {
 
       <div>
         <label htmlFor="content" className="mb-1 block text-sm font-medium text-stone-700">
-          Your mood
+          {t("moodForm.yourMood")}
         </label>
         <textarea
           id="content"
           rows={6}
           className="w-full rounded-xl border border-stone-300 px-3 py-2 text-stone-900 outline-none ring-teal-700 focus:ring-2"
-          placeholder="Share anonymously how you're feeling today..."
+          placeholder={t("moodForm.contentPlaceholder")}
           {...register("content")}
         />
         {errors.content ? <p className="mt-1 text-sm text-red-600">{errors.content.message}</p> : null}
       </div>
 
       <div>
-        <p className="mb-2 text-sm font-medium text-stone-700">Emotions</p>
+        <p className="mb-2 text-sm font-medium text-stone-700">{t("moodForm.emotions")}</p>
         {tagsQuery.isLoading ? (
-          <p className="text-sm text-stone-500">Loading tags...</p>
+          <p className="text-sm text-stone-500">{t("moodForm.loadingTags")}</p>
         ) : (
           <div className="flex flex-wrap gap-2">
             {(tagsQuery.data ?? []).map((tag) => {
@@ -145,7 +149,7 @@ export function CreateMoodForm() {
                       : "bg-stone-100 text-stone-700 hover:bg-stone-200"
                   }`}
                 >
-                  {tag.name}
+                  {localizedName(tag)}
                   {isPrimary ? " ★" : ""}
                 </button>
               );
@@ -158,7 +162,7 @@ export function CreateMoodForm() {
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="facultyId" className="mb-1 block text-sm font-medium text-stone-700">
-            Faculty
+            {t("moodForm.faculty")}
           </label>
           <select
             id="facultyId"
@@ -170,10 +174,10 @@ export function CreateMoodForm() {
               },
             })}
           >
-            <option value="">Select faculty</option>
+            <option value="">{t("moodForm.selectFaculty")}</option>
             {(facultiesQuery.data ?? []).map((faculty) => (
               <option key={faculty.id} value={faculty.id}>
-                {faculty.name}
+                {localizedName(faculty)}
               </option>
             ))}
           </select>
@@ -181,7 +185,7 @@ export function CreateMoodForm() {
 
         <div>
           <label htmlFor="majorId" className="mb-1 block text-sm font-medium text-stone-700">
-            Major
+            {t("moodForm.major")}
           </label>
           <select
             id="majorId"
@@ -189,10 +193,10 @@ export function CreateMoodForm() {
             {...register("majorId")}
             disabled={!selectedFacultyId}
           >
-            <option value="">Select major</option>
+            <option value="">{t("moodForm.selectMajor")}</option>
             {(majorsQuery.data ?? []).map((major) => (
               <option key={major.id} value={major.id}>
-                {major.name}
+                {localizedName(major)}
               </option>
             ))}
           </select>
@@ -201,7 +205,7 @@ export function CreateMoodForm() {
 
       <div>
         <label htmlFor="images" className="mb-1 block text-sm font-medium text-stone-700">
-          Images (optional, up to 4)
+          {t("moodForm.imagesOptional")}
         </label>
         <input
           id="images"
@@ -225,7 +229,7 @@ export function CreateMoodForm() {
                   onClick={() => removeImage(image.id)}
                   className="absolute right-1 top-1 rounded-full bg-black/60 px-2 py-0.5 text-xs text-white"
                 >
-                  Remove
+                  {t("moodForm.remove")}
                 </button>
               </li>
             ))}
@@ -238,7 +242,7 @@ export function CreateMoodForm() {
         disabled={isSubmitting || uploading}
         className="w-full rounded-xl bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-800 disabled:opacity-60"
       >
-        {isSubmitting ? "Publishing..." : "Publish anonymously"}
+        {isSubmitting ? t("moodForm.publishing") : t("moodForm.publishAnonymously")}
       </button>
     </form>
   );

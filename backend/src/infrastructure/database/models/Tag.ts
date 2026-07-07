@@ -3,6 +3,7 @@ import { Schema, model, type InferSchemaType } from "mongoose";
 const tagSchema = new Schema(
   {
     name: { type: String, required: true, trim: true },
+    nameTh: { type: String, trim: true, default: null },
     slug: { type: String, required: true, trim: true, lowercase: true },
     type: { type: String, required: true, default: "emotion", enum: ["emotion"] },
     colorToken: { type: String, default: null },

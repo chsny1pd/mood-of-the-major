@@ -38,13 +38,16 @@ async function seedSampleMoods(): Promise<void> {
 
   await connectDatabase(env.MONGODB_URI, logger);
 
-  const faculty = await FacultyModel.findOne({ slug: "engineering" }).lean();
+  const faculty = await FacultyModel.findOne({ slug: "kmitl-engineering" }).lean();
   const major = faculty
-    ? await MajorModel.findOne({ facultyId: faculty._id, slug: "computer-science" }).lean()
+    ? await MajorModel.findOne({
+        facultyId: faculty._id,
+        slug: "bachelor-of-engineering-program-in-computer-engineering",
+      }).lean()
     : null;
 
   if (!faculty || !major) {
-    throw new Error("Run npm run seed first — engineering / computer-science reference data missing.");
+    throw new Error("Run npm run seed first — KMITL engineering reference data missing.");
   }
 
   const tags = await TagModel.find({ type: "emotion", isActive: true }).lean();

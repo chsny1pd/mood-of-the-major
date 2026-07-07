@@ -96,10 +96,10 @@ async function hydrateMoods(
         isPrimary: mt.isPrimary,
       })),
       faculty: faculty
-        ? { id: faculty._id.toString(), name: faculty.name, slug: faculty.slug }
+        ? { id: faculty._id.toString(), name: faculty.name, nameTh: faculty.nameTh ?? null, slug: faculty.slug }
         : null,
       major: major
-        ? { id: major._id.toString(), name: major.name, slug: major.slug }
+        ? { id: major._id.toString(), name: major.name, nameTh: major.nameTh ?? null, slug: major.slug }
         : null,
       tagDetails: moodTagRows
         .map((mt) => {
@@ -110,6 +110,7 @@ async function hydrateMoods(
             id: tag._id.toString(),
             slug: tag.slug,
             name: tag.name,
+            nameTh: tag.nameTh ?? null,
             isPrimary: mt.isPrimary,
           };
         })

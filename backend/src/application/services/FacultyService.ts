@@ -27,7 +27,7 @@ export class FacultyService {
       slug: major.slug,
       code: major.code,
       faculty: faculty
-        ? { id: faculty.id, name: faculty.name, slug: faculty.slug }
+        ? { id: faculty.id, name: faculty.name, nameTh: faculty.nameTh, slug: faculty.slug }
         : null,
     };
   }

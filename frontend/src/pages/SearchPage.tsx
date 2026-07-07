@@ -16,7 +16,7 @@ export function SearchPage() {
   return (
     <section className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
       <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-100">{t("search.pageTitle")}</h1>
-      <p className="mt-1 text-sm text-stone-600">Find posts by keyword and filters (min 2 characters).</p>
+      <p className="mt-1 text-sm text-stone-600">{t("search.description")}</p>
 
       <form
         className="mt-6 flex gap-2"
@@ -31,14 +31,14 @@ export function SearchPage() {
           type="search"
           value={draftQuery}
           onChange={(event) => setDraftQuery(event.target.value)}
-          placeholder="Search..."
+          placeholder={t("search.placeholder")}
           className="flex-1 rounded-xl border border-stone-300 px-3 py-2 outline-none ring-teal-700 focus:ring-2"
         />
         <button
           type="submit"
           className="rounded-xl bg-teal-800 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-900"
         >
-          Search
+          {t("search.submit")}
         </button>
       </form>
 
@@ -47,7 +47,7 @@ export function SearchPage() {
       </div>
 
       {activeQuery.length < 2 ? (
-        <p className="mt-8 text-sm text-stone-500">Enter at least 2 characters to search.</p>
+        <p className="mt-8 text-sm text-stone-500">{t("search.minCharsHint")}</p>
       ) : query.isLoading ? (
         <div className="mt-8 space-y-4">
           <MoodCardSkeleton />
@@ -55,11 +55,14 @@ export function SearchPage() {
         </div>
       ) : query.isError ? (
         <EmptyState
-          title="Search failed"
-          description={getApiErrorMessage(query.error, "Please try again.")}
+          title={t("search.errorTitle")}
+          description={getApiErrorMessage(query.error, t("search.errorDescription"))}
         />
       ) : moods.length === 0 ? (
-        <EmptyState title="No results" description={`Nothing matched "${activeQuery}".`} />
+        <EmptyState
+          title={t("search.noResultsTitle")}
+          description={t("search.noResultsDescription", { query: activeQuery })}
+        />
       ) : (
         <div className="mt-8 space-y-4">
           {moods.map((mood) => (
@@ -73,7 +76,7 @@ export function SearchPage() {
               disabled={query.isFetchingNextPage}
               className="w-full rounded-xl border border-stone-300 px-4 py-2 text-sm text-stone-700 hover:bg-stone-100 disabled:opacity-60"
             >
-              {query.isFetchingNextPage ? "Loading..." : "Load more"}
+              {query.isFetchingNextPage ? t("common.loading") : t("feed.loadMore")}
             </button>
           ) : null}
         </div>

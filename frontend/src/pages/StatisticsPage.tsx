@@ -36,29 +36,27 @@ export function StatisticsPage() {
   return (
     <section className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
       <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-100">{t("statistics.pageTitle")}</h1>
-      <p className="mt-1 text-sm text-stone-600">
-        Aggregated mood insights — individual posts are never shown.
-      </p>
+      <p className="mt-1 text-sm text-stone-600">{t("statistics.description")}</p>
 
       <div className="mt-6 space-y-4">
         <ScopeSelector value={scope} onChange={setScope} />
 
         <label className="block w-full max-w-xs text-sm">
-          <span className="mb-1 block font-medium text-stone-700">Period</span>
+          <span className="mb-1 block font-medium text-stone-700">{t("statistics.period")}</span>
           <select
             value={period}
             onChange={(event) => setPeriod(event.target.value as typeof period)}
             className="w-full rounded-lg border border-stone-300 px-3 py-2"
           >
-            <option value="7d">Last 7 days</option>
-            <option value="30d">Last 30 days</option>
-            <option value="90d">Last 90 days</option>
+            <option value="7d">{t("statistics.period7d")}</option>
+            <option value="30d">{t("statistics.period30d")}</option>
+            <option value="90d">{t("statistics.period90d")}</option>
           </select>
         </label>
       </div>
 
       {!scopeReady ? (
-        <p className="mt-8 text-sm text-stone-500">Select a scope to view statistics.</p>
+        <p className="mt-8 text-sm text-stone-500">{t("statistics.selectScopeHint")}</p>
       ) : dashboardQuery.isLoading ? (
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           {[1, 2, 3].map((key) => (
@@ -67,22 +65,22 @@ export function StatisticsPage() {
         </div>
       ) : dashboardQuery.isError ? (
         <EmptyState
-          title="Could not load statistics"
-          description={getApiErrorMessage(dashboardQuery.error, "Try again later.")}
+          title={t("statistics.loadErrorTitle")}
+          description={getApiErrorMessage(dashboardQuery.error, t("common.tryAgainLater"))}
         />
       ) : data ? (
         <div className="mt-8 space-y-6">
           <div className="grid gap-4 sm:grid-cols-3">
-            <KpiCard label="Moods" value={data.overview.totalMoods} />
-            <KpiCard label="Comments" value={data.overview.totalComments} />
-            <KpiCard label="Reactions" value={data.overview.totalReactions} />
+            <KpiCard label={t("statistics.kpiMoods")} value={data.overview.totalMoods} />
+            <KpiCard label={t("statistics.kpiComments")} value={data.overview.totalComments} />
+            <KpiCard label={t("statistics.kpiReactions")} value={data.overview.totalReactions} />
           </div>
 
-          <ChartContainer title="Emotion distribution" meetsThreshold={data.meetsThreshold}>
+          <ChartContainer title={t("statistics.emotionDistribution")} meetsThreshold={data.meetsThreshold}>
             <DistributionChart data={data.distribution} />
           </ChartContainer>
 
-          <ChartContainer title="Activity over time" meetsThreshold={data.overview.meetsThreshold}>
+          <ChartContainer title={t("statistics.activityOverTime")} meetsThreshold={data.overview.meetsThreshold}>
             <TimeSeriesChart data={data.timeSeries} />
           </ChartContainer>
         </div>

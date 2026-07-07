@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { addBookmark, fetchBookmarkStatus, removeBookmark } from "../../../services/bookmarkService";
 import { queryKeys } from "../../../constants/queryKeys";
 import { getApiErrorMessage } from "../../../services/apiClient";
@@ -11,6 +12,7 @@ interface BookmarkButtonProps {
 }
 
 export function BookmarkButton({ moodId }: BookmarkButtonProps) {
+  const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
 
@@ -49,20 +51,20 @@ export function BookmarkButton({ moodId }: BookmarkButtonProps) {
   if (!isAuthenticated) {
     return (
       <Link to={ROUTES.login} className="text-sm text-stone-500 hover:text-teal-800">
-        Log in to save
+        {t("bookmarks.logInToSave")}
       </Link>
     );
   }
 
   if (statusQuery.isLoading) {
-    return <span className="text-sm text-stone-400">Loading...</span>;
+    return <span className="text-sm text-stone-400">{t("common.loading")}</span>;
   }
 
   const bookmarked = statusQuery.data ?? false;
   const errorMessage = mutation.isError
-    ? getApiErrorMessage(mutation.error, "Could not update bookmark")
+    ? getApiErrorMessage(mutation.error, t("bookmarks.updateError"))
     : statusQuery.isError
-      ? getApiErrorMessage(statusQuery.error, "Could not load bookmark status")
+      ? getApiErrorMessage(statusQuery.error, t("bookmarks.statusError"))
       : null;
 
   return (
@@ -77,7 +79,11 @@ export function BookmarkButton({ moodId }: BookmarkButtonProps) {
             : "border-stone-300 text-stone-600 hover:border-teal-400"
         } disabled:opacity-60`}
       >
-        {mutation.isPending ? "Saving..." : bookmarked ? "Saved" : "Save"}
+        {mutation.isPending
+          ? t("bookmarks.saving")
+          : bookmarked
+            ? t("bookmarks.saved")
+            : t("bookmarks.save")}
       </button>
       {errorMessage ? <span className="text-xs text-red-600">{errorMessage}</span> : null}
     </div>

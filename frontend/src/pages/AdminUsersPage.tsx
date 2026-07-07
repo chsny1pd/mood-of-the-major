@@ -1,11 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { EmptyState } from "../components/EmptyState";
 import { queryKeys } from "../constants/queryKeys";
 import { fetchAdminUsers, updateUserStatus, type AdminUserItem } from "../services/adminService";
 import { getApiErrorMessage } from "../services/apiClient";
 
 export function AdminUsersPage() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
 
@@ -24,27 +26,27 @@ export function AdminUsersPage() {
 
   return (
     <section>
-      <h1 className="text-2xl font-bold text-stone-900">User management</h1>
-      <p className="mt-1 text-sm text-stone-600">Suspend or reinstate student accounts.</p>
+      <h1 className="text-2xl font-bold text-stone-900">{t("admin.usersTitle")}</h1>
+      <p className="mt-1 text-sm text-stone-600">{t("admin.usersDescription")}</p>
 
       <label className="mt-6 block max-w-md text-sm">
-        <span className="mb-1 block font-medium text-stone-700">Search by email</span>
+        <span className="mb-1 block font-medium text-stone-700">{t("admin.searchByEmail")}</span>
         <input
           type="search"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           className="w-full rounded-lg border border-stone-300 px-3 py-2"
-          placeholder="student@university.edu"
+          placeholder={t("admin.searchPlaceholder")}
         />
       </label>
 
       {usersQuery.isLoading ? (
-        <p className="mt-6 text-stone-500">Loading users...</p>
+        <p className="mt-6 text-stone-500">{t("admin.loadingUsers")}</p>
       ) : usersQuery.isError ? (
         <div className="mt-6">
           <EmptyState
-            title="Could not load users"
-            description={getApiErrorMessage(usersQuery.error, "Try again later.")}
+            title={t("admin.usersErrorTitle")}
+            description={getApiErrorMessage(usersQuery.error, t("common.tryAgainLater"))}
           />
         </div>
       ) : (
@@ -52,10 +54,10 @@ export function AdminUsersPage() {
           <table className="min-w-full text-left text-sm">
             <thead className="border-b border-stone-200 bg-stone-50 text-stone-600">
               <tr>
-                <th className="px-4 py-3 font-medium">Email</th>
-                <th className="px-4 py-3 font-medium">Role</th>
-                <th className="px-4 py-3 font-medium">Status</th>
-                <th className="px-4 py-3 font-medium">Actions</th>
+                <th className="px-4 py-3 font-medium">{t("admin.tableEmail")}</th>
+                <th className="px-4 py-3 font-medium">{t("admin.tableRole")}</th>
+                <th className="px-4 py-3 font-medium">{t("admin.tableStatus")}</th>
+                <th className="px-4 py-3 font-medium">{t("admin.tableActions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -84,6 +86,7 @@ function UserRow({
   isUpdating: boolean;
   onToggleStatus: (status: "active" | "suspended") => void;
 }) {
+  const { t } = useTranslation();
   const isAdmin = user.role === "administrator";
 
   return (
@@ -93,7 +96,7 @@ function UserRow({
       <td className="px-4 py-3 capitalize">{user.status}</td>
       <td className="px-4 py-3">
         {isAdmin ? (
-          <span className="text-stone-400">Protected</span>
+          <span className="text-stone-400">{t("admin.protected")}</span>
         ) : user.status === "active" ? (
           <button
             type="button"
@@ -101,7 +104,7 @@ function UserRow({
             onClick={() => onToggleStatus("suspended")}
             className="text-red-700 hover:underline disabled:opacity-50"
           >
-            Suspend
+            {t("admin.suspend")}
           </button>
         ) : (
           <button
@@ -110,7 +113,7 @@ function UserRow({
             onClick={() => onToggleStatus("active")}
             className="text-teal-700 hover:underline disabled:opacity-50"
           >
-            Reinstate
+            {t("admin.reinstate")}
           </button>
         )}
       </td>

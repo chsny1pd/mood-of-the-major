@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { REPORT_REASONS, type ReportReasonCode } from "../../../types/engagement";
+import { useTranslation } from "react-i18next";
+import {
+  REPORT_REASONS,
+  getReportReasonTranslationKey,
+  type ReportReasonCode,
+} from "../../../types/engagement";
 import { reportComment, reportMood } from "../../../services/reportService";
 import { getApiErrorMessage } from "../../../services/apiClient";
 
@@ -11,6 +16,7 @@ interface ReportModalProps {
 }
 
 export function ReportModal({ targetType, targetId, onClose }: ReportModalProps) {
+  const { t } = useTranslation();
   const [reasonCode, setReasonCode] = useState<ReportReasonCode>("spam");
   const [description, setDescription] = useState("");
   const [message, setMessage] = useState<string | null>(null);
@@ -26,7 +32,7 @@ export function ReportModal({ targetType, targetId, onClose }: ReportModalProps)
       setError(null);
     },
     onError: (err) => {
-      setError(getApiErrorMessage(err, "Could not submit report"));
+      setError(getApiErrorMessage(err, t("engagement.reportModal.submitError")));
     },
   });
 
@@ -40,9 +46,9 @@ export function ReportModal({ targetType, targetId, onClose }: ReportModalProps)
     >
       <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
         <h2 id="report-modal-title" className="text-lg font-semibold text-stone-900">
-          Report content
+          {t("engagement.reportModal.title")}
         </h2>
-        <p className="mt-1 text-sm text-stone-600">Help keep the community safe. Reports are anonymous.</p>
+        <p className="mt-1 text-sm text-stone-600">{t("engagement.reportModal.description")}</p>
 
         {message ? (
           <p className="mt-4 rounded-xl bg-teal-50 px-4 py-3 text-sm text-teal-900">{message}</p>
@@ -56,7 +62,7 @@ export function ReportModal({ targetType, targetId, onClose }: ReportModalProps)
           >
             <div>
               <label htmlFor="reasonCode" className="mb-1 block text-sm font-medium text-stone-700">
-                Reason
+                {t("engagement.reportModal.reason")}
               </label>
               <select
                 id="reasonCode"
@@ -66,7 +72,7 @@ export function ReportModal({ targetType, targetId, onClose }: ReportModalProps)
               >
                 {REPORT_REASONS.map((reason) => (
                   <option key={reason.code} value={reason.code}>
-                    {reason.label}
+                    {t(getReportReasonTranslationKey(reason.code))}
                   </option>
                 ))}
               </select>
@@ -74,7 +80,7 @@ export function ReportModal({ targetType, targetId, onClose }: ReportModalProps)
 
             <div>
               <label htmlFor="description" className="mb-1 block text-sm font-medium text-stone-700">
-                Details (optional)
+                {t("engagement.reportModal.detailsOptional")}
               </label>
               <textarea
                 id="description"
@@ -94,7 +100,7 @@ export function ReportModal({ targetType, targetId, onClose }: ReportModalProps)
                 onClick={onClose}
                 className="rounded-xl border border-stone-300 px-4 py-2 text-sm text-stone-700"
               >
-                Cancel
+                {t("common.cancel")}
               </button>
               <button
                 type="submit"
@@ -102,7 +108,9 @@ export function ReportModal({ targetType, targetId, onClose }: ReportModalProps)
                 disabled={mutation.isPending}
                 className="rounded-xl bg-red-700 px-4 py-2 text-sm font-semibold text-white hover:bg-red-800 disabled:opacity-60"
               >
-                {mutation.isPending ? "Submitting..." : "Submit report"}
+                {mutation.isPending
+                  ? t("engagement.reportModal.submitting")
+                  : t("engagement.reportModal.submit")}
               </button>
             </div>
           </form>
@@ -114,7 +122,7 @@ export function ReportModal({ targetType, targetId, onClose }: ReportModalProps)
             onClick={onClose}
             className="mt-4 w-full rounded-xl bg-teal-800 px-4 py-2 text-sm font-semibold text-white"
           >
-            Close
+            {t("engagement.reportModal.close")}
           </button>
         ) : null}
       </div>

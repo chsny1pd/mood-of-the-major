@@ -6,7 +6,7 @@ export interface StatisticsScope {
 }
 
 export interface DistributionItem {
-  tag: { id: string; slug: string; name: string };
+  tag: { id: string; slug: string; name: string; nameTh?: string | null };
   moodCount: number | null;
   percentage: number | null;
   rank: number | null;
@@ -37,7 +37,7 @@ export interface DashboardData {
 }
 
 export interface TrendingItem {
-  tag: { id: string; slug: string; name: string };
+  tag: { id: string; slug: string; name: string; nameTh?: string | null };
   moodCount: number | null;
   delta: number | null;
   direction: "rising" | "declining" | "stable";

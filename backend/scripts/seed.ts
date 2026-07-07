@@ -5,37 +5,32 @@ import { createLogger } from "../src/infrastructure/logging/logger.js";
 import { FacultyModel } from "../src/infrastructure/database/models/Faculty.js";
 import { MajorModel } from "../src/infrastructure/database/models/Major.js";
 import { TagModel } from "../src/infrastructure/database/models/Tag.js";
-
-const faculties = [
-  {
-    name: "Faculty of Engineering",
-    slug: "engineering",
-    code: "ENG",
-    description: "Engineering programs and community.",
-    sortOrder: 1,
-    majors: [
-      { name: "Computer Science", slug: "computer-science", code: "CS", sortOrder: 1 },
-      { name: "Electrical Engineering", slug: "electrical-engineering", code: "EE", sortOrder: 2 },
-    ],
-  },
-  {
-    name: "Faculty of Science",
-    slug: "science",
-    code: "SCI",
-    description: "Science programs and community.",
-    sortOrder: 2,
-    majors: [
-      { name: "Mathematics", slug: "mathematics", code: "MATH", sortOrder: 1 },
-      { name: "Physics", slug: "physics", code: "PHY", sortOrder: 2 },
-    ],
-  },
-];
+import {
+  KMITL_FACULTIES,
+  LEGACY_FACULTY_SLUGS,
+  LEGACY_MAJOR_SLUGS,
+} from "./data/kmitl-reference-data.js";
 
 const emotionTags = [
-  { name: "Stress", slug: "stress", colorToken: "emotion-stress", iconKey: "stress", sortOrder: 1 },
-  { name: "Joy", slug: "joy", colorToken: "emotion-joy", iconKey: "joy", sortOrder: 2 },
+  {
+    name: "Stress",
+    nameTh: "ความเครียด",
+    slug: "stress",
+    colorToken: "emotion-stress",
+    iconKey: "stress",
+    sortOrder: 1,
+  },
+  {
+    name: "Joy",
+    nameTh: "ความสุข",
+    slug: "joy",
+    colorToken: "emotion-joy",
+    iconKey: "joy",
+    sortOrder: 2,
+  },
   {
     name: "Anxiety",
+    nameTh: "ความวิตกกังวล",
     slug: "anxiety",
     colorToken: "emotion-anxiety",
     iconKey: "anxiety",
@@ -43,6 +38,7 @@ const emotionTags = [
   },
   {
     name: "Gratitude",
+    nameTh: "ความกตัญญู",
     slug: "gratitude",
     colorToken: "emotion-gratitude",
     iconKey: "gratitude",
@@ -56,33 +52,44 @@ async function seed(): Promise<void> {
 
   await connectDatabase(env.MONGODB_URI, logger);
 
-  for (const faculty of faculties) {
+  await FacultyModel.updateMany(
+    { slug: { $in: LEGACY_FACULTY_SLUGS } },
+    { isActive: false },
+  );
+  await MajorModel.updateMany({ slug: { $in: LEGACY_MAJOR_SLUGS } }, { isActive: false });
+
+  let majorCount = 0;
+
+  for (const faculty of KMITL_FACULTIES) {
     const facultyDoc = await FacultyModel.findOneAndUpdate(
       { slug: faculty.slug },
       {
-        name: faculty.name,
+        name: faculty.nameEn,
+        nameTh: faculty.nameTh,
         slug: faculty.slug,
         code: faculty.code,
-        description: faculty.description,
+        description: faculty.description ?? null,
         isActive: true,
         sortOrder: faculty.sortOrder,
       },
       { upsert: true, returnDocument: "after", setDefaultsOnInsert: true },
     );
 
-    for (const major of faculty.majors) {
+    for (const [index, major] of faculty.majors.entries()) {
       await MajorModel.findOneAndUpdate(
         { facultyId: facultyDoc._id, slug: major.slug },
         {
           facultyId: facultyDoc._id,
-          name: major.name,
+          name: major.nameEn,
+          nameTh: major.nameTh,
           slug: major.slug,
-          code: major.code,
+          code: major.code ?? null,
           isActive: true,
-          sortOrder: major.sortOrder,
+          sortOrder: index + 1,
         },
         { upsert: true, returnDocument: "after", setDefaultsOnInsert: true },
       );
+      majorCount += 1;
     }
   }
 
@@ -91,6 +98,7 @@ async function seed(): Promise<void> {
       { type: "emotion", slug: tag.slug },
       {
         name: tag.name,
+        nameTh: tag.nameTh,
         slug: tag.slug,
         type: "emotion",
         colorToken: tag.colorToken,
@@ -103,8 +111,8 @@ async function seed(): Promise<void> {
   }
 
   logger.info("Seed completed", {
-    faculties: faculties.length,
-    majors: faculties.reduce((sum, f) => sum + f.majors.length, 0),
+    faculties: KMITL_FACULTIES.length,
+    majors: majorCount,
     tags: emotionTags.length,
   });
 

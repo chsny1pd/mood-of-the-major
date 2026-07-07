@@ -16,12 +16,13 @@ export interface MoodFeedQuery extends MoodFeedFilters {
 }
 
 export interface MoodWithRelations extends Mood {
-  faculty: { id: string; name: string; slug: string } | null;
-  major: { id: string; name: string; slug: string } | null;
+  faculty: { id: string; name: string; nameTh: string | null; slug: string } | null;
+  major: { id: string; name: string; nameTh: string | null; slug: string } | null;
   tagDetails: Array<{
     id: string;
     slug: string;
     name: string;
+    nameTh: string | null;
     isPrimary: boolean;
   }>;
   images: Array<{ id: string; sortOrder: number }>;

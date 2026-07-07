@@ -1,16 +1,15 @@
+import { useTranslation } from "react-i18next";
+import { useLocalizedName } from "../../../lib/useLocalizedName";
 import type { TrendingItem } from "../../../types/statistics";
 
 interface TrendingEmotionChipProps {
   item: TrendingItem;
 }
 
-const directionLabel = {
-  rising: "Rising",
-  declining: "Declining",
-  stable: "Stable",
-} as const;
-
 export function TrendingEmotionChip({ item }: TrendingEmotionChipProps) {
+  const { t } = useTranslation();
+  const localizedName = useLocalizedName();
+
   const directionClass =
     item.direction === "rising"
       ? "border-teal-200 bg-teal-50 text-teal-900"
@@ -21,23 +20,25 @@ export function TrendingEmotionChip({ item }: TrendingEmotionChipProps) {
   return (
     <article className={`rounded-xl border px-4 py-3 ${directionClass}`}>
       <div className="flex items-center justify-between gap-2">
-        <h3 className="font-semibold">{item.tag.name}</h3>
+        <h3 className="font-semibold">{localizedName(item.tag)}</h3>
         <span className="text-xs font-medium uppercase tracking-wide">
-          {directionLabel[item.direction]}
+          {t(`trendingChip.${item.direction}`)}
         </span>
       </div>
       {item.meetsThreshold && item.moodCount !== null ? (
         <p className="mt-1 text-sm">
-          {item.moodCount} moods
+          {t("trendingChip.moodsCount", { count: item.moodCount })}
           {item.delta !== null ? (
             <span className="ml-2 text-stone-600">
-              ({item.delta >= 0 ? "+" : ""}
-              {item.delta} vs prior window)
+              {t("trendingChip.delta", {
+                sign: item.delta >= 0 ? "+" : "",
+                count: item.delta,
+              })}
             </span>
           ) : null}
         </p>
       ) : (
-        <p className="mt-1 text-sm text-stone-500">Insufficient data</p>
+        <p className="mt-1 text-sm text-stone-500">{t("trendingChip.insufficientData")}</p>
       )}
     </article>
   );

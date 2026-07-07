@@ -1,13 +1,17 @@
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { MoodCard } from "../components/MoodCard";
 import { EmptyState } from "../components/EmptyState";
 import { MoodCardSkeleton } from "../components/Skeleton";
 import { ROUTES } from "../constants/routes";
 import { useMoodFeed } from "../features/feed/hooks/useMoodFeed";
+import { useLocalizedName } from "../lib/useLocalizedName";
 import { fetchFaculties } from "../services/referenceService";
 
 export function FacultyFeedPage() {
+  const { t } = useTranslation();
+  const localizedName = useLocalizedName();
   const { facultyId = "" } = useParams();
   const facultiesQuery = useQuery({ queryKey: ["faculties"], queryFn: fetchFaculties });
   const faculty = facultiesQuery.data?.find(
@@ -23,10 +27,10 @@ export function FacultyFeedPage() {
   return (
     <section className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       <Link to={ROUTES.feed} className="text-sm text-teal-800 hover:underline">
-        ← All moods
+        {t("facultyFeed.backToAll")}
       </Link>
       <h1 className="mt-4 text-3xl font-semibold text-stone-900">
-        {faculty?.name ?? "Faculty feed"}
+        {faculty ? localizedName(faculty) : t("facultyFeed.fallbackTitle")}
       </h1>
 
       <div className="mt-8 space-y-4">
@@ -37,16 +41,19 @@ export function FacultyFeedPage() {
           </>
         ) : feedQuery.isError ? (
           <EmptyState
-            title="Faculty not found"
-            description="This faculty does not exist or is inactive."
+            title={t("facultyFeed.notFoundTitle")}
+            description={t("facultyFeed.notFoundDescription")}
             action={
               <Link to={ROUTES.feed} className="text-sm font-medium text-teal-800 hover:underline">
-                Back to feed
+                {t("feed.backToFeed")}
               </Link>
             }
           />
         ) : moods.length === 0 ? (
-          <EmptyState title="No moods in this faculty yet" description="Check back later or share your own." />
+          <EmptyState
+            title={t("facultyFeed.emptyTitle")}
+            description={t("facultyFeed.emptyDescription")}
+          />
         ) : (
           moods.map((mood) => <MoodCard key={mood.id} mood={mood} />)
         )}

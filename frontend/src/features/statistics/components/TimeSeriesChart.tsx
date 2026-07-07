@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   CartesianGrid,
   Legend,
@@ -15,6 +16,8 @@ interface TimeSeriesChartProps {
 }
 
 export function TimeSeriesChart({ data }: TimeSeriesChartProps) {
+  const { t } = useTranslation();
+
   const chartData = data
     .filter((point) => point.meetsThreshold)
     .map((point) => ({
@@ -25,7 +28,7 @@ export function TimeSeriesChart({ data }: TimeSeriesChartProps) {
     }));
 
   if (chartData.length === 0) {
-    return <p className="text-sm text-stone-500">No time-series data for this period.</p>;
+    return <p className="text-sm text-stone-500">{t("charts.noTimeSeriesData")}</p>;
   }
 
   return (
@@ -37,9 +40,30 @@ export function TimeSeriesChart({ data }: TimeSeriesChartProps) {
           <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
           <Tooltip />
           <Legend />
-          <Line type="monotone" dataKey="moods" stroke="#0f766e" strokeWidth={2} dot={false} />
-          <Line type="monotone" dataKey="comments" stroke="#0369a1" strokeWidth={2} dot={false} />
-          <Line type="monotone" dataKey="reactions" stroke="#b45309" strokeWidth={2} dot={false} />
+          <Line
+            type="monotone"
+            dataKey="moods"
+            name={t("charts.legendMoods")}
+            stroke="#0f766e"
+            strokeWidth={2}
+            dot={false}
+          />
+          <Line
+            type="monotone"
+            dataKey="comments"
+            name={t("charts.legendComments")}
+            stroke="#0369a1"
+            strokeWidth={2}
+            dot={false}
+          />
+          <Line
+            type="monotone"
+            dataKey="reactions"
+            name={t("charts.legendReactions")}
+            stroke="#b45309"
+            strokeWidth={2}
+            dot={false}
+          />
         </LineChart>
       </ResponsiveContainer>
     </div>

@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { fetchFaculties, fetchMajors } from "../../../services/referenceService";
+import { useLocalizedName } from "../../../lib/useLocalizedName";
 import type { StatisticsScopeType } from "../../../types/statistics";
 
 export interface ScopeSelection {
@@ -14,6 +16,9 @@ interface ScopeSelectorProps {
 }
 
 export function ScopeSelector({ value, onChange }: ScopeSelectorProps) {
+  const { t } = useTranslation();
+  const localizedName = useLocalizedName();
+
   const facultiesQuery = useQuery({
     queryKey: ["faculties"],
     queryFn: fetchFaculties,
@@ -28,7 +33,7 @@ export function ScopeSelector({ value, onChange }: ScopeSelectorProps) {
   return (
     <div className="grid gap-3 sm:grid-cols-3">
       <label className="block text-sm">
-        <span className="mb-1 block font-medium text-stone-700">Scope</span>
+        <span className="mb-1 block font-medium text-stone-700">{t("scope.label")}</span>
         <select
           value={value.scope}
           onChange={(event) => {
@@ -37,15 +42,15 @@ export function ScopeSelector({ value, onChange }: ScopeSelectorProps) {
           }}
           className="w-full rounded-lg border border-stone-300 px-3 py-2"
         >
-          <option value="platform">Platform-wide</option>
-          <option value="faculty">Faculty</option>
-          <option value="major">Major</option>
+          <option value="platform">{t("scope.platform")}</option>
+          <option value="faculty">{t("scope.faculty")}</option>
+          <option value="major">{t("scope.major")}</option>
         </select>
       </label>
 
       {value.scope === "faculty" || value.scope === "major" ? (
         <label className="block text-sm">
-          <span className="mb-1 block font-medium text-stone-700">Faculty</span>
+          <span className="mb-1 block font-medium text-stone-700">{t("scope.faculty")}</span>
           <select
             value={value.facultyId ?? ""}
             onChange={(event) => {
@@ -58,10 +63,10 @@ export function ScopeSelector({ value, onChange }: ScopeSelectorProps) {
             }}
             className="w-full rounded-lg border border-stone-300 px-3 py-2"
           >
-            <option value="">Select faculty</option>
+            <option value="">{t("scope.selectFaculty")}</option>
             {facultiesQuery.data?.map((faculty) => (
               <option key={faculty.id} value={faculty.id}>
-                {faculty.name}
+                {localizedName(faculty)}
               </option>
             ))}
           </select>
@@ -70,7 +75,7 @@ export function ScopeSelector({ value, onChange }: ScopeSelectorProps) {
 
       {value.scope === "major" ? (
         <label className="block text-sm">
-          <span className="mb-1 block font-medium text-stone-700">Major</span>
+          <span className="mb-1 block font-medium text-stone-700">{t("scope.major")}</span>
           <select
             value={value.scopeId ?? ""}
             onChange={(event) =>
@@ -82,10 +87,10 @@ export function ScopeSelector({ value, onChange }: ScopeSelectorProps) {
             disabled={!value.facultyId}
             className="w-full rounded-lg border border-stone-300 px-3 py-2 disabled:bg-stone-100"
           >
-            <option value="">Select major</option>
+            <option value="">{t("scope.selectMajor")}</option>
             {majorsQuery.data?.map((major) => (
               <option key={major.id} value={major.id}>
-                {major.name}
+                {localizedName(major)}
               </option>
             ))}
           </select>

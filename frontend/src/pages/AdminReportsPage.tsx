@@ -1,15 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { memo, useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { EmptyState } from "../components/EmptyState";
 import { queryKeys } from "../constants/queryKeys";
 import { fetchAdminReports, resolveReport, type AdminReportItem } from "../services/adminService";
 import { getApiErrorMessage } from "../services/apiClient";
+import { getReportReasonTranslationKey, type ReportReasonCode } from "../types/engagement";
 
 const pendingReportsQueryKey = queryKeys.adminReports({ status: "pending" });
 
 type AdminReportsResponse = Awaited<ReturnType<typeof fetchAdminReports>>;
 
 export function AdminReportsPage() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [resolvingId, setResolvingId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -53,7 +56,7 @@ export function AdminReportsPage() {
       if (context?.previous) {
         queryClient.setQueryData(pendingReportsQueryKey, context.previous);
       }
-      setActionError(getApiErrorMessage(error, "Could not update report."));
+      setActionError(getApiErrorMessage(error, t("admin.reportUpdateError")));
       setResolvingId(null);
     },
     onSuccess: () => {
@@ -78,14 +81,14 @@ export function AdminReportsPage() {
   );
 
   if (reportsQuery.isLoading) {
-    return <p className="text-stone-500">Loading report queue...</p>;
+    return <p className="text-stone-500">{t("admin.loadingReports")}</p>;
   }
 
   if (reportsQuery.isError) {
     return (
       <EmptyState
-        title="Could not load reports"
-        description={getApiErrorMessage(reportsQuery.error, "Try again later.")}
+        title={t("admin.reportsErrorTitle")}
+        description={getApiErrorMessage(reportsQuery.error, t("common.tryAgainLater"))}
       />
     );
   }
@@ -95,8 +98,8 @@ export function AdminReportsPage() {
 
   return (
     <section>
-      <h1 className="text-2xl font-bold text-stone-900">Report queue</h1>
-      <p className="mt-1 text-sm text-stone-600">{pendingCount} pending report(s)</p>
+      <h1 className="text-2xl font-bold text-stone-900">{t("admin.reportQueueTitle")}</h1>
+      <p className="mt-1 text-sm text-stone-600">{t("admin.pendingReports", { count: pendingCount })}</p>
 
       {actionError ? (
         <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
@@ -106,7 +109,7 @@ export function AdminReportsPage() {
 
       {reports.length === 0 ? (
         <div className="mt-8">
-          <EmptyState title="Queue is clear" description="No pending reports need review." />
+          <EmptyState title={t("admin.queueClearTitle")} description={t("admin.queueClearDescription")} />
         </div>
       ) : (
         <ul className="mt-6 space-y-4">
@@ -137,12 +140,15 @@ const ReportRow = memo(function ReportRow({
     removeContent?: boolean,
   ) => void;
 }) {
+  const { t } = useTranslation();
+  const reasonKey = getReportReasonTranslationKey(report.reasonCode as ReportReasonCode);
+
   return (
     <li className="rounded-xl border border-stone-200 bg-white p-4 shadow-sm">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-xs uppercase tracking-wide text-stone-500">
-            {report.targetType} · {report.reasonCode}
+            {report.targetType} · {t(reasonKey)}
           </p>
           <p className="mt-1 text-sm text-stone-800">{report.contentPreview ?? "—"}</p>
           {report.description ? (
@@ -159,7 +165,7 @@ const ReportRow = memo(function ReportRow({
             onClick={() => onResolve(report.id, "resolved_dismissed")}
             className="rounded-md border border-stone-300 px-3 py-1 text-sm hover:bg-stone-50 disabled:opacity-50"
           >
-            Dismiss
+            {t("admin.dismiss")}
           </button>
           <button
             type="button"
@@ -167,7 +173,7 @@ const ReportRow = memo(function ReportRow({
             onClick={() => onResolve(report.id, "resolved_removed", true)}
             className="rounded-md bg-red-700 px-3 py-1 text-sm text-white hover:bg-red-800 disabled:opacity-50"
           >
-            Remove content
+            {t("admin.removeContent")}
           </button>
         </div>
       </div>

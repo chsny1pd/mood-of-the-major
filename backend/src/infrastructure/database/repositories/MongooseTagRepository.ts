@@ -9,6 +9,7 @@ import { TagModel } from "../models/Tag.js";
 function toEmotionTag(doc: {
   _id: { toString(): string };
   name: string;
+  nameTh?: string | null;
   slug: string;
   colorToken?: string | null;
   iconKey?: string | null;
@@ -18,6 +19,7 @@ function toEmotionTag(doc: {
   return {
     id: doc._id.toString(),
     name: doc.name,
+    nameTh: doc.nameTh ?? null,
     slug: doc.slug,
     colorToken: doc.colorToken ?? null,
     iconKey: doc.iconKey ?? null,

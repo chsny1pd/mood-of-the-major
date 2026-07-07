@@ -41,14 +41,14 @@ export function NotificationsPage() {
   });
 
   if (notificationsQuery.isLoading) {
-    return <p className="text-stone-500">Loading notifications...</p>;
+    return <p className="text-stone-500">{t("notifications.loading")}</p>;
   }
 
   if (notificationsQuery.isError) {
     return (
       <EmptyState
-        title="Could not load notifications"
-        description={getApiErrorMessage(notificationsQuery.error, "Try again later.")}
+        title={t("notifications.loadErrorTitle")}
+        description={getApiErrorMessage(notificationsQuery.error, t("common.tryAgainLater"))}
       />
     );
   }
@@ -61,7 +61,7 @@ export function NotificationsPage() {
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-100">{t("notifications.pageTitle")}</h1>
-          <p className="mt-1 text-sm text-stone-600">{unreadCount} unread</p>
+          <p className="mt-1 text-sm text-stone-600">{t("notifications.unread", { count: unreadCount })}</p>
         </div>
         {unreadCount > 0 ? (
           <button
@@ -70,14 +70,14 @@ export function NotificationsPage() {
             onClick={() => void markAllMutation.mutate()}
             className="rounded-md border border-stone-300 px-3 py-1.5 text-sm hover:bg-stone-50"
           >
-            Mark all read
+            {t("notifications.markAllRead")}
           </button>
         ) : null}
       </div>
 
       {items.length === 0 ? (
         <div className="mt-8">
-          <EmptyState title="Inbox is empty" description="Notifications will appear here." />
+          <EmptyState title={t("notifications.emptyTitle")} description={t("notifications.emptyDescription")} />
         </div>
       ) : (
         <ul className="mt-6 space-y-3">
@@ -103,7 +103,7 @@ export function NotificationsPage() {
                       onClick={() => void markReadMutation.mutate(item.id)}
                       className="text-xs text-teal-700 hover:underline"
                     >
-                      Mark read
+                      {t("notifications.markRead")}
                     </button>
                   ) : null}
                   <button
@@ -111,7 +111,7 @@ export function NotificationsPage() {
                     onClick={() => void deleteMutation.mutate(item.id)}
                     className="text-xs text-stone-500 hover:underline"
                   >
-                    Delete
+                    {t("notifications.delete")}
                   </button>
                 </div>
               </div>

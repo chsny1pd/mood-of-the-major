@@ -23,6 +23,7 @@ export class MongooseFacultyRepository implements IFacultyRepository {
       summaries.push({
         id: faculty._id.toString(),
         name: faculty.name,
+        nameTh: faculty.nameTh ?? null,
         slug: faculty.slug,
         code: faculty.code ?? null,
         majorCount,
@@ -43,6 +44,7 @@ export class MongooseFacultyRepository implements IFacultyRepository {
     return {
       id: faculty._id.toString(),
       name: faculty.name,
+      nameTh: faculty.nameTh ?? null,
       slug: faculty.slug,
     };
   }
@@ -58,6 +60,7 @@ export class MongooseFacultyRepository implements IFacultyRepository {
     return {
       id: major._id.toString(),
       name: major.name,
+      nameTh: major.nameTh ?? null,
       slug: major.slug,
       code: major.code ?? null,
       facultyId: major.facultyId.toString(),
@@ -76,6 +79,7 @@ export class MongooseFacultyRepository implements IFacultyRepository {
     return {
       id: major._id.toString(),
       name: major.name,
+      nameTh: major.nameTh ?? null,
       slug: major.slug,
       code: major.code ?? null,
     };
@@ -92,6 +96,7 @@ export class MongooseFacultyRepository implements IFacultyRepository {
     return majors.map((major) => ({
       id: major._id.toString(),
       name: major.name,
+      nameTh: major.nameTh ?? null,
       slug: major.slug,
       code: major.code ?? null,
     }));

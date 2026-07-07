@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { addBookmark, fetchBookmarkStatus, removeBookmark } from "../../../services/bookmarkService";
 import { queryKeys } from "../../../constants/queryKeys";
 import { useAuth } from "../../../contexts/AuthContext";
@@ -8,6 +9,7 @@ interface BookmarkIconButtonProps {
 }
 
 export function BookmarkIconButton({ moodId }: BookmarkIconButtonProps) {
+  const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
 
@@ -52,7 +54,7 @@ export function BookmarkIconButton({ moodId }: BookmarkIconButtonProps) {
   return (
     <button
       type="button"
-      aria-label={bookmarked ? "Remove bookmark" : "Save mood"}
+      aria-label={bookmarked ? t("bookmarks.removeBookmark") : t("bookmarks.saveMood")}
       onClick={(event) => {
         event.preventDefault();
         event.stopPropagation();

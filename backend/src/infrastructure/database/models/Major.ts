@@ -4,6 +4,7 @@ const majorSchema = new Schema(
   {
     facultyId: { type: Schema.Types.ObjectId, ref: "Faculty", required: true },
     name: { type: String, required: true, trim: true },
+    nameTh: { type: String, trim: true, default: null },
     slug: { type: String, required: true, trim: true, lowercase: true },
     code: { type: String, default: null },
     isActive: { type: Boolean, required: true, default: true },

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { queryKeys } from "../../../constants/queryKeys";
 import { createComment, deleteComment, fetchComments } from "../../../services/commentService";
 import { useAuth } from "../../../contexts/AuthContext";
@@ -14,6 +15,7 @@ interface CommentSectionProps {
 }
 
 export function CommentSection({ moodId }: CommentSectionProps) {
+  const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
   const [content, setContent] = useState("");
@@ -42,7 +44,7 @@ export function CommentSection({ moodId }: CommentSectionProps) {
       void queryClient.invalidateQueries({ queryKey: queryKeys.moodDetail(moodId) });
     },
     onError: (err) => {
-      setError(getApiErrorMessage(err, "Could not post comment"));
+      setError(getApiErrorMessage(err, t("comments.postError")));
     },
   });
 
@@ -60,7 +62,9 @@ export function CommentSection({ moodId }: CommentSectionProps) {
   return (
     <section className="mt-8">
       <h2 className="mb-4 text-lg font-semibold text-stone-800">
-        Comments {comments.length > 0 ? `(${comments.length})` : ""}
+        {comments.length > 0
+          ? t("comments.titleWithCount", { count: comments.length })
+          : t("comments.title")}
       </h2>
 
       {isAuthenticated ? (
@@ -74,13 +78,13 @@ export function CommentSection({ moodId }: CommentSectionProps) {
         >
           {replyTarget ? (
             <p className="text-sm text-stone-600">
-              Replying to comment…{" "}
+              {t("comments.replyingTo")}{" "}
               <button
                 type="button"
                 onClick={() => setReplyToId(null)}
                 className="font-medium text-teal-800 hover:underline"
               >
-                Cancel
+                {t("common.cancel")}
               </button>
             </p>
           ) : null}
@@ -89,7 +93,7 @@ export function CommentSection({ moodId }: CommentSectionProps) {
             onChange={(event) => setContent(event.target.value)}
             rows={3}
             maxLength={2000}
-            placeholder="Share support anonymously..."
+            placeholder={t("comments.placeholder")}
             className="w-full rounded-xl border border-stone-300 px-3 py-2 text-stone-900 outline-none ring-teal-700 focus:ring-2"
           />
           {error ? <p className="text-sm text-red-600">{error}</p> : null}
@@ -98,15 +102,19 @@ export function CommentSection({ moodId }: CommentSectionProps) {
             disabled={mutation.isPending || !content.trim()}
             className="rounded-xl bg-teal-800 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-900 disabled:opacity-60"
           >
-            {mutation.isPending ? "Posting..." : replyToId ? "Post reply" : "Post comment"}
+            {mutation.isPending
+              ? t("comments.posting")
+              : replyToId
+                ? t("comments.postReply")
+                : t("comments.postComment")}
           </button>
         </form>
       ) : (
         <p className="mb-6 text-sm text-stone-600">
           <Link to={ROUTES.login} className="font-medium text-teal-800 hover:underline">
-            Log in
+            {t("nav.logIn")}
           </Link>{" "}
-          to join the conversation.
+          {t("comments.logInPrompt")}
         </p>
       )}
 
@@ -116,7 +124,7 @@ export function CommentSection({ moodId }: CommentSectionProps) {
           <div className="h-16 animate-pulse rounded-xl bg-stone-100" />
         </div>
       ) : comments.length === 0 ? (
-        <p className="text-sm text-stone-500">No comments yet. Be the first to respond.</p>
+        <p className="text-sm text-stone-500">{t("comments.empty")}</p>
       ) : (
         <ul className="space-y-4">
           {comments.map((comment) => (
@@ -136,14 +144,14 @@ export function CommentSection({ moodId }: CommentSectionProps) {
                         onClick={() => setReplyToId(comment.id)}
                         className="text-teal-800 hover:underline"
                       >
-                        Reply
+                        {t("comments.reply")}
                       </button>
                       <button
                         type="button"
                         onClick={() => setReportCommentId(comment.id)}
                         className="text-stone-500 hover:text-red-700"
                       >
-                        Report
+                        {t("comments.report")}
                       </button>
                       {comment.isOwner ? (
                         <button
@@ -152,7 +160,7 @@ export function CommentSection({ moodId }: CommentSectionProps) {
                           disabled={deleteMutation.isPending}
                           className="text-red-700 hover:underline disabled:opacity-60"
                         >
-                          Delete
+                          {t("comments.delete")}
                         </button>
                       ) : null}
                     </>
@@ -174,7 +182,7 @@ export function CommentSection({ moodId }: CommentSectionProps) {
           disabled={commentsQuery.isFetchingNextPage}
           className="mt-4 w-full rounded-xl border border-stone-300 px-4 py-2 text-sm text-stone-700 hover:bg-stone-100 disabled:opacity-60"
         >
-          {commentsQuery.isFetchingNextPage ? "Loading..." : "Load more comments"}
+          {commentsQuery.isFetchingNextPage ? t("common.loading") : t("comments.loadMore")}
         </button>
       ) : null}
 

@@ -61,6 +61,22 @@
     "register": "สมัครสมาชิก",
     "registering": "กำลังสร้างบัญชี..."
   },
+  "register": {
+    "studentId": "รหัสนักศึกษา",
+    "studentIdPlaceholder": "เช่น 6512345678",
+    "yearOfStudy": "ชั้นปี",
+    "selectYear": "เลือกชั้นปี",
+    "yearOption": "ปี {{year}}",
+    "facultyOptional": "คณะ (ไม่บังคับ)",
+    "majorOptional": "สาขา (ไม่บังคับ)",
+    "selectFaculty": "เลือกคณะ",
+    "selectMajor": "เลือกสาขา",
+    "facultiesLoadError": "โหลดข้อมูลคณะไม่สำเร็จ เซิร์ฟเวอร์ทำงานอยู่หรือไม่?",
+    "registrationFailed": "สมัครสมาชิกไม่สำเร็จ",
+    "createAccount": "สร้างบัญชี",
+    "creatingAccount": "กำลังสร้างบัญชี...",
+    "alreadyHaveAccount": "มีบัญชีอยู่แล้ว?"
+  },
   "settings": {
     "title": "ตั้งค่า",
     "profile": "โปรไฟล์",
@@ -119,7 +135,8 @@
     "cancel": "ยกเลิก",
     "save": "บันทึก",
     "error": "เกิดข้อผิดพลาด",
-    "back": "กลับ"
+    "back": "กลับ",
+    "tryAgainLater": "กรุณาลองอีกครั้งในภายหลัง"
   },
   "landing": {
     "eyebrow": "สุขภาวะทางอารมณ์ในมหาวิทยาลัย",
@@ -149,23 +166,201 @@
     "emptyTitle": "ยังไม่มีโพสต์",
     "emptyBody": "เป็นคนแรกที่แบ่งปันความรู้สึกวันนี้",
     "errorTitle": "โหลดฟีดไม่สำเร็จ",
-    "loadMore": "โหลดเพิ่ม"
+    "loadMore": "โหลดเพิ่ม",
+    "backToFeed": "กลับไปฟีด"
+  },
+  "facultyFeed": {
+    "backToAll": "← อารมณ์ทั้งหมด",
+    "fallbackTitle": "ฟีดคณะ",
+    "notFoundTitle": "ไม่พบคณะ",
+    "notFoundDescription": "คณะนี้ไม่มีอยู่หรือถูกปิดใช้งาน",
+    "emptyTitle": "ยังไม่มีโพสต์ในคณะนี้",
+    "emptyDescription": "กลับมาดูภายหลังหรือแชร์ของคุณเอง"
+  },
+  "majorFeed": {
+    "backToAll": "← อารมณ์ทั้งหมด",
+    "fallbackTitle": "ฟีดสาขา",
+    "notFoundTitle": "ไม่พบสาขา",
+    "notFoundDescription": "สาขานี้ไม่มีอยู่หรือถูกปิดใช้งาน",
+    "emptyTitle": "ยังไม่มีโพสต์ในสาขานี้",
+    "emptyDescription": "กลับมาดูภายหลังหรือแชร์ของคุณเอง"
+  },
+  "moodDetail": {
+    "notFoundTitle": "ไม่พบโพสต์",
+    "notFoundDescription": "โพสต์นี้อาจถูกลบหรือไม่มีอยู่",
+    "backToFeed": "กลับไปฟีด",
+    "deleteConfirm": "ลบโพสต์นี้? การกระทำนี้ไม่สามารถย้อนกลับได้",
+    "edited": "แก้ไขเมื่อ {{date}}",
+    "edit": "แก้ไข",
+    "deleting": "กำลังลบ...",
+    "delete": "ลบ",
+    "report": "รายงาน",
+    "deleteError": "ลบโพสต์ไม่สำเร็จ"
+  },
+  "moodForm": {
+    "yourMood": "อารมณ์ของคุณ",
+    "contentPlaceholder": "แบ่งปันความรู้สึกของคุณวันนี้แบบไม่เปิดเผยตัวตน...",
+    "emotions": "อารมณ์",
+    "loadingTags": "กำลังโหลดแท็ก...",
+    "faculty": "คณะ",
+    "major": "สาขา",
+    "selectFaculty": "เลือกคณะ",
+    "selectMajor": "เลือกสาขา",
+    "imagesOptional": "รูปภาพ (ไม่บังคับ สูงสุด 4 รูป)",
+    "remove": "ลบ",
+    "publishing": "กำลังเผยแพร่...",
+    "publishAnonymously": "เผยแพร่แบบไม่เปิดเผยตัวตน",
+    "publishError": "เผยแพร่โพสต์ไม่สำเร็จ",
+    "saving": "กำลังบันทึก...",
+    "saveChanges": "บันทึกการเปลี่ยนแปลง",
+    "saveError": "บันทึกไม่สำเร็จ"
+  },
+  "comments": {
+    "title": "ความคิดเห็น",
+    "titleWithCount": "ความคิดเห็น ({{count}})",
+    "replyingTo": "กำลังตอบกลับความคิดเห็น…",
+    "placeholder": "แบ่งปันการสนับสนุนแบบไม่เปิดเผยตัวตน...",
+    "posting": "กำลังโพสต์...",
+    "postReply": "ตอบกลับ",
+    "postComment": "โพสต์ความคิดเห็น",
+    "postError": "โพสต์ความคิดเห็นไม่สำเร็จ",
+    "logInPrompt": "เพื่อเข้าร่วมบทสนทนา",
+    "empty": "ยังไม่มีความคิดเห็น เป็นคนแรกที่ตอบกลับ",
+    "reply": "ตอบกลับ",
+    "report": "รายงาน",
+    "delete": "ลบ",
+    "loadMore": "โหลดความคิดเห็นเพิ่ม"
+  },
+  "engagement": {
+    "reactions": {
+      "empathy": "เห็นใจ",
+      "support": "สนับสนุน",
+      "relate": "เข้าใจ",
+      "solidarity": "เป็นกำลังใจ"
+    },
+    "reportReasons": {
+      "harassment": "การคุกคาม",
+      "spam": "สแปม",
+      "self_harm": "ทำร้ายตนเอง",
+      "hate_speech": "คำพูดแสดงความเกลียดชัง",
+      "other": "อื่นๆ"
+    },
+    "logInToReact": "เข้าสู่ระบบเพื่อแสดงปฏิกิริยา",
+    "reportModal": {
+      "title": "รายงานเนื้อหา",
+      "description": "ช่วยรักษาความปลอดภัยของชุมชน การรายงานเป็นแบบไม่เปิดเผยตัวตน",
+      "reason": "เหตุผล",
+      "detailsOptional": "รายละเอียด (ไม่บังคับ)",
+      "submitting": "กำลังส่ง...",
+      "submit": "ส่งรายงาน",
+      "submitError": "ส่งรายงานไม่สำเร็จ",
+      "close": "ปิด"
+    }
+  },
+  "filter": {
+    "sort": "เรียงลำดับ",
+    "sortNewest": "ใหม่สุด",
+    "sortMostReacted": "ปฏิกิริยามากสุด",
+    "sortMostCommented": "ความคิดเห็นมากสุด",
+    "emotion": "อารมณ์",
+    "allEmotions": "อารมณ์ทั้งหมด",
+    "faculty": "คณะ",
+    "allFaculties": "คณะทั้งหมด",
+    "major": "สาขา",
+    "allMajors": "สาขาทั้งหมด",
+    "from": "ตั้งแต่",
+    "to": "ถึง"
+  },
+  "scope": {
+    "label": "ขอบเขต",
+    "platform": "ทั้งแพลตฟอร์ม",
+    "faculty": "คณะ",
+    "major": "สาขา",
+    "selectFaculty": "เลือกคณะ",
+    "selectMajor": "เลือกสาขา"
+  },
+  "charts": {
+    "insufficientData": "ข้อมูลไม่เพียงพอ",
+    "insufficientDataDescription": "สถิติรวมจะถูกซ่อนเมื่อขนาดกลุ่มเล็กเกินไปเพื่อปกป้องความไม่เปิดเผยตัวตน",
+    "noDistributionData": "ไม่มีข้อมูลการกระจายสำหรับขอบเขตนี้",
+    "noTimeSeriesData": "ไม่มีข้อมูลตามช่วงเวลาสำหรับช่วงนี้",
+    "legendMoods": "โพสต์",
+    "legendComments": "ความคิดเห็น",
+    "legendReactions": "ปฏิกิริยา"
+  },
+  "trendingChip": {
+    "rising": "เพิ่มขึ้น",
+    "declining": "ลดลง",
+    "stable": "คงที่",
+    "moodsCount": "{{count}} โพสต์",
+    "delta": "({{sign}}{{count}} เทียบช่วงก่อนหน้า)",
+    "insufficientData": "ข้อมูลไม่เพียงพอ"
+  },
+  "moodCard": {
+    "image_one": "{{count}} รูป",
+    "image_other": "{{count}} รูป",
+    "comments_one": "{{count}} ความคิดเห็น",
+    "comments_other": "{{count}} ความคิดเห็น",
+    "reactions_one": "{{count}} ปฏิกิริยา",
+    "reactions_other": "{{count}} ปฏิกิริยา"
+  },
+  "time": {
+    "justNow": "เมื่อสักครู่",
+    "minutesAgo": "{{count}} นาทีที่แล้ว",
+    "hoursAgo": "{{count}} ชม. ที่แล้ว",
+    "daysAgo": "{{count}} วันที่แล้ว"
   },
   "search": {
     "title": "ค้นหา",
-    "pageTitle": "ค้นหาอารมณ์"
+    "pageTitle": "ค้นหาอารมณ์",
+    "description": "ค้นหาโพสต์ด้วยคำสำคัญและตัวกรอง (อย่างน้อย 2 ตัวอักษร)",
+    "placeholder": "ค้นหา...",
+    "submit": "ค้นหา",
+    "minCharsHint": "กรอกอย่างน้อย 2 ตัวอักษรเพื่อค้นหา",
+    "errorTitle": "ค้นหาไม่สำเร็จ",
+    "errorDescription": "กรุณาลองอีกครั้ง",
+    "noResultsTitle": "ไม่พบผลลัพธ์",
+    "noResultsDescription": "ไม่พบสิ่งที่ตรงกับ \"{{query}}\""
   },
   "statistics": {
     "title": "สถิติ",
-    "pageTitle": "สถิติ"
+    "pageTitle": "สถิติ",
+    "description": "ข้อมูลเชิงลึกอารมณ์แบบรวม — ไม่แสดงโพสต์รายบุคคล",
+    "period": "ช่วงเวลา",
+    "period7d": "7 วันล่าสุด",
+    "period30d": "30 วันล่าสุด",
+    "period90d": "90 วันล่าสุด",
+    "selectScopeHint": "เลือกขอบเขตเพื่อดูสถิติ",
+    "loadErrorTitle": "โหลดสถิติไม่สำเร็จ",
+    "kpiMoods": "โพสต์",
+    "kpiComments": "ความคิดเห็น",
+    "kpiReactions": "ปฏิกิริยา",
+    "emotionDistribution": "การกระจายอารมณ์",
+    "activityOverTime": "กิจกรรมตามเวลา"
   },
   "trending": {
     "title": "มาแรง",
-    "pageTitle": "อารมณ์ที่มาแรง"
+    "pageTitle": "อารมณ์ที่มาแรง",
+    "description": "ธีมที่กำลังมาแรงจากกิจกรรมล่าสุด — ไม่แสดงโพสต์รายบุคคล",
+    "window": "ช่วงเวลา",
+    "window7d": "7 วันล่าสุด",
+    "window30d": "30 วันล่าสุด",
+    "selectScopeHint": "เลือกขอบเขตเพื่อดูอารมณ์ที่มาแรง",
+    "loadErrorTitle": "โหลดข้อมูลมาแรงไม่สำเร็จ",
+    "emptyTitle": "ยังไม่มีข้อมูลมาแรง",
+    "emptyDescription": "รันงานรวมสถิติหลังจากมีกิจกรรมโพสต์เพียงพอ"
   },
   "notifications": {
     "title": "การแจ้งเตือน",
-    "pageTitle": "การแจ้งเตือน"
+    "pageTitle": "การแจ้งเตือน",
+    "loading": "กำลังโหลดการแจ้งเตือน...",
+    "loadErrorTitle": "โหลดการแจ้งเตือนไม่สำเร็จ",
+    "unread": "ยังไม่ได้อ่าน {{count}} รายการ",
+    "markAllRead": "ทำเครื่องหมายว่าอ่านทั้งหมด",
+    "emptyTitle": "กล่องข้อความว่าง",
+    "emptyDescription": "การแจ้งเตือนจะปรากฏที่นี่",
+    "markRead": "ทำเครื่องหมายว่าอ่านแล้ว",
+    "delete": "ลบ"
   },
   "create": {
     "title": "แชร์อารมณ์",
@@ -174,13 +369,67 @@
   },
   "bookmarks": {
     "title": "อารมณ์ที่บันทึก",
-    "pageTitle": "อารมณ์ที่บันทึก"
+    "pageTitle": "อารมณ์ที่บันทึก",
+    "description": "โพสต์ที่คุณบันทึกไว้ดูภายหลัง",
+    "loadErrorTitle": "โหลดรายการบันทึกไม่สำเร็จ",
+    "loadErrorDescription": "กรุณาลองอีกครั้งในภายหลัง",
+    "emptyTitle": "ยังไม่มีโพสต์ที่บันทึก",
+    "emptyDescription": "บันทึกโพสต์จากหน้ารายละเอียดโพสต์",
+    "browseFeed": "เรียกดูฟีด",
+    "backToFeed": "กลับไปฟีด",
+    "logInToSave": "เข้าสู่ระบบเพื่อบันทึก",
+    "saving": "กำลังบันทึก...",
+    "saved": "บันทึกแล้ว",
+    "save": "บันทึก",
+    "updateError": "อัปเดตการบันทึกไม่สำเร็จ",
+    "statusError": "โหลดสถานะการบันทึกไม่สำเร็จ",
+    "removeBookmark": "ลบการบันทึก",
+    "saveMood": "บันทึกโพสต์"
   },
   "admin": {
     "overview": "ภาพรวม",
     "reports": "รายงาน",
     "users": "ผู้ใช้",
     "auditLog": "บันทึก audit",
-    "administration": "การดูแลระบบ"
+    "administration": "การดูแลระบบ",
+    "loadingDashboard": "กำลังโหลดแดชบอร์ด...",
+    "dashboardErrorTitle": "โหลดแดชบอร์ดผู้ดูแลไม่สำเร็จ",
+    "overviewTitle": "ภาพรวมผู้ดูแล",
+    "overviewDescription": "การดูแลและความรับผิดชอบของแพลตฟอร์ม",
+    "kpiOpenReports": "รายงานที่เปิดอยู่",
+    "kpiActionsToday": "การดำเนินการวันนี้",
+    "kpiActiveUsers24h": "ผู้ใช้ที่ใช้งาน (24 ชม.)",
+    "kpiMoodsCreated24h": "โพสต์ที่สร้าง (24 ชม.)",
+    "recentActions": "การดำเนินการล่าสุด",
+    "noActionsYet": "ยังไม่มีการดำเนินการที่บันทึก",
+    "loadingReports": "กำลังโหลดคิวรายงาน...",
+    "reportsErrorTitle": "โหลดรายงานไม่สำเร็จ",
+    "reportQueueTitle": "คิวรายงาน",
+    "pendingReports": "รายงานที่รอดำเนินการ {{count}} รายการ",
+    "queueClearTitle": "คิวว่างแล้ว",
+    "queueClearDescription": "ไม่มีรายงานที่รอตรวจสอบ",
+    "dismiss": "ยกเลิก",
+    "removeContent": "ลบเนื้อหา",
+    "reportUpdateError": "อัปเดตรายงานไม่สำเร็จ",
+    "usersTitle": "จัดการผู้ใช้",
+    "usersDescription": "ระงับหรือคืนสถานะบัญชีนักศึกษา",
+    "searchByEmail": "ค้นหาด้วยอีเมล",
+    "searchPlaceholder": "student@university.edu",
+    "loadingUsers": "กำลังโหลดผู้ใช้...",
+    "usersErrorTitle": "โหลดผู้ใช้ไม่สำเร็จ",
+    "tableEmail": "อีเมล",
+    "tableRole": "บทบาท",
+    "tableStatus": "สถานะ",
+    "tableActions": "การดำเนินการ",
+    "protected": "ได้รับการปกป้อง",
+    "suspend": "ระงับ",
+    "reinstate": "คืนสถานะ",
+    "loadingAudit": "กำลังโหลดบันทึก audit...",
+    "auditErrorTitle": "โหลดบันทึก audit ไม่สำเร็จ",
+    "auditTitle": "บันทึก audit",
+    "auditDescription": "บันทึกการดำเนินการของผู้ดูแลแบบ append-only",
+    "noAuditEntries": "ยังไม่มีรายการ audit",
+    "auditEntriesHint": "การดำเนินการจะปรากฏที่นี่",
+    "identityAccessed": "เข้าถึงตัวตนแล้ว"
   }
 }

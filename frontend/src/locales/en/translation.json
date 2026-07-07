@@ -61,6 +61,22 @@
     "register": "Register",
     "registering": "Creating account..."
   },
+  "register": {
+    "studentId": "Student ID",
+    "studentIdPlaceholder": "e.g. 6512345678",
+    "yearOfStudy": "Year of study",
+    "selectYear": "Select year",
+    "yearOption": "Year {{year}}",
+    "facultyOptional": "Faculty (optional)",
+    "majorOptional": "Major (optional)",
+    "selectFaculty": "Select faculty",
+    "selectMajor": "Select major",
+    "facultiesLoadError": "Could not load faculties. Is the backend running?",
+    "registrationFailed": "Registration failed",
+    "createAccount": "Create account",
+    "creatingAccount": "Creating account...",
+    "alreadyHaveAccount": "Already have an account?"
+  },
   "settings": {
     "title": "Settings",
     "profile": "Profile",
@@ -119,7 +135,8 @@
     "cancel": "Cancel",
     "save": "Save",
     "error": "Something went wrong",
-    "back": "Back"
+    "back": "Back",
+    "tryAgainLater": "Try again later."
   },
   "landing": {
     "eyebrow": "University emotional wellness",
@@ -149,23 +166,201 @@
     "emptyTitle": "No moods yet",
     "emptyBody": "Be the first to share how you're feeling today.",
     "errorTitle": "Could not load feed",
-    "loadMore": "Load more"
+    "loadMore": "Load more",
+    "backToFeed": "Back to feed"
+  },
+  "facultyFeed": {
+    "backToAll": "← All moods",
+    "fallbackTitle": "Faculty feed",
+    "notFoundTitle": "Faculty not found",
+    "notFoundDescription": "This faculty does not exist or is inactive.",
+    "emptyTitle": "No moods in this faculty yet",
+    "emptyDescription": "Check back later or share your own."
+  },
+  "majorFeed": {
+    "backToAll": "← All moods",
+    "fallbackTitle": "Major feed",
+    "notFoundTitle": "Major not found",
+    "notFoundDescription": "This major does not exist or is inactive.",
+    "emptyTitle": "No moods in this major yet",
+    "emptyDescription": "Check back later or share your own."
+  },
+  "moodDetail": {
+    "notFoundTitle": "Mood not found",
+    "notFoundDescription": "This post may have been removed or does not exist.",
+    "backToFeed": "Back to feed",
+    "deleteConfirm": "Delete this mood? This cannot be undone.",
+    "edited": "Edited {{date}}",
+    "edit": "Edit",
+    "deleting": "Deleting...",
+    "delete": "Delete",
+    "report": "Report",
+    "deleteError": "Could not delete mood."
+  },
+  "moodForm": {
+    "yourMood": "Your mood",
+    "contentPlaceholder": "Share anonymously how you're feeling today...",
+    "emotions": "Emotions",
+    "loadingTags": "Loading tags...",
+    "faculty": "Faculty",
+    "major": "Major",
+    "selectFaculty": "Select faculty",
+    "selectMajor": "Select major",
+    "imagesOptional": "Images (optional, up to 4)",
+    "remove": "Remove",
+    "publishing": "Publishing...",
+    "publishAnonymously": "Publish anonymously",
+    "publishError": "Could not publish your mood.",
+    "saving": "Saving...",
+    "saveChanges": "Save changes",
+    "saveError": "Could not save changes."
+  },
+  "comments": {
+    "title": "Comments",
+    "titleWithCount": "Comments ({{count}})",
+    "replyingTo": "Replying to comment…",
+    "placeholder": "Share support anonymously...",
+    "posting": "Posting...",
+    "postReply": "Post reply",
+    "postComment": "Post comment",
+    "postError": "Could not post comment",
+    "logInPrompt": "to join the conversation.",
+    "empty": "No comments yet. Be the first to respond.",
+    "reply": "Reply",
+    "report": "Report",
+    "delete": "Delete",
+    "loadMore": "Load more comments"
+  },
+  "engagement": {
+    "reactions": {
+      "empathy": "Empathy",
+      "support": "Support",
+      "relate": "Relate",
+      "solidarity": "Solidarity"
+    },
+    "reportReasons": {
+      "harassment": "Harassment",
+      "spam": "Spam",
+      "self_harm": "Self harm",
+      "hate_speech": "Hate speech",
+      "other": "Other"
+    },
+    "logInToReact": "Log in to react",
+    "reportModal": {
+      "title": "Report content",
+      "description": "Help keep the community safe. Reports are anonymous.",
+      "reason": "Reason",
+      "detailsOptional": "Details (optional)",
+      "submitting": "Submitting...",
+      "submit": "Submit report",
+      "submitError": "Could not submit report",
+      "close": "Close"
+    }
+  },
+  "filter": {
+    "sort": "Sort",
+    "sortNewest": "Newest",
+    "sortMostReacted": "Most reacted",
+    "sortMostCommented": "Most commented",
+    "emotion": "Emotion",
+    "allEmotions": "All emotions",
+    "faculty": "Faculty",
+    "allFaculties": "All faculties",
+    "major": "Major",
+    "allMajors": "All majors",
+    "from": "From",
+    "to": "To"
+  },
+  "scope": {
+    "label": "Scope",
+    "platform": "Platform-wide",
+    "faculty": "Faculty",
+    "major": "Major",
+    "selectFaculty": "Select faculty",
+    "selectMajor": "Select major"
+  },
+  "charts": {
+    "insufficientData": "Insufficient data",
+    "insufficientDataDescription": "Aggregated statistics are hidden when group sizes are too small to protect anonymity.",
+    "noDistributionData": "No distribution data for this scope.",
+    "noTimeSeriesData": "No time-series data for this period.",
+    "legendMoods": "Moods",
+    "legendComments": "Comments",
+    "legendReactions": "Reactions"
+  },
+  "trendingChip": {
+    "rising": "Rising",
+    "declining": "Declining",
+    "stable": "Stable",
+    "moodsCount": "{{count}} moods",
+    "delta": "({{sign}}{{count}} vs prior window)",
+    "insufficientData": "Insufficient data"
+  },
+  "moodCard": {
+    "image_one": "{{count}} image",
+    "image_other": "{{count}} images",
+    "comments_one": "{{count}} comment",
+    "comments_other": "{{count}} comments",
+    "reactions_one": "{{count}} reaction",
+    "reactions_other": "{{count}} reactions"
+  },
+  "time": {
+    "justNow": "just now",
+    "minutesAgo": "{{count}}m ago",
+    "hoursAgo": "{{count}}h ago",
+    "daysAgo": "{{count}}d ago"
   },
   "search": {
     "title": "Search",
-    "pageTitle": "Search moods"
+    "pageTitle": "Search moods",
+    "description": "Find posts by keyword and filters (min 2 characters).",
+    "placeholder": "Search...",
+    "submit": "Search",
+    "minCharsHint": "Enter at least 2 characters to search.",
+    "errorTitle": "Search failed",
+    "errorDescription": "Please try again.",
+    "noResultsTitle": "No results",
+    "noResultsDescription": "Nothing matched \"{{query}}\"."
   },
   "statistics": {
     "title": "Statistics",
-    "pageTitle": "Statistics"
+    "pageTitle": "Statistics",
+    "description": "Aggregated mood insights — individual posts are never shown.",
+    "period": "Period",
+    "period7d": "Last 7 days",
+    "period30d": "Last 30 days",
+    "period90d": "Last 90 days",
+    "selectScopeHint": "Select a scope to view statistics.",
+    "loadErrorTitle": "Could not load statistics",
+    "kpiMoods": "Moods",
+    "kpiComments": "Comments",
+    "kpiReactions": "Reactions",
+    "emotionDistribution": "Emotion distribution",
+    "activityOverTime": "Activity over time"
   },
   "trending": {
     "title": "Trending",
-    "pageTitle": "Trending emotions"
+    "pageTitle": "Trending emotions",
+    "description": "Rising themes from recent activity — no individual posts are shown.",
+    "window": "Window",
+    "window7d": "Last 7 days",
+    "window30d": "Last 30 days",
+    "selectScopeHint": "Select a scope to view trending emotions.",
+    "loadErrorTitle": "Could not load trending data",
+    "emptyTitle": "No trending data yet",
+    "emptyDescription": "Run the statistics aggregation job after mood activity builds up."
   },
   "notifications": {
     "title": "Notifications",
-    "pageTitle": "Notifications"
+    "pageTitle": "Notifications",
+    "loading": "Loading notifications...",
+    "loadErrorTitle": "Could not load notifications",
+    "unread": "{{count}} unread",
+    "markAllRead": "Mark all read",
+    "emptyTitle": "Inbox is empty",
+    "emptyDescription": "Notifications will appear here.",
+    "markRead": "Mark read",
+    "delete": "Delete"
   },
   "create": {
     "title": "Share a mood",
@@ -174,13 +369,67 @@
   },
   "bookmarks": {
     "title": "Saved moods",
-    "pageTitle": "Saved moods"
+    "pageTitle": "Saved moods",
+    "description": "Posts you bookmarked for later.",
+    "loadErrorTitle": "Could not load bookmarks",
+    "loadErrorDescription": "Please try again later.",
+    "emptyTitle": "No saved moods",
+    "emptyDescription": "Bookmark posts from the mood detail page.",
+    "browseFeed": "Browse feed",
+    "backToFeed": "Back to feed",
+    "logInToSave": "Log in to save",
+    "saving": "Saving...",
+    "saved": "Saved",
+    "save": "Save",
+    "updateError": "Could not update bookmark",
+    "statusError": "Could not load bookmark status",
+    "removeBookmark": "Remove bookmark",
+    "saveMood": "Save mood"
   },
   "admin": {
     "overview": "Overview",
     "reports": "Reports",
     "users": "Users",
     "auditLog": "Audit log",
-    "administration": "Administration"
+    "administration": "Administration",
+    "loadingDashboard": "Loading dashboard...",
+    "dashboardErrorTitle": "Could not load admin dashboard",
+    "overviewTitle": "Admin overview",
+    "overviewDescription": "Platform moderation and accountability.",
+    "kpiOpenReports": "Open reports",
+    "kpiActionsToday": "Actions today",
+    "kpiActiveUsers24h": "Active users (24h)",
+    "kpiMoodsCreated24h": "Moods created (24h)",
+    "recentActions": "Recent admin actions",
+    "noActionsYet": "No actions recorded yet.",
+    "loadingReports": "Loading report queue...",
+    "reportsErrorTitle": "Could not load reports",
+    "reportQueueTitle": "Report queue",
+    "pendingReports": "{{count}} pending report(s)",
+    "queueClearTitle": "Queue is clear",
+    "queueClearDescription": "No pending reports need review.",
+    "dismiss": "Dismiss",
+    "removeContent": "Remove content",
+    "reportUpdateError": "Could not update report.",
+    "usersTitle": "User management",
+    "usersDescription": "Suspend or reinstate student accounts.",
+    "searchByEmail": "Search by email",
+    "searchPlaceholder": "student@university.edu",
+    "loadingUsers": "Loading users...",
+    "usersErrorTitle": "Could not load users",
+    "tableEmail": "Email",
+    "tableRole": "Role",
+    "tableStatus": "Status",
+    "tableActions": "Actions",
+    "protected": "Protected",
+    "suspend": "Suspend",
+    "reinstate": "Reinstate",
+    "loadingAudit": "Loading audit log...",
+    "auditErrorTitle": "Could not load audit log",
+    "auditTitle": "Audit log",
+    "auditDescription": "Append-only record of administrative actions.",
+    "noAuditEntries": "No audit entries yet",
+    "auditEntriesHint": "Actions will appear here.",
+    "identityAccessed": "identity accessed"
   }
 }

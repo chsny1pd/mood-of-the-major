@@ -18,6 +18,8 @@
     "seed": "tsx scripts/seed.ts",
     "seed:e2e-admin": "tsx scripts/seed-e2e-admin.ts",
     "seed:sample-moods": "tsx scripts/seed-sample-moods.ts",
+    "seed:mock-data": "tsx scripts/seed-mock-data.ts",
+    "promote:github-admin": "tsx scripts/promote-github-admin.ts",
     "aggregate:statistics": "tsx scripts/run-aggregation.ts",
     "cleanup:images": "tsx scripts/run-image-cleanup.ts",
     "qa:statistics": "tsx scripts/qa-statistics.ts",

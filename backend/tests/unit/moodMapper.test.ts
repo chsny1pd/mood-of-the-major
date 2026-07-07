@@ -20,10 +20,10 @@ const sampleMood: MoodWithRelations = {
   updatedAt: new Date("2026-07-05T08:00:00.000Z"),
   deletedAt: null,
   tags: [{ tagId: "665a1b2c3d4e5f6789012349", isPrimary: true }],
-  faculty: { id: "665a1b2c3d4e5f6789012345", name: "Engineering", slug: "engineering" },
-  major: { id: "665a1b2c3d4e5f6789012346", name: "Computer Science", slug: "computer-science" },
+  faculty: { id: "665a1b2c3d4e5f6789012345", name: "Engineering", nameTh: null, slug: "engineering" },
+  major: { id: "665a1b2c3d4e5f6789012346", name: "Computer Science", nameTh: null, slug: "computer-science" },
   tagDetails: [
-    { id: "665a1b2c3d4e5f6789012349", slug: "stress", name: "Stress", isPrimary: true },
+    { id: "665a1b2c3d4e5f6789012349", slug: "stress", name: "Stress", nameTh: null, isPrimary: true },
   ],
   images: [{ id: "665a1b2c3d4e5f6789012350", sortOrder: 0 }],
 };

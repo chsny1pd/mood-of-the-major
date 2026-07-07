@@ -1,8 +1,10 @@
 import { memo } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { queryKeys } from "../../../constants/queryKeys";
 import { fetchFaculties, fetchMajors } from "../../../services/referenceService";
 import { fetchEmotionTags } from "../../../services/tagService";
+import { useLocalizedName } from "../../../lib/useLocalizedName";
 import type { MoodFilters } from "../types";
 
 interface FilterPanelProps {
@@ -12,6 +14,9 @@ interface FilterPanelProps {
 }
 
 export const FilterPanel = memo(function FilterPanel({ filters, onChange, showSort = true }: FilterPanelProps) {
+  const { t } = useTranslation();
+  const localizedName = useLocalizedName();
+
   const tagsQuery = useQuery({
     queryKey: queryKeys.emotionTags,
     queryFn: fetchEmotionTags,
@@ -36,7 +41,7 @@ export const FilterPanel = memo(function FilterPanel({ filters, onChange, showSo
     <div className="grid gap-3 rounded-xl border border-stone-200 bg-white p-4 sm:grid-cols-2">
       {showSort ? (
         <label className="block text-sm">
-          <span className="mb-1 block font-medium text-stone-700">Sort</span>
+          <span className="mb-1 block font-medium text-stone-700">{t("filter.sort")}</span>
           <select
             value={filters.sort ?? "newest"}
             onChange={(event) =>
@@ -44,15 +49,15 @@ export const FilterPanel = memo(function FilterPanel({ filters, onChange, showSo
             }
             className="w-full rounded-lg border border-stone-300 px-3 py-2 text-stone-900"
           >
-            <option value="newest">Newest</option>
-            <option value="most_reacted">Most reacted</option>
-            <option value="most_commented">Most commented</option>
+            <option value="newest">{t("filter.sortNewest")}</option>
+            <option value="most_reacted">{t("filter.sortMostReacted")}</option>
+            <option value="most_commented">{t("filter.sortMostCommented")}</option>
           </select>
         </label>
       ) : null}
 
       <label className="block text-sm">
-        <span className="mb-1 block font-medium text-stone-700">Emotion</span>
+        <span className="mb-1 block font-medium text-stone-700">{t("filter.emotion")}</span>
         <select
           value={filters.tagSlug ?? ""}
           onChange={(event) =>
@@ -60,17 +65,17 @@ export const FilterPanel = memo(function FilterPanel({ filters, onChange, showSo
           }
           className="w-full rounded-lg border border-stone-300 px-3 py-2 text-stone-900"
         >
-          <option value="">All emotions</option>
+          <option value="">{t("filter.allEmotions")}</option>
           {tagsQuery.data?.map((tag) => (
             <option key={tag.id} value={tag.slug}>
-              {tag.name}
+              {localizedName(tag)}
             </option>
           ))}
         </select>
       </label>
 
       <label className="block text-sm">
-        <span className="mb-1 block font-medium text-stone-700">Faculty</span>
+        <span className="mb-1 block font-medium text-stone-700">{t("filter.faculty")}</span>
         <select
           value={filters.facultyId ?? ""}
           onChange={(event) =>
@@ -81,34 +86,34 @@ export const FilterPanel = memo(function FilterPanel({ filters, onChange, showSo
           }
           className="w-full rounded-lg border border-stone-300 px-3 py-2 text-stone-900"
         >
-          <option value="">All faculties</option>
+          <option value="">{t("filter.allFaculties")}</option>
           {facultiesQuery.data?.map((faculty) => (
             <option key={faculty.id} value={faculty.id}>
-              {faculty.name}
+              {localizedName(faculty)}
             </option>
           ))}
         </select>
       </label>
 
       <label className="block text-sm">
-        <span className="mb-1 block font-medium text-stone-700">Major</span>
+        <span className="mb-1 block font-medium text-stone-700">{t("filter.major")}</span>
         <select
           value={filters.majorId ?? ""}
           onChange={(event) => update({ majorId: event.target.value || undefined })}
           disabled={!filters.facultyId}
           className="w-full rounded-lg border border-stone-300 px-3 py-2 text-stone-900 disabled:bg-stone-100"
         >
-          <option value="">All majors</option>
+          <option value="">{t("filter.allMajors")}</option>
           {majorsQuery.data?.map((major) => (
             <option key={major.id} value={major.id}>
-              {major.name}
+              {localizedName(major)}
             </option>
           ))}
         </select>
       </label>
 
       <label className="block text-sm">
-        <span className="mb-1 block font-medium text-stone-700">From</span>
+        <span className="mb-1 block font-medium text-stone-700">{t("filter.from")}</span>
         <input
           type="date"
           value={filters.from?.slice(0, 10) ?? ""}
@@ -124,7 +129,7 @@ export const FilterPanel = memo(function FilterPanel({ filters, onChange, showSo
       </label>
 
       <label className="block text-sm">
-        <span className="mb-1 block font-medium text-stone-700">To</span>
+        <span className="mb-1 block font-medium text-stone-700">{t("filter.to")}</span>
         <input
           type="date"
           value={filters.to?.slice(0, 10) ?? ""}

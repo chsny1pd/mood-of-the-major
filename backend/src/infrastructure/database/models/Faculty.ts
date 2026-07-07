@@ -3,6 +3,7 @@ import { Schema, model, type InferSchemaType } from "mongoose";
 const facultySchema = new Schema(
   {
     name: { type: String, required: true, trim: true },
+    nameTh: { type: String, trim: true, default: null },
     slug: { type: String, required: true, trim: true, lowercase: true, unique: true },
     code: { type: String, default: null },
     description: { type: String, default: null },

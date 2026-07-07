@@ -2,13 +2,17 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../../contexts/AuthContext";
 import { ROUTES } from "../../../constants/routes";
 import { getApiErrorMessage, getApiFieldErrors } from "../../../services/apiClient";
 import { fetchFaculties, fetchMajors, type FacultyOption, type MajorOption } from "../../../services/referenceService";
+import { useLocalizedName } from "../../../lib/useLocalizedName";
 import { registerSchema, type RegisterFormValues } from "../schemas";
 
 export function RegisterForm() {
+  const { t } = useTranslation();
+  const localizedName = useLocalizedName();
   const { register: registerUser } = useAuth();
   const navigate = useNavigate();
   const [formError, setFormError] = useState<string | null>(null);
@@ -30,8 +34,8 @@ export function RegisterForm() {
   useEffect(() => {
     void fetchFaculties()
       .then(setFaculties)
-      .catch(() => setFormError("Could not load faculties. Is the backend running?"));
-  }, []);
+      .catch(() => setFormError(t("register.facultiesLoadError")));
+  }, [t]);
 
   useEffect(() => {
     if (!facultyId) {
@@ -62,7 +66,7 @@ export function RegisterForm() {
       Object.entries(fieldErrors).forEach(([field, message]) => {
         setError(field as keyof RegisterFormValues, { message });
       });
-      setFormError(getApiErrorMessage(error, "Registration failed"));
+      setFormError(getApiErrorMessage(error, t("register.registrationFailed")));
     }
   });
 
@@ -76,14 +80,14 @@ export function RegisterForm() {
 
       <div>
         <label htmlFor="register-email" className="mb-1 block text-sm font-medium text-stone-700">
-          Email
+          {t("auth.email")}
         </label>
         <input
           {...register("email")}
           id="register-email"
           type="email"
           autoComplete="email"
-          aria-label="Email"
+          aria-label={t("auth.email")}
           className="w-full rounded-xl border border-stone-300 px-3 py-2 text-stone-900 outline-none ring-teal-700 focus:ring-2"
         />
         {errors.email ? <p className="mt-1 text-sm text-red-600">{errors.email.message}</p> : null}
@@ -91,15 +95,15 @@ export function RegisterForm() {
 
       <div>
         <label htmlFor="register-student-id" className="mb-1 block text-sm font-medium text-stone-700">
-          Student ID
+          {t("register.studentId")}
         </label>
         <input
           {...register("studentId")}
           id="register-student-id"
           type="text"
           autoComplete="off"
-          aria-label="Student ID"
-          placeholder="e.g. 6512345678"
+          aria-label={t("register.studentId")}
+          placeholder={t("register.studentIdPlaceholder")}
           className="w-full rounded-xl border border-stone-300 px-3 py-2 text-stone-900 outline-none ring-teal-700 focus:ring-2"
         />
         {errors.studentId ? (
@@ -109,18 +113,18 @@ export function RegisterForm() {
 
       <div>
         <label htmlFor="register-year" className="mb-1 block text-sm font-medium text-stone-700">
-          Year of study
+          {t("register.yearOfStudy")}
         </label>
         <select
           id="register-year"
-          aria-label="Year of study"
+          aria-label={t("register.yearOfStudy")}
           className="w-full rounded-xl border border-stone-300 px-3 py-2 text-stone-900 outline-none ring-teal-700 focus:ring-2"
           {...register("yearOfStudy", { valueAsNumber: true })}
         >
-          <option value="">Select year</option>
+          <option value="">{t("register.selectYear")}</option>
           {[1, 2, 3, 4, 5, 6, 7, 8].map((year) => (
             <option key={year} value={year}>
-              Year {year}
+              {t("register.yearOption", { year })}
             </option>
           ))}
         </select>
@@ -131,14 +135,14 @@ export function RegisterForm() {
 
       <div>
         <label htmlFor="register-password" className="mb-1 block text-sm font-medium text-stone-700">
-          Password
+          {t("auth.password")}
         </label>
         <input
           {...register("password")}
           id="register-password"
           type="password"
           autoComplete="new-password"
-          aria-label="Password"
+          aria-label={t("auth.password")}
           className="w-full rounded-xl border border-stone-300 px-3 py-2 text-stone-900 outline-none ring-teal-700 focus:ring-2"
         />
         {errors.password ? (
@@ -148,17 +152,17 @@ export function RegisterForm() {
 
       <div>
         <label htmlFor="facultyId" className="mb-1 block text-sm font-medium text-stone-700">
-          Faculty (optional)
+          {t("register.facultyOptional")}
         </label>
         <select
           id="facultyId"
           className="w-full rounded-xl border border-stone-300 px-3 py-2 text-stone-900 outline-none ring-teal-700 focus:ring-2"
           {...register("facultyId")}
         >
-          <option value="">Select faculty</option>
+          <option value="">{t("register.selectFaculty")}</option>
           {faculties.map((faculty) => (
             <option key={faculty.id} value={faculty.id}>
-              {faculty.name}
+              {localizedName(faculty)}
             </option>
           ))}
         </select>
@@ -166,7 +170,7 @@ export function RegisterForm() {
 
       <div>
         <label htmlFor="majorId" className="mb-1 block text-sm font-medium text-stone-700">
-          Major (optional)
+          {t("register.majorOptional")}
         </label>
         <select
           id="majorId"
@@ -174,10 +178,10 @@ export function RegisterForm() {
           className="w-full rounded-xl border border-stone-300 px-3 py-2 text-stone-900 outline-none ring-teal-700 focus:ring-2 disabled:bg-stone-100"
           {...register("majorId")}
         >
-          <option value="">Select major</option>
+          <option value="">{t("register.selectMajor")}</option>
           {majors.map((major) => (
             <option key={major.id} value={major.id}>
-              {major.name}
+              {localizedName(major)}
             </option>
           ))}
         </select>
@@ -188,13 +192,13 @@ export function RegisterForm() {
         disabled={isSubmitting}
         className="w-full rounded-xl bg-teal-800 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-900 disabled:opacity-60"
       >
-        {isSubmitting ? "Creating account..." : "Create account"}
+        {isSubmitting ? t("register.creatingAccount") : t("register.createAccount")}
       </button>
 
       <p className="text-center text-sm text-stone-600">
-        Already have an account?{" "}
+        {t("register.alreadyHaveAccount")}{" "}
         <Link to={ROUTES.login} className="font-medium text-teal-800 hover:underline">
-          Sign in
+          {t("auth.signIn")}
         </Link>
       </p>
     </form>
