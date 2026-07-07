@@ -51,6 +51,12 @@
     "oauthError": "Could not sign in with this provider. Please try again.",
     "callbackLoading": "Completing sign in...",
     "callbackError": "Sign in failed. Please try again.",
+    "backToLogin": "Back to sign in",
+    "oauthErrors": {
+      "oauth_not_configured": "Social sign-in is not configured on the server. Use email and password instead.",
+      "oauth_failed": "Could not complete sign in with this provider. Check that redirect URIs are configured correctly.",
+      "email_domain_not_allowed": "This email domain is not allowed to register on this platform."
+    },
     "registerTitle": "Create account",
     "register": "Register",
     "registering": "Creating account..."

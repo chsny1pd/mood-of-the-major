@@ -11,12 +11,24 @@ export function getOAuthStartUrl(provider: "google" | "github", returnUrl: strin
   return `${API_BASE_URL}/auth/${provider}?${params.toString()}`;
 }
 
+export const OAUTH_ERROR_CODES = [
+  "oauth_not_configured",
+  "oauth_failed",
+  "email_domain_not_allowed",
+] as const;
+
+export type OAuthErrorCode = (typeof OAUTH_ERROR_CODES)[number];
+
+export function isOAuthErrorCode(value: string): value is OAuthErrorCode {
+  return (OAUTH_ERROR_CODES as readonly string[]).includes(value);
+}
+
 export function parseOAuthCallbackHash(): {
   accessToken: string | null;
   displayName: string | null;
   avatarUrl: string | null;
   returnUrl: string;
-  error: string | null;
+  error: OAuthErrorCode | null;
 } {
   const hash = window.location.hash.startsWith("#")
     ? window.location.hash.slice(1)
@@ -34,6 +46,9 @@ export function parseOAuthCallbackHash(): {
     displayName: params.get("displayName"),
     avatarUrl: params.get("avatarUrl"),
     returnUrl: sanitizedReturnUrl,
-    error: params.get("error"),
+    error: (() => {
+      const error = params.get("error");
+      return error && isOAuthErrorCode(error) ? error : null;
+    })(),
   };
 }
