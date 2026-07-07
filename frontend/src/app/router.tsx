@@ -8,7 +8,7 @@ import { PublicLayout } from "../layouts/PublicLayout";
 import { StudentLayout } from "../layouts/StudentLayout";
 import { LandingPage } from "../pages/LandingPage";
 import { QueryProvider } from "./QueryProvider";
-import { lazyRoute } from "./routeUtils";
+import { lazyRoute } from "./lazyRoute";
 
 const LoginPage = lazyRoute(() => import("../pages/LoginPage"), "LoginPage");
 const RegisterPage = lazyRoute(() => import("../pages/RegisterPage"), "RegisterPage");
