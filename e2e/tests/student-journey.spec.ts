@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { logoutUser } from "../helpers/auth.js";
 
 test.describe("Student journey", () => {
   test("register, create mood, and view in feed", async ({ page }) => {
@@ -39,7 +40,7 @@ test.describe("Student journey", () => {
     await page.getByRole("button", { name: "Create account" }).click();
     await expect(page).toHaveURL(/\/feed/, { timeout: 15_000 });
 
-    await page.getByRole("button", { name: "Log out" }).click();
+    await logoutUser(page);
     await expect(page.getByRole("link", { name: "Log in" })).toBeVisible({ timeout: 10_000 });
 
     await page.goto("/login");

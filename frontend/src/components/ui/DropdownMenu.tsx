@@ -20,9 +20,16 @@ interface DropdownMenuProps {
   children: ReactNode;
   align?: "start" | "end";
   label: string;
+  triggerTestId?: string;
 }
 
-export function DropdownMenu({ trigger, children, align = "end", label }: DropdownMenuProps) {
+export function DropdownMenu({
+  trigger,
+  children,
+  align = "end",
+  label,
+  triggerTestId,
+}: DropdownMenuProps) {
   const [open, setOpen] = useState(false);
   const menuId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -62,6 +69,7 @@ export function DropdownMenu({ trigger, children, align = "end", label }: Dropdo
           aria-expanded={open}
           aria-controls={menuId}
           aria-label={label}
+          data-testid={triggerTestId}
           onClick={() => setOpen((value) => !value)}
           className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700"
         >
@@ -88,12 +96,14 @@ interface DropdownMenuItemProps {
   children: ReactNode;
   onSelect?: () => void;
   className?: string;
+  testId?: string;
 }
 
 export function DropdownMenuItem({
   children,
   onSelect,
   className = "",
+  testId,
 }: DropdownMenuItemProps) {
   const menu = useContext(DropdownMenuContext);
 
@@ -101,6 +111,7 @@ export function DropdownMenuItem({
     <button
       type="button"
       role="menuitem"
+      data-testid={testId}
       onClick={() => {
         onSelect?.();
         menu?.close();

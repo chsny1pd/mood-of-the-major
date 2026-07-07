@@ -30,6 +30,11 @@ export async function loginUser(
   await page.waitForURL(/\/feed/, { timeout: 15_000 });
 }
 
+export async function logoutUser(page: import("@playwright/test").Page): Promise<void> {
+  await page.getByTestId("user-menu-trigger").click();
+  await page.getByTestId("user-menu-logout").click();
+}
+
 export async function createMoodWithTag(
   page: import("@playwright/test").Page,
   content: string,

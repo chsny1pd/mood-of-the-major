@@ -34,6 +34,7 @@ export function UserMenu() {
   return (
     <DropdownMenu
       label={displayName}
+      triggerTestId="user-menu-trigger"
       trigger={
         <Avatar
           src={profileMeta.avatarUrl}
@@ -50,7 +51,9 @@ export function UserMenu() {
       <DropdownMenuSeparator />
       <DropdownMenuItem onSelect={() => navigate(ROUTES.settings)}>{t("nav.settings")}</DropdownMenuItem>
       <DropdownMenuSeparator />
-      <DropdownMenuItem onSelect={() => void logout()}>{t("nav.logout")}</DropdownMenuItem>
+      <DropdownMenuItem testId="user-menu-logout" onSelect={() => void logout()}>
+        {t("nav.logout")}
+      </DropdownMenuItem>
     </DropdownMenu>
   );
 }

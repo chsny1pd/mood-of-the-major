@@ -175,6 +175,7 @@ export function MoodDetailPage() {
               {isAuthenticated ? (
                 <button
                   type="button"
+                  data-testid="report-mood-button"
                   onClick={() => setShowReport(true)}
                   className="text-sm text-stone-500 hover:text-red-700"
                 >

@@ -31,9 +31,17 @@ export function ReportModal({ targetType, targetId, onClose }: ReportModalProps)
   });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="report-modal-title"
+      data-testid="report-modal"
+    >
       <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-        <h2 className="text-lg font-semibold text-stone-900">Report content</h2>
+        <h2 id="report-modal-title" className="text-lg font-semibold text-stone-900">
+          Report content
+        </h2>
         <p className="mt-1 text-sm text-stone-600">Help keep the community safe. Reports are anonymous.</p>
 
         {message ? (
@@ -90,6 +98,7 @@ export function ReportModal({ targetType, targetId, onClose }: ReportModalProps)
               </button>
               <button
                 type="submit"
+                data-testid="report-submit-button"
                 disabled={mutation.isPending}
                 className="rounded-xl bg-red-700 px-4 py-2 text-sm font-semibold text-white hover:bg-red-800 disabled:opacity-60"
               >
