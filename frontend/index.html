@@ -6,30 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Anonymous emotional sharing for university communities." />
     <title>Mood of the Major</title>
-    <script>
-      (function () {
-        var storageKey = "motm-theme";
-        var stored = localStorage.getItem(storageKey);
-        var theme = stored === "light" || stored === "dark" || stored === "system" ? stored : "system";
-        var resolved =
-          theme === "system"
-            ? window.matchMedia("(prefers-color-scheme: dark)").matches
-              ? "dark"
-              : "light"
-            : theme;
-        var root = document.documentElement;
-        if (resolved === "dark") {
-          root.classList.add("dark");
-        }
-        root.style.colorScheme = resolved;
-
-        var languageKey = "motm-language";
-        var language = localStorage.getItem(languageKey);
-        if (language === "en" || language === "th") {
-          root.lang = language;
-        }
-      })();
-    </script>
+    <script src="/theme-init.js"></script>
   </head>
   <body>
     <div id="root"></div>
