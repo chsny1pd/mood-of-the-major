@@ -1,0 +1,161 @@
+import { useState } from "react";
+import { Link, NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { ROUTES } from "../constants/routes";
+import { useAuth } from "../contexts/AuthContext";
+import { LanguageSwitcher } from "./LanguageSwitcher";
+import { ThemeToggle } from "./ThemeToggle";
+import { UserMenu } from "./UserMenu";
+import { Button } from "./ui/Button";
+
+interface NavItem {
+  to: string;
+  labelKey: string;
+  requiresAuth?: boolean;
+  adminOnly?: boolean;
+}
+
+const primaryNavItems: NavItem[] = [
+  { to: ROUTES.home, labelKey: "nav.home" },
+  { to: ROUTES.feed, labelKey: "nav.feed" },
+  { to: ROUTES.statistics, labelKey: "nav.statistics" },
+  { to: ROUTES.howToUse, labelKey: "nav.howToUse" },
+];
+
+const authenticatedNavItems: NavItem[] = [
+  { to: ROUTES.search, labelKey: "nav.search", requiresAuth: true },
+  { to: ROUTES.bookmarks, labelKey: "nav.saved", requiresAuth: true },
+  { to: ROUTES.trending, labelKey: "nav.trending", requiresAuth: true },
+  { to: ROUTES.notifications, labelKey: "nav.inbox", requiresAuth: true },
+  { to: ROUTES.admin, labelKey: "nav.admin", requiresAuth: true, adminOnly: true },
+];
+
+function navLinkClass({ isActive }: { isActive: boolean }) {
+  return [
+    "rounded-md px-2.5 py-1.5 transition",
+    isActive
+      ? "bg-teal-50 font-medium text-teal-900 dark:bg-teal-950 dark:text-teal-100"
+      : "text-stone-600 hover:bg-stone-100 hover:text-teal-800 dark:text-stone-300 dark:hover:bg-stone-800 dark:hover:text-teal-300",
+  ].join(" ");
+}
+
+interface AppNavbarProps {
+  variant?: "public" | "app";
+}
+
+export function AppNavbar({ variant = "app" }: AppNavbarProps) {
+  const { t } = useTranslation();
+  const { user, isAuthenticated } = useAuth();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const visibleItems = [
+    ...primaryNavItems,
+    ...authenticatedNavItems.filter((item) => {
+      if (item.adminOnly) {
+        return user?.role === "administrator";
+      }
+
+      if (item.requiresAuth) {
+        return isAuthenticated;
+      }
+
+      return true;
+    }),
+  ];
+
+  const closeMobile = () => setMobileOpen(false);
+
+  return (
+    <header className="border-b border-stone-200 bg-white/80 backdrop-blur dark:border-stone-700 dark:bg-stone-950/80">
+      <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 sm:px-6">
+        <div className="flex min-w-0 flex-1 items-center gap-4">
+          <Link
+            to={ROUTES.home}
+            className="shrink-0 text-lg font-semibold tracking-tight text-teal-800 dark:text-teal-300"
+          >
+            {t("app.name")}
+          </Link>
+
+          <nav className="hidden items-center gap-1 lg:flex" aria-label="Main navigation">
+            {visibleItems.map((item) => (
+              <NavLink key={item.to} to={item.to} className={navLinkClass}>
+                {t(item.labelKey)}
+              </NavLink>
+            ))}
+          </nav>
+        </div>
+
+        <div className="flex items-center gap-1 sm:gap-2">
+          {isAuthenticated ? (
+            <Link to={ROUTES.create} className="hidden sm:inline-flex">
+              <Button size="sm" className="rounded-full">
+                {t("nav.share")}
+              </Button>
+            </Link>
+          ) : variant === "public" ? (
+            <>
+              <Link to={ROUTES.login} className="hidden sm:inline-flex">
+                <Button variant="ghost" size="sm">
+                  {t("nav.logIn")}
+                </Button>
+              </Link>
+              <Link to={ROUTES.register} className="hidden sm:inline-flex">
+                <Button size="sm" className="rounded-full">
+                  {t("nav.join")}
+                </Button>
+              </Link>
+            </>
+          ) : null}
+
+          <LanguageSwitcher />
+          <ThemeToggle />
+          <UserMenu />
+
+          <button
+            type="button"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full text-stone-600 hover:bg-stone-100 lg:hidden dark:text-stone-300 dark:hover:bg-stone-800"
+            aria-expanded={mobileOpen}
+            aria-label={mobileOpen ? t("nav.closeMenu") : t("nav.menu")}
+            onClick={() => setMobileOpen((value) => !value)}
+          >
+            <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
+              {mobileOpen ? <path d="M6 18 18 6M6 6l12 12" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {mobileOpen ? (
+        <nav
+          className="border-t border-stone-200 px-4 py-3 lg:hidden dark:border-stone-700"
+          aria-label="Mobile navigation"
+        >
+          <div className="flex flex-col gap-1">
+            {visibleItems.map((item) => (
+              <NavLink key={item.to} to={item.to} className={navLinkClass} onClick={closeMobile}>
+                {t(item.labelKey)}
+              </NavLink>
+            ))}
+
+            {isAuthenticated ? (
+              <NavLink to={ROUTES.create} className={navLinkClass} onClick={closeMobile}>
+                {t("nav.share")}
+              </NavLink>
+            ) : (
+              <>
+                <NavLink to={ROUTES.login} className={navLinkClass} onClick={closeMobile}>
+                  {t("nav.logIn")}
+                </NavLink>
+                {variant === "public" ? (
+                  <NavLink to={ROUTES.register} className={navLinkClass} onClick={closeMobile}>
+                    {t("nav.join")}
+                  </NavLink>
+                ) : null}
+              </>
+            )}
+          </div>
+        </nav>
+      ) : null}
+    </header>
+  );
+}

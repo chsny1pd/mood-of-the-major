@@ -29,6 +29,8 @@ import { createTagController } from "../controllers/tagController.js";
 import { AggregationThresholdPolicy } from "../domain/services/AggregationThresholdPolicy.js";
 import { BcryptPasswordHasher } from "../infrastructure/auth/BcryptPasswordHasher.js";
 import { JwtTokenService } from "../infrastructure/auth/JwtTokenService.js";
+import { configurePassport } from "../infrastructure/auth/configurePassport.js";
+import { createOAuthController } from "../controllers/oauthController.js";
 import {
   connectDatabase,
   disconnectDatabase,
@@ -87,6 +89,7 @@ export interface AppDependencies {
   adminController: ReturnType<typeof createAdminController>;
   notificationController: ReturnType<typeof createNotificationController>;
   authController: ReturnType<typeof createAuthController>;
+  oauthController: ReturnType<typeof createOAuthController>;
   facultyController: ReturnType<typeof createFacultyController>;
   moodController: ReturnType<typeof createMoodController>;
   imageController: ReturnType<typeof createImageController>;
@@ -127,6 +130,7 @@ export function createDependencies(env: Env): AppDependencies {
   const imageStorage = createImageStorage(env);
   const passwordHasher = new BcryptPasswordHasher(env.BCRYPT_ROUNDS);
   const tokenService = new JwtTokenService(resolveJwtSecret(env));
+  configurePassport(env);
 
   const authService = new AuthService(
     userRepository,
@@ -206,6 +210,7 @@ export function createDependencies(env: Env): AppDependencies {
     adminController: createAdminController(adminService),
     notificationController: createNotificationController(notificationService),
     authController: createAuthController(authService, env),
+    oauthController: createOAuthController(authService, env),
     facultyController: createFacultyController(facultyService),
     moodController: createMoodController(moodService),
     imageController: createImageController(imageService),

@@ -1,0 +1,180 @@
+{
+  "app": {
+    "name": "Mood of the Major",
+    "tagline": "Anonymous sharing for university communities",
+    "footer": "Anonymous emotional sharing for university communities."
+  },
+  "nav": {
+    "home": "Home",
+    "feed": "Feed",
+    "statistics": "Statistics",
+    "howToUse": "How to Use",
+    "search": "Search",
+    "saved": "Saved",
+    "trending": "Trending",
+    "inbox": "Inbox",
+    "admin": "Admin",
+    "share": "Share",
+    "logIn": "Log in",
+    "join": "Join",
+    "menu": "Menu",
+    "closeMenu": "Close menu",
+    "settings": "Settings",
+    "logout": "Log out",
+    "backToApp": "Back to app"
+  },
+  "theme": {
+    "label": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "language": {
+    "label": "Language",
+    "en": "English",
+    "th": "ไทย"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signInTitle": "Sign in",
+    "signingIn": "Signing in...",
+    "createAccount": "Create one",
+    "noAccount": "No account yet?",
+    "email": "Email",
+    "password": "Password",
+    "invalidCredentials": "Invalid email or password",
+    "continueWithGoogle": "Continue with Google",
+    "continueWithGitHub": "Continue with GitHub",
+    "orContinueWithEmail": "Or continue with email",
+    "oauthUnavailable": "Social sign-in is not configured. Use email and password instead.",
+    "oauthLoading": "Connecting...",
+    "oauthError": "Could not sign in with this provider. Please try again.",
+    "callbackLoading": "Completing sign in...",
+    "callbackError": "Sign in failed. Please try again.",
+    "registerTitle": "Create account",
+    "register": "Register",
+    "registering": "Creating account..."
+  },
+  "settings": {
+    "title": "Settings",
+    "profile": "Profile",
+    "preferences": "Preferences",
+    "account": "Account",
+    "avatar": "Avatar",
+    "name": "Name",
+    "email": "Email",
+    "nameFallback": "Not set",
+    "logoutDescription": "Sign out of your account on this device.",
+    "logoutButton": "Log out"
+  },
+  "howToUse": {
+    "title": "How to Use",
+    "whatIsTitle": "What is Mood of the Major",
+    "whatIsBody": "Mood of the Major is an anonymous social platform for university students. Share how you feel, browse community moods, and explore emotional trends across faculties and majors — without revealing your identity to other students.",
+    "howToPostTitle": "How to Post",
+    "howToPostSteps": {
+      "selectMood": "Select a mood category that best matches how you feel.",
+      "writeMessage": "Write your message. You can optionally attach an image.",
+      "submit": "Submit your post. It appears anonymously in the feed."
+    },
+    "browseTitle": "Browse Posts",
+    "browseBody": "Explore the mood feed to read anonymous posts from your campus community.",
+    "browseReactions": "React to posts with emotional reactions to show support or resonance.",
+    "browseFilters": "Use filters to narrow posts by faculty, major, mood category, or date.",
+    "browseSearch": "Search for keywords or topics across posts.",
+    "privacyTitle": "Privacy",
+    "privacyAnonymous": "Posts, comments, and reactions are anonymous to other users. Your identity is not shown on public content.",
+    "privacyData": "Your account data is protected. Only platform administrators can access identity for moderation, with audit logging.",
+    "privacyGuidelines": "Follow community guidelines: be respectful, avoid harassment, and report harmful content.",
+    "faqTitle": "FAQ",
+    "faq": {
+      "howPost": {
+        "q": "How do I post?",
+        "a": "Sign in, tap Share, choose a mood category, write your message, and submit."
+      },
+      "whoAmI": {
+        "q": "Can people know who I am?",
+        "a": "No. Other students cannot see your name, email, or profile on public posts."
+      },
+      "editPost": {
+        "q": "Can I edit my post?",
+        "a": "You can edit your own posts from the post detail view while signed in."
+      },
+      "reactions": {
+        "q": "How do reactions work?",
+        "a": "Tap a reaction on a post to express how it resonates with you. Reactions are anonymous."
+      }
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "loadingSession": "Loading session...",
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "save": "Save",
+    "error": "Something went wrong",
+    "back": "Back"
+  },
+  "landing": {
+    "eyebrow": "University emotional wellness",
+    "headline": "Share how you feel — anonymously, safely, together.",
+    "description": "Mood of the Major helps students express emotional experience without revealing identity, while communities understand collective mood across faculties and majors.",
+    "cards": {
+      "anonymous": {
+        "title": "Anonymous posts",
+        "body": "Your voice matters. Your identity stays private in public views."
+      },
+      "feeds": {
+        "title": "Faculty & major feeds",
+        "body": "See how your academic community is feeling over time."
+      },
+      "trust": {
+        "title": "Built for trust",
+        "body": "Security, moderation, and privacy are core — not add-ons."
+      }
+    },
+    "authLive": "Authentication is live.",
+    "authLiveBody": "Create an account to access your feed — browse anonymous moods or share your own."
+  },
+  "feed": {
+    "title": "Mood feed",
+    "description": "Anonymous posts from students across campus.",
+    "shareMood": "Share mood",
+    "emptyTitle": "No moods yet",
+    "emptyBody": "Be the first to share how you're feeling today.",
+    "errorTitle": "Could not load feed",
+    "loadMore": "Load more"
+  },
+  "search": {
+    "title": "Search",
+    "pageTitle": "Search moods"
+  },
+  "statistics": {
+    "title": "Statistics",
+    "pageTitle": "Statistics"
+  },
+  "trending": {
+    "title": "Trending",
+    "pageTitle": "Trending emotions"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "pageTitle": "Notifications"
+  },
+  "create": {
+    "title": "Share a mood",
+    "pageTitle": "Share your mood",
+    "pageDescription": "Your post will be anonymous. Only you know it's yours."
+  },
+  "bookmarks": {
+    "title": "Saved moods",
+    "pageTitle": "Saved moods"
+  },
+  "admin": {
+    "overview": "Overview",
+    "reports": "Reports",
+    "users": "Users",
+    "auditLog": "Audit log",
+    "administration": "Administration"
+  }
+}

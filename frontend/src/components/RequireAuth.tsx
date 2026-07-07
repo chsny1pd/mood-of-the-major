@@ -1,16 +1,18 @@
 import { Navigate, useLocation } from "react-router-dom";
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../contexts/AuthContext";
 import { ROUTES } from "../constants/routes";
 
 export function RequireAuth({ children }: { children: ReactNode }) {
+  const { t } = useTranslation();
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[40vh] items-center justify-center text-stone-500">
-        Loading session...
+      <div className="flex min-h-[40vh] items-center justify-center text-stone-500 dark:text-stone-400">
+        {t("common.loadingSession")}
       </div>
     );
   }

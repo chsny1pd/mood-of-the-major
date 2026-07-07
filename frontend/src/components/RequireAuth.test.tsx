@@ -1,8 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { I18nextProvider } from "react-i18next";
 import { describe, expect, it, vi } from "vitest";
 import { RequireAuth } from "./RequireAuth";
 import { ROUTES } from "../constants/routes";
+import i18n from "../lib/i18n";
 
 vi.mock("../contexts/AuthContext", () => ({
   useAuth: vi.fn(),
@@ -10,32 +12,41 @@ vi.mock("../contexts/AuthContext", () => ({
 
 import { useAuth } from "../contexts/AuthContext";
 
+const authMockBase = {
+  profileMeta: { displayName: null, avatarUrl: null },
+  login: vi.fn(),
+  loginWithOAuth: vi.fn(),
+  completeOAuthCallback: vi.fn(),
+  register: vi.fn(),
+  logout: vi.fn(),
+  refreshProfile: vi.fn(),
+};
+
 describe("RequireAuth", () => {
   it("redirects unauthenticated users to login", () => {
     vi.mocked(useAuth).mockReturnValue({
+      ...authMockBase,
       isAuthenticated: false,
       isLoading: false,
       user: null,
-      login: vi.fn(),
-      register: vi.fn(),
-      logout: vi.fn(),
-      refreshProfile: vi.fn(),
     });
 
     render(
-      <MemoryRouter initialEntries={["/create"]}>
-        <Routes>
-          <Route
-            path="/create"
-            element={
-              <RequireAuth>
-                <div>Protected content</div>
-              </RequireAuth>
-            }
-          />
-          <Route path={ROUTES.login} element={<div>Login page</div>} />
-        </Routes>
-      </MemoryRouter>,
+      <I18nextProvider i18n={i18n}>
+        <MemoryRouter initialEntries={["/create"]}>
+          <Routes>
+            <Route
+              path="/create"
+              element={
+                <RequireAuth>
+                  <div>Protected content</div>
+                </RequireAuth>
+              }
+            />
+            <Route path={ROUTES.login} element={<div>Login page</div>} />
+          </Routes>
+        </MemoryRouter>
+      </I18nextProvider>,
     );
 
     expect(screen.getByText("Login page")).toBeInTheDocument();
@@ -44,6 +55,7 @@ describe("RequireAuth", () => {
 
   it("renders children when authenticated", () => {
     vi.mocked(useAuth).mockReturnValue({
+      ...authMockBase,
       isAuthenticated: true,
       isLoading: false,
       user: {
@@ -58,18 +70,16 @@ describe("RequireAuth", () => {
         major: null,
         createdAt: new Date().toISOString(),
       },
-      login: vi.fn(),
-      register: vi.fn(),
-      logout: vi.fn(),
-      refreshProfile: vi.fn(),
     });
 
     render(
-      <MemoryRouter>
-        <RequireAuth>
-          <div>Protected content</div>
-        </RequireAuth>
-      </MemoryRouter>,
+      <I18nextProvider i18n={i18n}>
+        <MemoryRouter>
+          <RequireAuth>
+            <div>Protected content</div>
+          </RequireAuth>
+        </MemoryRouter>
+      </I18nextProvider>,
     );
 
     expect(screen.getByText("Protected content")).toBeInTheDocument();

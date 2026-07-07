@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { EmptyState } from "../components/EmptyState";
 import { queryKeys } from "../constants/queryKeys";
 import { ChartContainer } from "../features/statistics/components/ChartContainer";
@@ -10,6 +11,7 @@ import { fetchStatisticsDashboard } from "../services/statisticsService";
 import { getApiErrorMessage } from "../services/apiClient";
 
 export function StatisticsPage() {
+  const { t } = useTranslation();
   const [scope, setScope] = useState<ScopeSelection>({ scope: "platform" });
   const [period, setPeriod] = useState<"7d" | "30d" | "90d">("30d");
 
@@ -33,7 +35,7 @@ export function StatisticsPage() {
 
   return (
     <section className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
-      <h1 className="text-2xl font-bold text-stone-900">Statistics</h1>
+      <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-100">{t("statistics.pageTitle")}</h1>
       <p className="mt-1 text-sm text-stone-600">
         Aggregated mood insights — individual posts are never shown.
       </p>

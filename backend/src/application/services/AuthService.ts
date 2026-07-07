@@ -9,6 +9,7 @@ import {
   ValidationError,
 } from "../../domain/errors/AppError.js";
 import type { Env } from "../../config/env.js";
+import { randomBytes } from "node:crypto";
 
 export interface RegisterInput {
   email: string;
@@ -22,6 +23,12 @@ export interface RegisterInput {
 export interface LoginInput {
   email: string;
   password: string;
+}
+
+export interface OAuthProfileInput {
+  email: string;
+  displayName?: string | null;
+  avatarUrl?: string | null;
 }
 
 export interface AuthResult {
@@ -123,6 +130,32 @@ export class AuthService {
         "Invalid email or password",
         "AUTH_INVALID_CREDENTIALS",
       );
+    }
+
+    await this.users.updateLastLoginAt(user.id, new Date());
+
+    return this.issueSession(user);
+  }
+
+  async loginWithOAuthProfile(input: OAuthProfileInput): Promise<AuthResult> {
+    const email = input.email.trim().toLowerCase();
+    this.assertEmailAllowed(email);
+
+    let user = await this.users.findByEmail(email);
+
+    if (!user) {
+      const passwordHash = await this.passwordHasher.hash(randomBytes(32).toString("hex"));
+
+      user = await this.users.create({
+        email,
+        passwordHash,
+        studentId: null,
+        yearOfStudy: null,
+      });
+    }
+
+    if (user.status === "suspended") {
+      throw new AuthenticationError("Account suspended", "ACCOUNT_SUSPENDED", 403);
     }
 
     await this.users.updateLastLoginAt(user.id, new Date());

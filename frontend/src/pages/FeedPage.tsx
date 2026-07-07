@@ -1,5 +1,6 @@
 import { lazy, Suspense, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { AnimatedMoodItem, AnimatedMoodList } from "../components/AnimatedMoodList";
 import { MoodCard } from "../components/MoodCard";
 import { EmptyState } from "../components/EmptyState";
@@ -15,10 +16,13 @@ const FilterPanel = lazy(() =>
 );
 
 function FilterPanelFallback() {
-  return <div className="h-32 animate-pulse rounded-xl border border-stone-200 bg-stone-100" />;
+  return (
+    <div className="h-32 animate-pulse rounded-xl border border-stone-200 bg-stone-100 dark:border-stone-700 dark:bg-stone-800" />
+  );
 }
 
 export function FeedPage() {
+  const { t } = useTranslation();
   const [filters, setFilters] = useState<MoodFilters>(DEFAULT_MOOD_FILTERS);
   const feedQuery = useMoodFeed({ type: "global", params: filters });
   const moods = useMemo(
@@ -30,14 +34,14 @@ export function FeedPage() {
     <section className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       <div className="mb-8 flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-semibold text-stone-900">Mood feed</h1>
-          <p className="mt-2 text-stone-600">Anonymous posts from students across campus.</p>
+          <h1 className="text-3xl font-semibold text-stone-900 dark:text-stone-100">{t("feed.title")}</h1>
+          <p className="mt-2 text-stone-600 dark:text-stone-300">{t("feed.description")}</p>
         </div>
         <Link
           to={ROUTES.create}
-          className="rounded-full bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800"
+          className="rounded-full bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500"
         >
-          Share mood
+          {t("feed.shareMood")}
         </Link>
       </div>
 
@@ -52,28 +56,28 @@ export function FeedPage() {
         </div>
       ) : feedQuery.isError ? (
         <EmptyState
-          title="Could not load feed"
-          description="Please check your connection and try again."
+          title={t("feed.errorTitle")}
+          description={t("common.error")}
           action={
             <button
               type="button"
               onClick={() => void feedQuery.refetch()}
-              className="rounded-full border border-stone-300 px-4 py-2 text-sm text-stone-700 hover:bg-stone-100"
+              className="rounded-full border border-stone-300 px-4 py-2 text-sm text-stone-700 hover:bg-stone-100 dark:border-stone-600 dark:text-stone-200 dark:hover:bg-stone-800"
             >
-              Retry
+              {t("common.retry")}
             </button>
           }
         />
       ) : moods.length === 0 ? (
         <EmptyState
-          title="No moods yet"
-          description="Be the first to share how you're feeling."
+          title={t("feed.emptyTitle")}
+          description={t("feed.emptyBody")}
           action={
             <Link
               to={ROUTES.create}
-              className="inline-block rounded-full bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800"
+              className="inline-block rounded-full bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500"
             >
-              Create a mood
+              {t("feed.shareMood")}
             </Link>
           }
         />
@@ -90,9 +94,9 @@ export function FeedPage() {
               type="button"
               onClick={() => void feedQuery.fetchNextPage()}
               disabled={feedQuery.isFetchingNextPage}
-              className="w-full rounded-xl border border-stone-300 px-4 py-2 text-sm text-stone-700 hover:bg-stone-100 disabled:opacity-60"
+              className="w-full rounded-xl border border-stone-300 px-4 py-2 text-sm text-stone-700 hover:bg-stone-100 disabled:opacity-60 dark:border-stone-600 dark:text-stone-200 dark:hover:bg-stone-800"
             >
-              {feedQuery.isFetchingNextPage ? "Loading..." : "Load more"}
+              {feedQuery.isFetchingNextPage ? t("common.loading") : t("feed.loadMore")}
             </button>
           ) : null}
         </AnimatedMoodList>

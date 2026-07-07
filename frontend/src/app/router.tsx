@@ -12,6 +12,7 @@ import { lazyRoute } from "./routeUtils";
 
 const LoginPage = lazyRoute(() => import("../pages/LoginPage"), "LoginPage");
 const RegisterPage = lazyRoute(() => import("../pages/RegisterPage"), "RegisterPage");
+const AuthCallbackPage = lazyRoute(() => import("../pages/AuthCallbackPage"), "AuthCallbackPage");
 const FeedPage = lazyRoute(() => import("../pages/FeedPage"), "FeedPage");
 const MoodDetailPage = lazyRoute(() => import("../pages/MoodDetailPage"), "MoodDetailPage");
 const FacultyFeedPage = lazyRoute(() => import("../pages/FacultyFeedPage"), "FacultyFeedPage");
@@ -25,6 +26,8 @@ const NotificationsPage = lazyRoute(
   () => import("../pages/NotificationsPage"),
   "NotificationsPage",
 );
+const SettingsPage = lazyRoute(() => import("../pages/SettingsPage"), "SettingsPage");
+const HowToUsePage = lazyRoute(() => import("../pages/HowToUsePage"), "HowToUsePage");
 const AdminOverviewPage = lazyRoute(
   () => import("../pages/AdminOverviewPage"),
   "AdminOverviewPage",
@@ -57,6 +60,10 @@ export const router = createBrowserRouter([
         path: ROUTES.register,
         element: <RegisterPage />,
       },
+      {
+        path: ROUTES.authCallback,
+        element: <AuthCallbackPage />,
+      },
     ],
   },
   {
@@ -69,6 +76,10 @@ export const router = createBrowserRouter([
       {
         path: ROUTES.feed,
         element: <FeedPage />,
+      },
+      {
+        path: ROUTES.howToUse,
+        element: <HowToUsePage />,
       },
       {
         path: ROUTES.moodDetail(":moodId"),
@@ -116,6 +127,10 @@ export const router = createBrowserRouter([
       {
         path: ROUTES.notifications,
         element: <NotificationsPage />,
+      },
+      {
+        path: ROUTES.settings,
+        element: <SettingsPage />,
       },
     ],
   },

@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import passport from "passport";
 import type { Dependencies } from "./config/di.js";
 import { getCorsOrigins } from "./config/env.js";
 import { createHelmetMiddleware } from "./config/helmet.js";
@@ -21,6 +22,7 @@ export function createApp(deps: Dependencies) {
     }),
   );
   app.use(cookieParser());
+  app.use(passport.initialize());
   app.use((req, res, next) => {
     if (req.method === "PUT" && /^\/api\/v1\/images\/[^/]+\/data$/.test(req.path)) {
       next();

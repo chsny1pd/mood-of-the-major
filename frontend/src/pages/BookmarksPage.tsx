@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { MoodCard } from "../components/MoodCard";
 import { EmptyState } from "../components/EmptyState";
 import { MoodCardSkeleton } from "../components/Skeleton";
@@ -8,6 +9,7 @@ import { ROUTES } from "../constants/routes";
 import { fetchBookmarks } from "../services/bookmarkService";
 
 export function BookmarksPage() {
+  const { t } = useTranslation();
   const bookmarksQuery = useInfiniteQuery({
     queryKey: queryKeys.bookmarks(),
     initialPageParam: undefined as string | undefined,
@@ -19,7 +21,7 @@ export function BookmarksPage() {
 
   return (
     <section className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
-      <h1 className="text-2xl font-bold text-stone-900">Saved moods</h1>
+      <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-100">{t("bookmarks.pageTitle")}</h1>
       <p className="mt-1 text-sm text-stone-600">Posts you bookmarked for later.</p>
 
       {bookmarksQuery.isLoading ? (

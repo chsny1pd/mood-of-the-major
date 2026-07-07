@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { EmptyState } from "../components/EmptyState";
 import { queryKeys } from "../constants/queryKeys";
 import {
@@ -10,6 +11,7 @@ import {
 import { getApiErrorMessage } from "../services/apiClient";
 
 export function NotificationsPage() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const notificationsQuery = useQuery({
@@ -58,7 +60,7 @@ export function NotificationsPage() {
     <section className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-stone-900">Notifications</h1>
+          <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-100">{t("notifications.pageTitle")}</h1>
           <p className="mt-1 text-sm text-stone-600">{unreadCount} unread</p>
         </div>
         {unreadCount > 0 ? (

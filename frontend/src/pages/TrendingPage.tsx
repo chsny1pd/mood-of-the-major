@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { EmptyState } from "../components/EmptyState";
 import { queryKeys } from "../constants/queryKeys";
 import { ScopeSelector, type ScopeSelection } from "../features/statistics/components/ScopeSelector";
@@ -8,6 +9,7 @@ import { fetchTrendingEmotions } from "../services/statisticsService";
 import { getApiErrorMessage } from "../services/apiClient";
 
 export function TrendingPage() {
+  const { t } = useTranslation();
   const [scope, setScope] = useState<ScopeSelection>({ scope: "platform" });
   const [window, setWindow] = useState<"7d" | "30d">("7d");
 
@@ -29,7 +31,7 @@ export function TrendingPage() {
 
   return (
     <section className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-      <h1 className="text-2xl font-bold text-stone-900">Trending emotions</h1>
+      <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-100">{t("trending.pageTitle")}</h1>
       <p className="mt-1 text-sm text-stone-600">
         Rising themes from recent activity — no individual posts are shown.
       </p>
