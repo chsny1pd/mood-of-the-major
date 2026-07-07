@@ -2,17 +2,29 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { I18nextProvider } from "react-i18next";
 import { describe, expect, it, vi } from "vitest";
-import { RequireAuth } from "./RequireAuth";
 import { ROUTES } from "../constants/routes";
 import i18n from "../lib/i18n";
+import type { AuthContextValue } from "../contexts/auth-context";
 
-vi.mock("../contexts/AuthContext", () => ({
+vi.mock("../hooks/useAuth", () => ({
   useAuth: vi.fn(),
 }));
 
 import { useAuth } from "../hooks/useAuth";
+import { RequireAuth } from "./RequireAuth";
 
-const authMockBase = {
+const mockUseAuth = vi.mocked(useAuth);
+
+const authMockBase: Pick<
+  AuthContextValue,
+  | "profileMeta"
+  | "login"
+  | "loginWithOAuth"
+  | "completeOAuthCallback"
+  | "register"
+  | "logout"
+  | "refreshProfile"
+> = {
   profileMeta: { displayName: null, avatarUrl: null },
   login: vi.fn(),
   loginWithOAuth: vi.fn(),
@@ -24,7 +36,7 @@ const authMockBase = {
 
 describe("RequireAuth", () => {
   it("redirects unauthenticated users to login", () => {
-    vi.mocked(useAuth).mockReturnValue({
+    mockUseAuth.mockReturnValue({
       ...authMockBase,
       isAuthenticated: false,
       isLoading: false,
@@ -54,7 +66,7 @@ describe("RequireAuth", () => {
   });
 
   it("renders children when authenticated", () => {
-    vi.mocked(useAuth).mockReturnValue({
+    mockUseAuth.mockReturnValue({
       ...authMockBase,
       isAuthenticated: true,
       isLoading: false,
