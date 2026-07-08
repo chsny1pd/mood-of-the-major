@@ -2,13 +2,14 @@ import { createBrowserRouter } from "react-router-dom";
 import { RequireAuth } from "../components/RequireAuth";
 import { RequireAdmin } from "../components/RequireAdmin";
 import { ROUTES } from "../constants/routes";
-import { AdminLayout } from "../layouts/AdminLayout";
-import { AuthLayout } from "../layouts/AuthLayout";
 import { PublicLayout } from "../layouts/PublicLayout";
-import { StudentLayout } from "../layouts/StudentLayout";
 import { LandingPage } from "../pages/LandingPage";
-import { QueryProvider } from "./QueryProvider";
+import { LazyQueryProvider } from "./LazyQueryProvider";
 import { lazyRoute } from "./lazyRoute";
+
+const AuthLayout = lazyRoute(() => import("../layouts/AuthLayout"), "AuthLayout");
+const StudentLayout = lazyRoute(() => import("../layouts/StudentLayout"), "StudentLayout");
+const AdminLayout = lazyRoute(() => import("../layouts/AdminLayout"), "AdminLayout");
 
 const LoginPage = lazyRoute(() => import("../pages/LoginPage"), "LoginPage");
 const RegisterPage = lazyRoute(() => import("../pages/RegisterPage"), "RegisterPage");
@@ -76,9 +77,9 @@ export const router = createBrowserRouter([
   },
   {
     element: (
-      <QueryProvider>
+      <LazyQueryProvider>
         <StudentLayout />
-      </QueryProvider>
+      </LazyQueryProvider>
     ),
     children: [
       {
@@ -106,9 +107,9 @@ export const router = createBrowserRouter([
   {
     element: (
       <RequireAuth>
-        <QueryProvider>
+        <LazyQueryProvider>
           <StudentLayout />
-        </QueryProvider>
+        </LazyQueryProvider>
       </RequireAuth>
     ),
     children: [
@@ -145,9 +146,9 @@ export const router = createBrowserRouter([
   {
     element: (
       <RequireAdmin>
-        <QueryProvider>
+        <LazyQueryProvider>
           <AdminLayout />
-        </QueryProvider>
+        </LazyQueryProvider>
       </RequireAdmin>
     ),
     children: [

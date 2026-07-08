@@ -1,0 +1,52 @@
+{
+  "app": {
+    "name": "Mood of the Major",
+    "tagline": "Anonymous sharing for university communities",
+    "footer": "Anonymous emotional sharing for university communities."
+  },
+  "nav": {
+    "home": "Home",
+    "feed": "Feed",
+    "statistics": "Statistics",
+    "howToUse": "How to Use",
+    "logIn": "Log in",
+    "join": "Join",
+    "menu": "Menu",
+    "closeMenu": "Close menu"
+  },
+  "theme": {
+    "label": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "language": {
+    "label": "Language",
+    "en": "English",
+    "th": "ไทย"
+  },
+  "common": {
+    "loading": "Loading..."
+  },
+  "landing": {
+    "eyebrow": "University emotional wellness",
+    "headline": "Share how you feel — anonymously, safely, together.",
+    "description": "Mood of the Major helps students express emotional experience without revealing identity, while communities understand collective mood across faculties and majors.",
+    "cards": {
+      "anonymous": {
+        "title": "Anonymous posts",
+        "body": "Your voice matters. Your identity stays private in public views."
+      },
+      "feeds": {
+        "title": "Faculty & major feeds",
+        "body": "See how your academic community is feeling over time."
+      },
+      "trust": {
+        "title": "Built for trust",
+        "body": "Security, moderation, and privacy are core — not add-ons."
+      }
+    },
+    "authLive": "Authentication is live.",
+    "authLiveBody": "Create an account to access your feed — browse anonymous moods or share your own."
+  }
+}

@@ -1,12 +1,17 @@
-import { useState } from "react";
+import { Suspense, lazy, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ROUTES } from "../constants/routes";
 import { useAuth } from "../hooks/useAuth";
-import { LanguageSwitcher } from "./LanguageSwitcher";
-import { ThemeToggle } from "./ThemeToggle";
-import { UserMenu } from "./UserMenu";
 import { Button } from "./ui/Button";
+
+const LanguageSwitcher = lazy(() =>
+  import("./LanguageSwitcher").then((module) => ({ default: module.LanguageSwitcher })),
+);
+const ThemeToggle = lazy(() =>
+  import("./ThemeToggle").then((module) => ({ default: module.ThemeToggle })),
+);
+const UserMenu = lazy(() => import("./UserMenu").then((module) => ({ default: module.UserMenu })));
 
 interface NavItem {
   to: string;
@@ -107,9 +112,15 @@ export function AppNavbar({ variant = "app" }: AppNavbarProps) {
             </>
           ) : null}
 
-          <LanguageSwitcher />
-          <ThemeToggle />
-          <UserMenu />
+          <Suspense fallback={null}>
+            <LanguageSwitcher />
+          </Suspense>
+          <Suspense fallback={null}>
+            <ThemeToggle />
+          </Suspense>
+          <Suspense fallback={null}>
+            <UserMenu />
+          </Suspense>
 
           <button
             type="button"

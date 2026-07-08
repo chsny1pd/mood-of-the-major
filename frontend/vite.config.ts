@@ -8,6 +8,15 @@ export default defineConfig({
     target: "es2022",
     modulePreload: {
       polyfill: false,
+      resolveDependencies: (_filename, deps) =>
+        deps.filter(
+          (dep) =>
+            !dep.includes("/charts-") &&
+            !dep.includes("/motion-") &&
+            !dep.includes("/query-") &&
+            !dep.includes("/forms-") &&
+            !dep.includes("/http-"),
+        ),
     },
     rollupOptions: {
       output: {
@@ -42,6 +51,14 @@ export default defineConfig({
 
           if (id.includes("zod") || id.includes("@hookform")) {
             return "forms";
+          }
+
+          if (id.includes("i18next") || id.includes("react-i18next")) {
+            return "i18n";
+          }
+
+          if (id.includes("framer-motion")) {
+            return "motion";
           }
 
           if (id.includes("@sentry")) {

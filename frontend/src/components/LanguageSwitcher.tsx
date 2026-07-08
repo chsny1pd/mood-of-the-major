@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { LANGUAGE_STORAGE_KEY } from "../lib/i18n";
+import { LANGUAGE_STORAGE_KEY, changeLanguage as setAppLanguage } from "../lib/i18n";
 import {
   DropdownMenu,
   DropdownMenuItem,
@@ -18,7 +18,7 @@ export function LanguageSwitcher() {
 
   const changeLanguage = (code: string) => {
     localStorage.setItem(LANGUAGE_STORAGE_KEY, code);
-    void i18n.changeLanguage(code);
+    void setAppLanguage(code);
   };
 
   return (

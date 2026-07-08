@@ -1,11 +1,17 @@
+import { useEffect } from "react";
 import { Link, Outlet } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AppNavbar } from "../components/AppNavbar";
 import { ROUTES } from "../constants/routes";
+import { ensureFullTranslations } from "../lib/i18n";
 import { themeClasses } from "../lib/themeClasses";
 
 export function AuthLayout() {
   const { t } = useTranslation();
+
+  useEffect(() => {
+    void ensureFullTranslations();
+  }, []);
 
   return (
     <div className={`flex min-h-screen flex-col ${themeClasses.page}`}>

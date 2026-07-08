@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
-import { LANGUAGE_STORAGE_KEY } from "../lib/i18n";
+import { LANGUAGE_STORAGE_KEY, changeLanguage as setAppLanguage } from "../lib/i18n";
 import { ROUTES } from "../constants/routes";
 import { SettingsCard } from "../components/SettingsCard";
 import { Avatar } from "../components/ui/Avatar";
@@ -94,7 +94,7 @@ export function SettingsPage() {
                       size="sm"
                       onClick={() => {
                         localStorage.setItem(LANGUAGE_STORAGE_KEY, code);
-                        void i18n.changeLanguage(code);
+                        void setAppLanguage(code);
                       }}
                     >
                       {t(`language.${code}`)}

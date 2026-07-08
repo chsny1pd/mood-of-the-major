@@ -26,6 +26,7 @@ export function PasswordInput({ id, error, className = "", ...props }: PasswordI
           onClick={() => setVisible((current) => !current)}
           className="absolute inset-y-0 right-0 flex items-center px-3 text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-200"
           aria-label={visible ? t("auth.hidePassword") : t("auth.showPassword")}
+          aria-controls={id}
         >
           {visible ? (
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5" aria-hidden>

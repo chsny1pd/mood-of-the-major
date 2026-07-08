@@ -1,6 +1,7 @@
+import { memo } from "react";
 import { useTranslation } from "react-i18next";
 
-export function LandingPage() {
+export const LandingPage = memo(function LandingPage() {
   const { t } = useTranslation();
 
   const cards = [
@@ -51,4 +52,4 @@ export function LandingPage() {
       </div>
     </section>
   );
-}
+});
