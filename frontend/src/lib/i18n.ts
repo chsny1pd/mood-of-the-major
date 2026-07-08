@@ -2,14 +2,26 @@ import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
 import publicEn from "../locales/en/public.json";
-import publicTh from "../locales/th/public.json";
 
 export const LANGUAGE_STORAGE_KEY = "motm-language";
 
 let englishBundlePromise: Promise<typeof import("../locales/en/translation.json")> | null = null;
 let thaiBundlePromise: Promise<typeof import("../locales/th/translation.json")> | null = null;
+let thaiPublicBundlePromise: Promise<typeof import("../locales/th/public.json")> | null = null;
 let fullEnglishLoaded = false;
 let fullThaiLoaded = false;
+let thaiPublicLoaded = false;
+
+async function ensureThaiPublicResources(): Promise<void> {
+  if (thaiPublicLoaded) {
+    return;
+  }
+
+  thaiPublicBundlePromise ??= import("../locales/th/public.json");
+  const thaiPublic = await thaiPublicBundlePromise;
+  i18n.addResourceBundle("th", "translation", thaiPublic, true, false);
+  thaiPublicLoaded = true;
+}
 
 async function ensureEnglishResources(): Promise<void> {
   if (fullEnglishLoaded) {
@@ -27,6 +39,7 @@ async function ensureThaiResources(): Promise<void> {
     return;
   }
 
+  await ensureThaiPublicResources();
   thaiBundlePromise ??= import("../locales/th/translation.json");
   const thai = await thaiBundlePromise;
   i18n.addResourceBundle("th", "translation", thai, true, true);
@@ -39,7 +52,6 @@ void i18n
   .init({
     resources: {
       en: { translation: publicEn },
-      th: { translation: publicTh },
     },
     fallbackLng: "en",
     supportedLngs: ["en", "th"],
@@ -57,6 +69,9 @@ i18n.on("languageChanged", (language) => {
 
 void (async () => {
   const initialLanguage = i18n.resolvedLanguage ?? i18n.language;
+  if (initialLanguage.startsWith("th")) {
+    await ensureThaiPublicResources();
+  }
   applyDocumentLanguage(initialLanguage.startsWith("th") ? "th" : "en");
 
   const loadFullTranslations = async () => {
@@ -68,13 +83,16 @@ void (async () => {
   };
 
   if (typeof requestIdleCallback !== "undefined") {
-    requestIdleCallback(() => {
-      void loadFullTranslations();
-    }, { timeout: 1500 });
+    requestIdleCallback(
+      () => {
+        void loadFullTranslations();
+      },
+      { timeout: 2000 },
+    );
   } else {
     setTimeout(() => {
       void loadFullTranslations();
-    }, 100);
+    }, 200);
   }
 })();
 

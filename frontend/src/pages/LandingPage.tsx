@@ -1,23 +1,26 @@
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 export const LandingPage = memo(function LandingPage() {
   const { t } = useTranslation();
 
-  const cards = [
-    {
-      title: t("landing.cards.anonymous.title"),
-      body: t("landing.cards.anonymous.body"),
-    },
-    {
-      title: t("landing.cards.feeds.title"),
-      body: t("landing.cards.feeds.body"),
-    },
-    {
-      title: t("landing.cards.trust.title"),
-      body: t("landing.cards.trust.body"),
-    },
-  ];
+  const cards = useMemo(
+    () => [
+      {
+        title: t("landing.cards.anonymous.title"),
+        body: t("landing.cards.anonymous.body"),
+      },
+      {
+        title: t("landing.cards.feeds.title"),
+        body: t("landing.cards.feeds.body"),
+      },
+      {
+        title: t("landing.cards.trust.title"),
+        body: t("landing.cards.trust.body"),
+      },
+    ],
+    [t],
+  );
 
   return (
     <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6 sm:py-24">

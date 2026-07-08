@@ -1,52 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
-import { RequireAuth } from "../components/RequireAuth";
-import { RequireAdmin } from "../components/RequireAdmin";
 import { ROUTES } from "../constants/routes";
 import { PublicLayout } from "../layouts/PublicLayout";
 import { LandingPage } from "../pages/LandingPage";
-import { LazyQueryProvider } from "./LazyQueryProvider";
-import { lazyRoute } from "./lazyRoute";
-
-const AuthLayout = lazyRoute(() => import("../layouts/AuthLayout"), "AuthLayout");
-const StudentLayout = lazyRoute(() => import("../layouts/StudentLayout"), "StudentLayout");
-const AdminLayout = lazyRoute(() => import("../layouts/AdminLayout"), "AdminLayout");
-
-const LoginPage = lazyRoute(() => import("../pages/LoginPage"), "LoginPage");
-const RegisterPage = lazyRoute(() => import("../pages/RegisterPage"), "RegisterPage");
-const AuthCallbackPage = lazyRoute(() => import("../pages/AuthCallbackPage"), "AuthCallbackPage");
-const FeedPage = lazyRoute(() => import("../pages/FeedPage"), "FeedPage");
-const MoodDetailPage = lazyRoute(() => import("../pages/MoodDetailPage"), "MoodDetailPage");
-const FacultyFeedPage = lazyRoute(() => import("../pages/FacultyFeedPage"), "FacultyFeedPage");
-const MajorFeedPage = lazyRoute(() => import("../pages/MajorFeedPage"), "MajorFeedPage");
-const CreateMoodPage = lazyRoute(() => import("../pages/CreateMoodPage"), "CreateMoodPage");
-const BookmarksPage = lazyRoute(() => import("../pages/BookmarksPage"), "BookmarksPage");
-const SearchPage = lazyRoute(() => import("../pages/SearchPage"), "SearchPage");
-const StatisticsPage = lazyRoute(() => import("../pages/StatisticsPage"), "StatisticsPage");
-const TrendingPage = lazyRoute(() => import("../pages/TrendingPage"), "TrendingPage");
-const NotificationsPage = lazyRoute(
-  () => import("../pages/NotificationsPage"),
-  "NotificationsPage",
-);
-const SettingsPage = lazyRoute(() => import("../pages/SettingsPage"), "SettingsPage");
-const HowToUsePage = lazyRoute(() => import("../pages/HowToUsePage"), "HowToUsePage");
-const AdminOverviewPage = lazyRoute(
-  () => import("../pages/AdminOverviewPage"),
-  "AdminOverviewPage",
-);
-const AdminReportsPage = lazyRoute(() => import("../pages/AdminReportsPage"), "AdminReportsPage");
-const AdminUsersPage = lazyRoute(() => import("../pages/AdminUsersPage"), "AdminUsersPage");
-const AdminAuditLogPage = lazyRoute(
-  () => import("../pages/AdminAuditLogPage"),
-  "AdminAuditLogPage",
-);
-const AdminPostsPage = lazyRoute(() => import("../pages/AdminPostsPage"), "AdminPostsPage");
-const AdminFacultiesPage = lazyRoute(
-  () => import("../pages/AdminFacultiesPage"),
-  "AdminFacultiesPage",
-);
-const AdminMajorsPage = lazyRoute(() => import("../pages/AdminMajorsPage"), "AdminMajorsPage");
-const AdminMoodsPage = lazyRoute(() => import("../pages/AdminMoodsPage"), "AdminMoodsPage");
-const AdminPendingPage = lazyRoute(() => import("../pages/AdminPendingPage"), "AdminPendingPage");
 
 export const router = createBrowserRouter([
   {
@@ -54,139 +9,161 @@ export const router = createBrowserRouter([
     children: [
       {
         path: ROUTES.home,
-        element: <LandingPage />,
+        Component: LandingPage,
       },
     ],
   },
   {
-    element: <AuthLayout />,
+    lazy: () => import("./routes/authRoutes").then((module) => ({ Component: module.Component })),
     children: [
       {
         path: ROUTES.login,
-        element: <LoginPage />,
+        lazy: () => import("../pages/LoginPage").then((module) => ({ Component: module.LoginPage })),
       },
       {
         path: ROUTES.register,
-        element: <RegisterPage />,
+        lazy: () =>
+          import("../pages/RegisterPage").then((module) => ({ Component: module.RegisterPage })),
       },
       {
         path: ROUTES.authCallback,
-        element: <AuthCallbackPage />,
+        lazy: () =>
+          import("../pages/AuthCallbackPage").then((module) => ({
+            Component: module.AuthCallbackPage,
+          })),
       },
     ],
   },
   {
-    element: (
-      <LazyQueryProvider>
-        <StudentLayout />
-      </LazyQueryProvider>
-    ),
+    lazy: () => import("./routes/studentRoutes").then((module) => ({ Component: module.Component })),
     children: [
       {
         path: ROUTES.feed,
-        element: <FeedPage />,
+        lazy: () => import("../pages/FeedPage").then((module) => ({ Component: module.FeedPage })),
       },
       {
         path: ROUTES.howToUse,
-        element: <HowToUsePage />,
+        lazy: () =>
+          import("../pages/HowToUsePage").then((module) => ({ Component: module.HowToUsePage })),
       },
       {
         path: ROUTES.moodDetail(":moodId"),
-        element: <MoodDetailPage />,
+        lazy: () =>
+          import("../pages/MoodDetailPage").then((module) => ({ Component: module.MoodDetailPage })),
       },
       {
         path: ROUTES.facultyFeed(":facultyId"),
-        element: <FacultyFeedPage />,
+        lazy: () =>
+          import("../pages/FacultyFeedPage").then((module) => ({
+            Component: module.FacultyFeedPage,
+          })),
       },
       {
         path: ROUTES.majorFeed(":majorId"),
-        element: <MajorFeedPage />,
+        lazy: () =>
+          import("../pages/MajorFeedPage").then((module) => ({ Component: module.MajorFeedPage })),
       },
     ],
   },
   {
-    element: (
-      <RequireAuth>
-        <LazyQueryProvider>
-          <StudentLayout />
-        </LazyQueryProvider>
-      </RequireAuth>
-    ),
+    lazy: () =>
+      import("./routes/studentPrivateRoutes").then((module) => ({ Component: module.Component })),
     children: [
       {
         path: ROUTES.create,
-        element: <CreateMoodPage />,
+        lazy: () =>
+          import("../pages/CreateMoodPage").then((module) => ({ Component: module.CreateMoodPage })),
       },
       {
         path: ROUTES.bookmarks,
-        element: <BookmarksPage />,
+        lazy: () =>
+          import("../pages/BookmarksPage").then((module) => ({ Component: module.BookmarksPage })),
       },
       {
         path: ROUTES.search,
-        element: <SearchPage />,
+        lazy: () => import("../pages/SearchPage").then((module) => ({ Component: module.SearchPage })),
       },
       {
         path: ROUTES.statistics,
-        element: <StatisticsPage />,
+        lazy: () =>
+          import("../pages/StatisticsPage").then((module) => ({ Component: module.StatisticsPage })),
       },
       {
         path: ROUTES.trending,
-        element: <TrendingPage />,
+        lazy: () =>
+          import("../pages/TrendingPage").then((module) => ({ Component: module.TrendingPage })),
       },
       {
         path: ROUTES.notifications,
-        element: <NotificationsPage />,
+        lazy: () =>
+          import("../pages/NotificationsPage").then((module) => ({
+            Component: module.NotificationsPage,
+          })),
       },
       {
         path: ROUTES.settings,
-        element: <SettingsPage />,
+        lazy: () =>
+          import("../pages/SettingsPage").then((module) => ({ Component: module.SettingsPage })),
       },
     ],
   },
   {
-    element: (
-      <RequireAdmin>
-        <LazyQueryProvider>
-          <AdminLayout />
-        </LazyQueryProvider>
-      </RequireAdmin>
-    ),
+    lazy: () => import("./routes/adminRoutes").then((module) => ({ Component: module.Component })),
     children: [
       {
         path: ROUTES.admin,
-        element: <AdminOverviewPage />,
+        lazy: () =>
+          import("../pages/AdminOverviewPage").then((module) => ({
+            Component: module.AdminOverviewPage,
+          })),
       },
       {
         path: ROUTES.adminReports,
-        element: <AdminReportsPage />,
+        lazy: () =>
+          import("../pages/AdminReportsPage").then((module) => ({
+            Component: module.AdminReportsPage,
+          })),
       },
       {
         path: ROUTES.adminUsers,
-        element: <AdminUsersPage />,
+        lazy: () =>
+          import("../pages/AdminUsersPage").then((module) => ({ Component: module.AdminUsersPage })),
       },
       {
         path: ROUTES.adminAudit,
-        element: <AdminAuditLogPage />,
+        lazy: () =>
+          import("../pages/AdminAuditLogPage").then((module) => ({
+            Component: module.AdminAuditLogPage,
+          })),
       },
       {
         path: ROUTES.adminPosts,
-        element: <AdminPostsPage />,
+        lazy: () =>
+          import("../pages/AdminPostsPage").then((module) => ({ Component: module.AdminPostsPage })),
       },
       {
         path: ROUTES.adminFaculties,
-        element: <AdminFacultiesPage />,
+        lazy: () =>
+          import("../pages/AdminFacultiesPage").then((module) => ({
+            Component: module.AdminFacultiesPage,
+          })),
       },
       {
         path: ROUTES.adminMajors,
-        element: <AdminMajorsPage />,
+        lazy: () =>
+          import("../pages/AdminMajorsPage").then((module) => ({ Component: module.AdminMajorsPage })),
       },
       {
         path: ROUTES.adminMoods,
-        element: <AdminMoodsPage />,
+        lazy: () =>
+          import("../pages/AdminMoodsPage").then((module) => ({ Component: module.AdminMoodsPage })),
       },
       {
         path: ROUTES.adminPending,
-        element: <AdminPendingPage />,
+        lazy: () =>
+          import("../pages/AdminPendingPage").then((module) => ({
+            Component: module.AdminPendingPage,
+          })),
       },
     ],
   },

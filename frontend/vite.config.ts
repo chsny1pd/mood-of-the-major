@@ -15,7 +15,9 @@ export default defineConfig({
             !dep.includes("/motion-") &&
             !dep.includes("/query-") &&
             !dep.includes("/forms-") &&
-            !dep.includes("/http-"),
+            !dep.includes("/http-") &&
+            !dep.includes("/router-") &&
+            !dep.includes("/i18n-"),
         ),
     },
     rollupOptions: {

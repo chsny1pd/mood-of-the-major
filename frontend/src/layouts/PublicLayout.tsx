@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { AppNavbar } from "../components/AppNavbar";
+import { PublicNavbar } from "../components/PublicNavbar";
 import { themeClasses } from "../lib/themeClasses";
 
 export function PublicLayout() {
@@ -8,7 +8,7 @@ export function PublicLayout() {
 
   return (
     <div className={`flex min-h-screen flex-col ${themeClasses.page}`}>
-      <AppNavbar variant="public" />
+      <PublicNavbar />
 
       <main className="flex-1">
         <Outlet />
