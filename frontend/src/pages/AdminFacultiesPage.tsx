@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { EmptyState } from "../components/EmptyState";
+import { SubmitReferenceModal } from "../features/submissions/components/SubmitReferenceModal";
 import { queryKeys } from "../constants/queryKeys";
 import { useLocalizedName } from "../lib/useLocalizedName";
 import { themeClasses } from "../lib/themeClasses";
@@ -10,6 +12,7 @@ import { getApiErrorMessage } from "../services/apiClient";
 export function AdminFacultiesPage() {
   const { t } = useTranslation();
   const localizedName = useLocalizedName();
+  const [showAddMore, setShowAddMore] = useState(false);
   const facultiesQuery = useQuery({
     queryKey: queryKeys.adminFaculties,
     queryFn: fetchAdminFaculties,
@@ -32,8 +35,19 @@ export function AdminFacultiesPage() {
 
   return (
     <section>
-      <h1 className={`text-2xl font-bold ${themeClasses.heading}`}>{t("admin.facultiesTitle")}</h1>
-      <p className={`mt-1 text-sm ${themeClasses.body}`}>{t("admin.facultiesDescription")}</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className={`text-2xl font-bold ${themeClasses.heading}`}>{t("admin.facultiesTitle")}</h1>
+          <p className={`mt-1 text-sm ${themeClasses.body}`}>{t("admin.facultiesDescription")}</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setShowAddMore(true)}
+          className="shrink-0 rounded-xl bg-teal-800 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-900 dark:bg-teal-700 dark:hover:bg-teal-600"
+        >
+          {t("submissions.addMore")}
+        </button>
+      </div>
 
       {faculties.length === 0 ? (
         <div className="mt-8">
@@ -68,6 +82,9 @@ export function AdminFacultiesPage() {
           </table>
         </div>
       )}
+      {showAddMore ? (
+        <SubmitReferenceModal type="faculty" onClose={() => setShowAddMore(false)} />
+      ) : null}
     </section>
   );
 }

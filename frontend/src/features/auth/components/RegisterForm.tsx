@@ -159,7 +159,7 @@ export function RegisterForm() {
               onClick={() => setSuggestType("faculty")}
               className={`text-xs ${themeClasses.linkSubtle}`}
             >
-              {t("submissions.suggestNew")}
+              {t("submissions.addMore")}
             </button>
           </div>
           <select id="facultyId" className={themeClasses.select} {...register("facultyId")}>
@@ -183,7 +183,7 @@ export function RegisterForm() {
               disabled={!facultyId}
               className={`text-xs disabled:opacity-50 ${themeClasses.linkSubtle}`}
             >
-              {t("submissions.suggestNew")}
+              {t("submissions.addMore")}
             </button>
           </div>
           <select

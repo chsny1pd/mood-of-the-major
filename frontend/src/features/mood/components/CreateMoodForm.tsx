@@ -13,6 +13,7 @@ import { getApiErrorMessage, getApiFieldErrors } from "../../../services/apiClie
 import { fetchEmotionTags } from "../../../services/tagService";
 import { createMood } from "../../../services/moodService";
 import { fetchFaculties, fetchMajors } from "../../../services/referenceService";
+import type { SubmissionType } from "../../../services/submissionService";
 import { useLocalizedName } from "../../../lib/useLocalizedName";
 import { useImageUpload } from "../../upload/hooks/useImageUpload";
 import { createMoodSchema, type CreateMoodFormValues } from "../schemas";
@@ -23,7 +24,7 @@ export function CreateMoodForm() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [formError, setFormError] = useState<string | null>(null);
-  const [showTagSuggest, setShowTagSuggest] = useState(false);
+  const [suggestType, setSuggestType] = useState<SubmissionType | null>(null);
   const [selectedFacultyId, setSelectedFacultyId] = useState(user?.facultyId ?? "");
   const { images, uploading, error: uploadError, uploadFiles, removeImage, imageIds, reset } =
     useImageUpload();
@@ -134,10 +135,10 @@ export function CreateMoodForm() {
             <p className={`text-sm font-medium ${themeClasses.label}`}>{t("moodForm.emotions")}</p>
             <button
               type="button"
-              onClick={() => setShowTagSuggest(true)}
+              onClick={() => setSuggestType("tag")}
               className={`text-xs ${themeClasses.linkSubtle}`}
             >
-              {t("submissions.suggestNew")}
+              {t("submissions.addMore")}
             </button>
           </div>
           {tagsQuery.isLoading ? (
@@ -176,9 +177,18 @@ export function CreateMoodForm() {
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label htmlFor="facultyId" className={`mb-1 block ${themeClasses.label}`}>
-              {t("moodForm.faculty")}
-            </label>
+            <div className="mb-1 flex items-center justify-between">
+              <label htmlFor="facultyId" className={themeClasses.label}>
+                {t("moodForm.faculty")}
+              </label>
+              <button
+                type="button"
+                onClick={() => setSuggestType("faculty")}
+                className={`text-xs ${themeClasses.linkSubtle}`}
+              >
+                {t("submissions.addMore")}
+              </button>
+            </div>
             <select
               id="facultyId"
               className={themeClasses.select}
@@ -199,9 +209,19 @@ export function CreateMoodForm() {
           </div>
 
           <div>
-            <label htmlFor="majorId" className={`mb-1 block ${themeClasses.label}`}>
-              {t("moodForm.major")}
-            </label>
+            <div className="mb-1 flex items-center justify-between">
+              <label htmlFor="majorId" className={themeClasses.label}>
+                {t("moodForm.major")}
+              </label>
+              <button
+                type="button"
+                onClick={() => setSuggestType("major")}
+                disabled={!selectedFacultyId}
+                className={`text-xs disabled:opacity-50 ${themeClasses.linkSubtle}`}
+              >
+                {t("submissions.addMore")}
+              </button>
+            </div>
             <select
               id="majorId"
               className={`disabled:opacity-60 ${themeClasses.select}`}
@@ -261,8 +281,12 @@ export function CreateMoodForm() {
         </button>
       </form>
 
-      {showTagSuggest ? (
-        <SubmitReferenceModal type="tag" onClose={() => setShowTagSuggest(false)} />
+      {suggestType ? (
+        <SubmitReferenceModal
+          type={suggestType}
+          facultyId={suggestType === "major" ? selectedFacultyId : undefined}
+          onClose={() => setSuggestType(null)}
+        />
       ) : null}
     </>
   );

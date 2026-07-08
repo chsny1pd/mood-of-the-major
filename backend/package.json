@@ -16,6 +16,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "seed": "tsx scripts/seed.ts",
+    "backfill:approval-status": "tsx scripts/backfill-approval-status.ts",
     "seed:e2e-admin": "tsx scripts/seed-e2e-admin.ts",
     "seed:sample-moods": "tsx scripts/seed-sample-moods.ts",
     "seed:mock-data": "tsx scripts/seed-mock-data.ts",

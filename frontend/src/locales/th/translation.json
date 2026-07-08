@@ -400,6 +400,7 @@
     "error": "รีโพสต์ไม่สำเร็จ"
   },
   "submissions": {
+    "addMore": "เพิ่มอีก",
     "suggestNew": "แนะนำใหม่",
     "suggestFaculty": "แนะนำคณะ",
     "suggestMajor": "แนะนำสาขา",

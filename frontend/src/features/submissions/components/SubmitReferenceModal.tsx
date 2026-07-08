@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { themeClasses } from "../../../lib/themeClasses";
 import { getApiErrorMessage } from "../../../services/apiClient";
@@ -9,9 +9,12 @@ import {
   submitTag,
   type SubmissionType,
 } from "../../../services/submissionService";
+import { fetchFaculties } from "../../../services/referenceService";
+import { useLocalizedName } from "../../../lib/useLocalizedName";
 import { useAuth } from "../../../hooks/useAuth";
 import { Link } from "react-router-dom";
 import { ROUTES } from "../../../constants/routes";
+import { queryKeys } from "../../../constants/queryKeys";
 
 interface SubmitReferenceModalProps {
   type: SubmissionType;
@@ -27,10 +30,21 @@ export function SubmitReferenceModal({
   onSuccess,
 }: SubmitReferenceModalProps) {
   const { t } = useTranslation();
+  const localizedName = useLocalizedName();
+  const queryClient = useQueryClient();
   const { isAuthenticated } = useAuth();
   const [name, setName] = useState("");
   const [nameTh, setNameTh] = useState("");
+  const [selectedFacultyId, setSelectedFacultyId] = useState(facultyId ?? "");
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const facultiesQuery = useQuery({
+    queryKey: ["faculties"],
+    queryFn: fetchFaculties,
+    enabled: type === "major" && !facultyId,
+  });
+
+  const resolvedFacultyId = facultyId ?? selectedFacultyId;
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -43,15 +57,21 @@ export function SubmitReferenceModal({
         return submitFaculty(payload);
       }
       if (type === "major") {
-        if (!facultyId) {
+        if (!resolvedFacultyId) {
           throw new Error("facultyId required");
         }
-        return submitMajor(facultyId, payload);
+        return submitMajor(resolvedFacultyId, payload);
       }
       return submitTag(payload);
     },
     onSuccess: () => {
       setSuccessMessage(t(`submissions.success.${type}`));
+      void queryClient.invalidateQueries({ queryKey: ["faculties"] });
+      void queryClient.invalidateQueries({ queryKey: ["majors"] });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.adminFaculties });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.adminMajors });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.adminMoodTags });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.emotionTags });
       onSuccess?.();
     },
   });
@@ -113,6 +133,28 @@ export function SubmitReferenceModal({
             }}
           >
             {type === "major" && !facultyId ? (
+              <div>
+                <label htmlFor="submission-faculty" className={`mb-1 block ${themeClasses.label}`}>
+                  {t("moodForm.faculty")}
+                </label>
+                <select
+                  id="submission-faculty"
+                  value={selectedFacultyId}
+                  onChange={(event) => setSelectedFacultyId(event.target.value)}
+                  required
+                  className={themeClasses.select}
+                >
+                  <option value="">{t("moodForm.selectFaculty")}</option>
+                  {(facultiesQuery.data ?? []).map((faculty) => (
+                    <option key={faculty.id} value={faculty.id}>
+                      {localizedName(faculty)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : null}
+
+            {type === "major" && !resolvedFacultyId ? (
               <p className={`text-sm ${themeClasses.errorBox}`}>{t("submissions.selectFacultyFirst")}</p>
             ) : null}
 
@@ -160,7 +202,7 @@ export function SubmitReferenceModal({
               </button>
               <button
                 type="submit"
-                disabled={mutation.isPending || name.trim().length < 2 || (type === "major" && !facultyId)}
+                disabled={mutation.isPending || name.trim().length < 2 || (type === "major" && !resolvedFacultyId)}
                 className="rounded-xl bg-teal-800 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-900 disabled:opacity-60 dark:bg-teal-700 dark:hover:bg-teal-600"
               >
                 {mutation.isPending ? t("submissions.submitting") : t("submissions.submit")}

@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { EmptyState } from "../components/EmptyState";
+import { SubmitReferenceModal } from "../features/submissions/components/SubmitReferenceModal";
 import { queryKeys } from "../constants/queryKeys";
 import { useLocalizedName } from "../lib/useLocalizedName";
 import { themeClasses } from "../lib/themeClasses";
@@ -10,6 +12,7 @@ import { getApiErrorMessage } from "../services/apiClient";
 export function AdminMajorsPage() {
   const { t } = useTranslation();
   const localizedName = useLocalizedName();
+  const [showAddMore, setShowAddMore] = useState(false);
   const majorsQuery = useQuery({
     queryKey: queryKeys.adminMajors,
     queryFn: fetchAdminMajors,
@@ -32,8 +35,19 @@ export function AdminMajorsPage() {
 
   return (
     <section>
-      <h1 className={`text-2xl font-bold ${themeClasses.heading}`}>{t("admin.majorsTitle")}</h1>
-      <p className={`mt-1 text-sm ${themeClasses.body}`}>{t("admin.majorsDescription")}</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className={`text-2xl font-bold ${themeClasses.heading}`}>{t("admin.majorsTitle")}</h1>
+          <p className={`mt-1 text-sm ${themeClasses.body}`}>{t("admin.majorsDescription")}</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setShowAddMore(true)}
+          className="shrink-0 rounded-xl bg-teal-800 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-900 dark:bg-teal-700 dark:hover:bg-teal-600"
+        >
+          {t("submissions.addMore")}
+        </button>
+      </div>
 
       {majors.length === 0 ? (
         <div className="mt-8">
@@ -67,6 +81,9 @@ export function AdminMajorsPage() {
           </table>
         </div>
       )}
+      {showAddMore ? (
+        <SubmitReferenceModal type="major" onClose={() => setShowAddMore(false)} />
+      ) : null}
     </section>
   );
 }

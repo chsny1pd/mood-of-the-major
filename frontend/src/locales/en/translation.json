@@ -400,6 +400,7 @@
     "error": "Could not repost"
   },
   "submissions": {
+    "addMore": "Add more",
     "suggestNew": "Suggest new",
     "suggestFaculty": "Suggest a faculty",
     "suggestMajor": "Suggest a major",
