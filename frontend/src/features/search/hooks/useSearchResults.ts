@@ -1,5 +1,7 @@
+import { useEffect, useState } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
+import { useDebouncedValue } from "../../../hooks/useDebouncedValue";
 import { queryKeys } from "../../../constants/queryKeys";
 import { searchMoods, type SearchParams } from "../../../services/moodService";
 import type { MoodFilters } from "../types";
@@ -19,6 +21,23 @@ export function useSearchResults() {
   const [searchParams, setSearchParams] = useSearchParams();
   const filters = parseFilters(searchParams);
   const activeQuery = filters.q;
+  const [queryInput, setQueryInput] = useState(activeQuery);
+  const debouncedQuery = useDebouncedValue(queryInput, 300);
+
+  useEffect(() => {
+    const trimmed = debouncedQuery.trim();
+    if (trimmed === activeQuery.trim()) {
+      return;
+    }
+
+    const next = new URLSearchParams(searchParams);
+    if (trimmed.length >= 2) {
+      next.set("q", trimmed);
+    } else {
+      next.delete("q");
+    }
+    setSearchParams(next, { replace: true });
+  }, [debouncedQuery, activeQuery, searchParams, setSearchParams]);
 
   const query = useInfiniteQuery({
     queryKey: queryKeys.moodSearch(filters),
@@ -51,15 +70,5 @@ export function useSearchResults() {
     setSearchParams(next);
   };
 
-  const setQuery = (q: string) => {
-    const next = new URLSearchParams(searchParams);
-    if (q.trim()) {
-      next.set("q", q.trim());
-    } else {
-      next.delete("q");
-    }
-    setSearchParams(next);
-  };
-
-  return { filters, activeQuery, query, updateFilters, setQuery };
+  return { filters, activeQuery, queryInput, setQueryInput, query, updateFilters };
 }

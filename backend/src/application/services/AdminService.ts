@@ -21,6 +21,8 @@ import type { CreateTagInput, ITagRepository, UpdateTagInput } from "../../domai
 import type { IUserRepository } from "../../domain/ports/IUserRepository.js";
 import { buildNextCursor, decodeCursor } from "../../utils/cursorPagination.js";
 import type { NotificationService } from "./NotificationService.js";
+import type { SubmissionService } from "./SubmissionService.js";
+import type { SubmissionType } from "../../domain/constants/approvalConstants.js";
 
 function truncatePreview(text: string): string {
   if (text.length <= CONTENT_PREVIEW_MAX_LENGTH) return text;
@@ -37,6 +39,7 @@ export class AdminService {
     private readonly faculties: IFacultyRepository,
     private readonly auditLogs: IAuditLogRepository,
     private readonly notifications: NotificationService,
+    private readonly submissions: SubmissionService,
   ) {}
 
   async getDashboard() {
@@ -44,14 +47,31 @@ export class AdminService {
     const sinceToday = new Date();
     sinceToday.setUTCHours(0, 0, 0, 0);
 
-    const [openReports, actionsToday, activeUsers24h, moodsCreated24h, recentActions] =
-      await Promise.all([
-        this.reports.countPending(),
-        this.auditLogs.countActionsSince(null, sinceToday),
-        this.users.countActiveSince(since24h),
-        this.moods.countCreatedSince(since24h),
-        this.auditLogs.findRecent(5),
-      ]);
+    const [
+      openReports,
+      actionsToday,
+      activeUsers24h,
+      moodsCreated24h,
+      recentActions,
+      totalUsers,
+      totalPosts,
+      totalFaculties,
+      totalMajors,
+      totalMoods,
+      pendingSubmissions,
+    ] = await Promise.all([
+      this.reports.countPending(),
+      this.auditLogs.countActionsSince(null, sinceToday),
+      this.users.countActiveSince(since24h),
+      this.moods.countCreatedSince(since24h),
+      this.auditLogs.findRecent(5),
+      this.users.countAll(),
+      this.moods.countActive(),
+      this.submissions.countApprovedFaculties(),
+      this.submissions.countApprovedMajors(),
+      this.submissions.countApprovedTags(),
+      this.submissions.countPending(),
+    ]);
 
     const adminEmails = await this.loadAdminEmails(recentActions.map((log) => log.adminId));
 
@@ -60,6 +80,12 @@ export class AdminService {
       actionsToday,
       activeUsers24h,
       moodsCreated24h,
+      totalUsers,
+      totalPosts,
+      totalFaculties,
+      totalMajors,
+      totalMoods,
+      pendingSubmissions,
       recentActions: recentActions.map((log) => ({
         id: log.id,
         adminId: log.adminId,
@@ -579,6 +605,51 @@ export class AdminService {
     const comment = await this.comments.findById(targetId);
     if (!comment) return null;
     return { type: "comment" as const, body: comment.content, status: comment.status };
+  }
+
+  async listPendingSubmissions(type?: SubmissionType) {
+    const items = await this.submissions.listPending(type);
+    return { items, meta: { pendingCount: items.length } };
+  }
+
+  async updatePendingSubmission(
+    type: SubmissionType,
+    id: string,
+    input: { name?: string; nameTh?: string | null; facultyId?: string },
+  ) {
+    const updated = await this.submissions.updatePending(type, id, input);
+    if (!updated) {
+      throw new NotFoundError("Pending submission not found", "RESOURCE_NOT_FOUND");
+    }
+    return updated;
+  }
+
+  async approveSubmission(type: SubmissionType, id: string) {
+    const approved = await this.submissions.approve(type, id);
+    if (!approved) {
+      throw new NotFoundError("Pending submission not found", "RESOURCE_NOT_FOUND");
+    }
+    return approved;
+  }
+
+  async rejectSubmission(type: SubmissionType, id: string) {
+    const rejected = await this.submissions.reject(type, id);
+    if (!rejected) {
+      throw new NotFoundError("Pending submission not found", "RESOURCE_NOT_FOUND");
+    }
+    return rejected;
+  }
+
+  listFacultiesAdmin() {
+    return this.submissions.listFacultiesAdmin();
+  }
+
+  listMajorsAdmin() {
+    return this.submissions.listMajorsAdmin();
+  }
+
+  listMoodsAdmin() {
+    return this.submissions.listTagsAdmin();
   }
 
   private async loadAdminEmails(adminIds: string[]) {

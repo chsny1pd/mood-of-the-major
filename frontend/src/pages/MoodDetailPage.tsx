@@ -17,6 +17,8 @@ import { useLocalizedName } from "../lib/useLocalizedName";
 import { fetchSignedImageUrl } from "../services/imageService";
 import { deleteMood, fetchMoodById } from "../services/moodService";
 import { getApiErrorMessage } from "../services/apiClient";
+import { RepostButton } from "../features/repost/components/RepostButton";
+import { themeClasses } from "../lib/themeClasses";
 import { useAuth } from "../hooks/useAuth";
 
 function MoodImage({ imageId }: { imageId: string }) {
@@ -83,7 +85,7 @@ export function MoodDetailPage() {
           title={t("moodDetail.notFoundTitle")}
           description={t("moodDetail.notFoundDescription")}
           action={
-            <Link to={ROUTES.feed} className="text-sm font-medium text-teal-800 hover:underline">
+            <Link to={ROUTES.feed} className={`text-sm font-medium ${themeClasses.link}`}>
               {t("moodDetail.backToFeed")}
             </Link>
           }
@@ -104,7 +106,7 @@ export function MoodDetailPage() {
 
   return (
     <section className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
-      <Link to={ROUTES.feed} className="text-sm text-teal-800 hover:underline">
+      <Link to={ROUTES.feed} className={`text-sm ${themeClasses.link}`}>
         ← {t("moodDetail.backToFeed")}
       </Link>
 
@@ -112,8 +114,16 @@ export function MoodDetailPage() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25 }}
-        className="mt-6 rounded-2xl border border-stone-200 bg-white p-6 shadow-sm"
+        className={`mt-6 p-6 ${themeClasses.cardLg}`}
       >
+        {mood.isRepost && mood.repostOf ? (
+          <p className={`mb-4 text-sm ${themeClasses.muted}`}>
+            {t("repost.repostedFrom")}{" "}
+            <Link to={ROUTES.moodDetail(mood.repostOf.moodId)} className={themeClasses.linkSubtle}>
+              {mood.repostOf.excerpt}
+            </Link>
+          </p>
+        ) : null}
         {isEditing && mood.canEdit ? (
           <EditMoodForm
             mood={mood}
@@ -135,10 +145,10 @@ export function MoodDetailPage() {
               ))}
             </div>
 
-            <p className="whitespace-pre-wrap text-lg text-stone-800">{mood.content}</p>
+            <p className={`whitespace-pre-wrap text-lg ${themeClasses.subheading}`}>{mood.content}</p>
 
             {mood.editedAt ? (
-              <p className="mt-2 text-xs text-stone-400">
+              <p className={`mt-2 text-xs ${themeClasses.faint}`}>
                 {t("moodDetail.edited", { date: new Date(mood.editedAt).toLocaleString() })}
               </p>
             ) : null}
@@ -151,23 +161,29 @@ export function MoodDetailPage() {
               </div>
             ) : null}
 
-            <div className="mt-6 flex flex-wrap gap-3 text-sm text-stone-500">
+            <div className={`mt-6 flex flex-wrap gap-3 text-sm ${themeClasses.muted}`}>
               {mood.faculty ? <span>{localizedName(mood.faculty)}</span> : null}
               {mood.major ? <span>{localizedName(mood.major)}</span> : null}
               <span>{new Date(mood.createdAt).toLocaleString()}</span>
             </div>
 
-            <div className="mt-6 border-t border-stone-100 pt-4">
+            <div className={`mt-6 border-t pt-4 ${themeClasses.border}`}>
               <ReactionBar targetType="mood" targetId={mood.id} />
             </div>
 
             <div className="mt-4 flex flex-wrap items-center gap-3">
               <BookmarkButton moodId={mood.id} />
+              <RepostButton
+                moodId={mood.id}
+                hasReposted={mood.hasReposted}
+                isRepost={mood.isRepost}
+                repostCount={mood.repostCount}
+              />
               {mood.isOwner && mood.canEdit ? (
                 <button
                   type="button"
                   onClick={() => setIsEditing(true)}
-                  className="text-sm text-teal-800 hover:underline"
+                  className={`text-sm ${themeClasses.link}`}
                 >
                   {t("moodDetail.edit")}
                 </button>
@@ -177,7 +193,7 @@ export function MoodDetailPage() {
                   type="button"
                   onClick={handleDelete}
                   disabled={deleteMutation.isPending}
-                  className="text-sm text-red-700 hover:underline disabled:opacity-60"
+                  className="text-sm text-red-700 hover:underline disabled:opacity-60 dark:text-red-400"
                 >
                   {deleteMutation.isPending ? t("moodDetail.deleting") : t("moodDetail.delete")}
                 </button>
@@ -187,7 +203,7 @@ export function MoodDetailPage() {
                   type="button"
                   data-testid="report-mood-button"
                   onClick={() => setShowReport(true)}
-                  className="text-sm text-stone-500 hover:text-red-700"
+                  className={`text-sm ${themeClasses.muted} hover:text-red-700 dark:hover:text-red-400`}
                 >
                   {t("moodDetail.report")}
                 </button>
@@ -195,7 +211,7 @@ export function MoodDetailPage() {
             </div>
 
             {deleteMutation.isError ? (
-              <p className="mt-3 text-sm text-red-600">
+              <p className="mt-3 text-sm text-red-600 dark:text-red-400">
                 {getApiErrorMessage(deleteMutation.error, t("moodDetail.deleteError"))}
               </p>
             ) : null}

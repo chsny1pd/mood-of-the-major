@@ -11,6 +11,7 @@ import { SEARCH_QUERY_MIN_LENGTH } from "../../domain/constants/engagementConsta
 import {
   AppError,
   AuthorizationError,
+  ConflictError,
   ValidationError,
 } from "../../domain/errors/AppError.js";
 import type { IFacultyRepository } from "../../domain/ports/IFacultyRepository.js";
@@ -449,5 +450,46 @@ export class MoodService {
         hasMore: pagination.hasMore,
       },
     };
+  }
+
+  async repostMood(userId: string, moodId: string): Promise<MoodWithRelations> {
+    const original = await this.moods.findById(moodId);
+
+    if (!original) {
+      throw new AppError("Mood not found", { statusCode: 404, code: "NOT_FOUND" });
+    }
+
+    if (original.repostOfMoodId) {
+      throw new ValidationError("Cannot repost a repost", [
+        { field: "moodId", message: "Only original posts can be reposted." },
+      ]);
+    }
+
+    if (await this.moods.hasUserReposted(userId, moodId)) {
+      throw new ConflictError("You have already reposted this mood", "DUPLICATE_REPOST");
+    }
+
+    const tagIds = original.tags.map((tag) => tag.tagId);
+    const primaryTagId = original.primaryTagId ?? tagIds[0];
+
+    if (!primaryTagId || tagIds.length === 0) {
+      throw new ValidationError("Invalid mood tags", [
+        { field: "moodId", message: "Original mood has no tags." },
+      ]);
+    }
+
+    return this.moods.createRepost({
+      authorId: userId,
+      repostOfMoodId: moodId,
+      content: original.content,
+      facultyId: original.facultyId,
+      majorId: original.majorId,
+      tagIds,
+      primaryTagId,
+    });
+  }
+
+  async hasUserReposted(userId: string, moodId: string): Promise<boolean> {
+    return this.moods.hasUserReposted(userId, moodId);
   }
 }

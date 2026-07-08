@@ -3,6 +3,7 @@ import type { AdminService } from "../application/services/AdminService.js";
 import type { UserStatus } from "../domain/entities/User.js";
 import { AuthenticationError } from "../domain/errors/AppError.js";
 import type { ResolveReportInput } from "../domain/ports/IReportRepository.js";
+import { pendingListQuerySchema, submissionTypeParamSchema, updatePendingSubmissionSchema } from "../validators/submissionSchemas.js";
 import type { CreateTagInput, UpdateTagInput } from "../domain/ports/ITagRepository.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
@@ -155,6 +156,46 @@ export function createAdminController(adminService: AdminService) {
         req.body as UpdateTagInput,
         clientIp(req),
       );
+      res.status(200).json({ success: true, data });
+    }),
+
+    listPendingSubmissions: asyncHandler(async (req, res: Response) => {
+      const query = pendingListQuerySchema.parse(req.query);
+      const data = await adminService.listPendingSubmissions(query.type);
+      res.status(200).json({ success: true, data: data.items, meta: data.meta });
+    }),
+
+    updatePendingSubmission: asyncHandler(async (req, res: Response) => {
+      const { type } = submissionTypeParamSchema.parse(req.params);
+      const body = updatePendingSubmissionSchema.parse(req.body);
+      const data = await adminService.updatePendingSubmission(type, String(req.params.id), body);
+      res.status(200).json({ success: true, data });
+    }),
+
+    approveSubmission: asyncHandler(async (req, res: Response) => {
+      const { type } = submissionTypeParamSchema.parse(req.params);
+      const data = await adminService.approveSubmission(type, String(req.params.id));
+      res.status(200).json({ success: true, data });
+    }),
+
+    rejectSubmission: asyncHandler(async (req, res: Response) => {
+      const { type } = submissionTypeParamSchema.parse(req.params);
+      const data = await adminService.rejectSubmission(type, String(req.params.id));
+      res.status(200).json({ success: true, data });
+    }),
+
+    listFacultiesAdmin: asyncHandler(async (_req, res: Response) => {
+      const data = await adminService.listFacultiesAdmin();
+      res.status(200).json({ success: true, data });
+    }),
+
+    listMajorsAdmin: asyncHandler(async (_req, res: Response) => {
+      const data = await adminService.listMajorsAdmin();
+      res.status(200).json({ success: true, data });
+    }),
+
+    listMoodsAdmin: asyncHandler(async (_req, res: Response) => {
+      const data = await adminService.listMoodsAdmin();
       res.status(200).json({ success: true, data });
     }),
   };

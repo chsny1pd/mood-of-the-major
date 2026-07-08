@@ -16,5 +16,10 @@ export const queryKeys = {
   adminUsers: (params?: unknown) =>
     params === undefined ? (["admin", "users"] as const) : (["admin", "users", params] as const),
   adminAuditLogs: (params?: unknown) => ["admin", "audit-logs", params] as const,
+  adminContentMoods: (params?: unknown) => ["admin", "content-moods", params] as const,
+  adminFaculties: ["admin", "faculties"] as const,
+  adminMajors: ["admin", "majors"] as const,
+  adminMoodTags: ["admin", "mood-tags"] as const,
+  adminPendingSubmissions: (params?: unknown) => ["admin", "pending-submissions", params] as const,
   notifications: (params?: unknown) => ["notifications", params] as const,
 };

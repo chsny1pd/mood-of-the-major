@@ -26,6 +26,7 @@ export interface MoodWithRelations extends Mood {
     isPrimary: boolean;
   }>;
   images: Array<{ id: string; sortOrder: number }>;
+  repostOf: { id: string; content: string } | null;
 }
 
 export interface MoodSearchQuery extends MoodFeedFilters {
@@ -66,4 +67,17 @@ export interface IMoodRepository {
   moderateRemove(moodId: string, adminId: string, moderationNote: string | null): Promise<MoodWithRelations | null>;
   findAdminContentList(query: AdminMoodListQuery): Promise<MoodWithRelations[]>;
   countCreatedSince(since: Date): Promise<number>;
+  countActive(): Promise<number>;
+  findExistingRepost(authorId: string, repostOfMoodId: string): Promise<Mood | null>;
+  createRepost(input: {
+    authorId: string;
+    repostOfMoodId: string;
+    content: string;
+    facultyId: string | null;
+    majorId: string | null;
+    tagIds: string[];
+    primaryTagId: string;
+  }): Promise<MoodWithRelations>;
+  incrementRepostCount(moodId: string): Promise<void>;
+  hasUserReposted(authorId: string, repostOfMoodId: string): Promise<boolean>;
 }

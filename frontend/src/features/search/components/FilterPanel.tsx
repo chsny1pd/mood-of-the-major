@@ -5,6 +5,7 @@ import { queryKeys } from "../../../constants/queryKeys";
 import { fetchFaculties, fetchMajors } from "../../../services/referenceService";
 import { fetchEmotionTags } from "../../../services/tagService";
 import { useLocalizedName } from "../../../lib/useLocalizedName";
+import { themeClasses } from "../../../lib/themeClasses";
 import type { MoodFilters } from "../types";
 
 interface FilterPanelProps {
@@ -38,16 +39,16 @@ export const FilterPanel = memo(function FilterPanel({ filters, onChange, showSo
   };
 
   return (
-    <div className="grid gap-3 rounded-xl border border-stone-200 bg-white p-4 sm:grid-cols-2">
+    <div className={`grid gap-3 p-4 sm:grid-cols-2 ${themeClasses.card}`}>
       {showSort ? (
         <label className="block text-sm">
-          <span className="mb-1 block font-medium text-stone-700">{t("filter.sort")}</span>
+          <span className={`mb-1 block font-medium ${themeClasses.label}`}>{t("filter.sort")}</span>
           <select
             value={filters.sort ?? "newest"}
             onChange={(event) =>
               update({ sort: event.target.value as MoodFilters["sort"] })
             }
-            className="w-full rounded-lg border border-stone-300 px-3 py-2 text-stone-900"
+            className={`w-full ${themeClasses.select}`}
           >
             <option value="newest">{t("filter.sortNewest")}</option>
             <option value="most_reacted">{t("filter.sortMostReacted")}</option>
@@ -57,13 +58,13 @@ export const FilterPanel = memo(function FilterPanel({ filters, onChange, showSo
       ) : null}
 
       <label className="block text-sm">
-        <span className="mb-1 block font-medium text-stone-700">{t("filter.emotion")}</span>
+        <span className={`mb-1 block font-medium ${themeClasses.label}`}>{t("filter.emotion")}</span>
         <select
           value={filters.tagSlug ?? ""}
           onChange={(event) =>
             update({ tagSlug: event.target.value || undefined })
           }
-          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-stone-900"
+          className={`w-full ${themeClasses.select}`}
         >
           <option value="">{t("filter.allEmotions")}</option>
           {tagsQuery.data?.map((tag) => (
@@ -75,7 +76,7 @@ export const FilterPanel = memo(function FilterPanel({ filters, onChange, showSo
       </label>
 
       <label className="block text-sm">
-        <span className="mb-1 block font-medium text-stone-700">{t("filter.faculty")}</span>
+        <span className={`mb-1 block font-medium ${themeClasses.label}`}>{t("filter.faculty")}</span>
         <select
           value={filters.facultyId ?? ""}
           onChange={(event) =>
@@ -84,7 +85,7 @@ export const FilterPanel = memo(function FilterPanel({ filters, onChange, showSo
               majorId: undefined,
             })
           }
-          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-stone-900"
+          className={`w-full ${themeClasses.select}`}
         >
           <option value="">{t("filter.allFaculties")}</option>
           {facultiesQuery.data?.map((faculty) => (
@@ -96,12 +97,12 @@ export const FilterPanel = memo(function FilterPanel({ filters, onChange, showSo
       </label>
 
       <label className="block text-sm">
-        <span className="mb-1 block font-medium text-stone-700">{t("filter.major")}</span>
+        <span className={`mb-1 block font-medium ${themeClasses.label}`}>{t("filter.major")}</span>
         <select
           value={filters.majorId ?? ""}
           onChange={(event) => update({ majorId: event.target.value || undefined })}
           disabled={!filters.facultyId}
-          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-stone-900 disabled:bg-stone-100"
+          className={`w-full disabled:opacity-60 ${themeClasses.select}`}
         >
           <option value="">{t("filter.allMajors")}</option>
           {majorsQuery.data?.map((major) => (
@@ -113,7 +114,7 @@ export const FilterPanel = memo(function FilterPanel({ filters, onChange, showSo
       </label>
 
       <label className="block text-sm">
-        <span className="mb-1 block font-medium text-stone-700">{t("filter.from")}</span>
+        <span className={`mb-1 block font-medium ${themeClasses.label}`}>{t("filter.from")}</span>
         <input
           type="date"
           value={filters.from?.slice(0, 10) ?? ""}
@@ -124,12 +125,12 @@ export const FilterPanel = memo(function FilterPanel({ filters, onChange, showSo
                 : undefined,
             })
           }
-          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-stone-900"
+          className={themeClasses.input}
         />
       </label>
 
       <label className="block text-sm">
-        <span className="mb-1 block font-medium text-stone-700">{t("filter.to")}</span>
+        <span className={`mb-1 block font-medium ${themeClasses.label}`}>{t("filter.to")}</span>
         <input
           type="date"
           value={filters.to?.slice(0, 10) ?? ""}
@@ -140,7 +141,7 @@ export const FilterPanel = memo(function FilterPanel({ filters, onChange, showSo
                 : undefined,
             })
           }
-          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-stone-900"
+          className={themeClasses.input}
         />
       </label>
     </div>

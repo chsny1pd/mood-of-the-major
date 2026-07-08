@@ -3,18 +3,22 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { EmotionBadge } from "./EmotionBadge";
 import { BookmarkIconButton } from "../features/bookmarks/components/BookmarkIconButton";
+import { RepostButton } from "../features/repost/components/RepostButton";
 import { ROUTES } from "../constants/routes";
 import { useLocalizedName } from "../lib/useLocalizedName";
 import { useRelativeTime } from "../hooks/useRelativeTime";
+import { themeClasses } from "../lib/themeClasses";
 import { REACTION_TYPES } from "../types/engagement";
 import type { AnonymousMood } from "../types/mood";
 
 export const MoodCard = memo(function MoodCard({
   mood,
   showBookmark = false,
+  showRepost = false,
 }: {
   mood: AnonymousMood;
   showBookmark?: boolean;
+  showRepost?: boolean;
 }) {
   const { t } = useTranslation();
   const localizedName = useLocalizedName();
@@ -27,7 +31,16 @@ export const MoodCard = memo(function MoodCard({
   );
 
   return (
-    <article className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm transition hover:border-teal-200">
+    <article className={`p-5 transition hover:border-teal-200 dark:hover:border-teal-800 ${themeClasses.cardLg}`}>
+      {mood.isRepost && mood.repostOf ? (
+        <p className={`mb-2 text-xs ${themeClasses.muted}`}>
+          {t("repost.repostedFrom")}{" "}
+          <Link to={ROUTES.moodDetail(mood.repostOf.moodId)} className={themeClasses.linkSubtle}>
+            {mood.repostOf.excerpt}
+          </Link>
+        </p>
+      ) : null}
+
       <div className="mb-3 flex flex-wrap items-center gap-2">
         {primaryTag ? (
           <EmotionBadge name={localizedName(primaryTag)} isPrimary />
@@ -35,7 +48,7 @@ export const MoodCard = memo(function MoodCard({
         {mood.faculty ? (
           <Link
             to={ROUTES.facultyFeed(mood.faculty.slug)}
-            className="text-xs text-teal-700 hover:underline"
+            className={`text-xs ${themeClasses.linkSubtle}`}
             onClick={(event) => event.stopPropagation()}
           >
             {localizedName(mood.faculty)}
@@ -44,7 +57,7 @@ export const MoodCard = memo(function MoodCard({
         {mood.major ? (
           <Link
             to={ROUTES.majorFeed(mood.major.slug)}
-            className="text-xs text-teal-700 hover:underline"
+            className={`text-xs ${themeClasses.linkSubtle}`}
             onClick={(event) => event.stopPropagation()}
           >
             {localizedName(mood.major)}
@@ -52,21 +65,33 @@ export const MoodCard = memo(function MoodCard({
         ) : null}
         <span className="ml-auto flex items-center gap-1">
           {showBookmark ? <BookmarkIconButton moodId={mood.id} /> : null}
-          <span className="text-xs text-stone-400">{relativeTime}</span>
+          <span className={`text-xs ${themeClasses.faint}`}>{relativeTime}</span>
         </span>
       </div>
 
       <Link to={ROUTES.moodDetail(mood.id)} className="block">
-        <p className="whitespace-pre-wrap text-stone-800 line-clamp-4">{mood.content}</p>
+        <p className={`whitespace-pre-wrap line-clamp-4 ${themeClasses.subheading}`}>{mood.content}</p>
       </Link>
 
-      <div className="mt-4 flex items-center gap-4 text-xs text-stone-500">
+      <div className={`mt-4 flex flex-wrap items-center gap-4 text-xs ${themeClasses.muted}`}>
         {mood.imageCount > 0 ? (
           <span>{t("moodCard.image", { count: mood.imageCount })}</span>
         ) : null}
         <span>{t("moodCard.comments", { count: mood.commentCount })}</span>
         {totalReactions > 0 ? (
           <span>{t("moodCard.reactions", { count: totalReactions })}</span>
+        ) : null}
+        {(mood.repostCount ?? 0) > 0 ? (
+          <span>{t("moodCard.reposts", { count: mood.repostCount })}</span>
+        ) : null}
+        {showRepost ? (
+          <RepostButton
+            moodId={mood.id}
+            hasReposted={mood.hasReposted}
+            isRepost={mood.isRepost}
+            repostCount={mood.repostCount}
+            compact
+          />
         ) : null}
       </div>
     </article>

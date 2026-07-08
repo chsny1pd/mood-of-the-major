@@ -8,6 +8,7 @@ import { MoodService } from "../application/services/MoodService.js";
 import { ReactionService } from "../application/services/ReactionService.js";
 import { ReportService } from "../application/services/ReportService.js";
 import { AdminService } from "../application/services/AdminService.js";
+import { SubmissionService } from "../application/services/SubmissionService.js";
 import { NotificationService } from "../application/services/NotificationService.js";
 import { StatisticsAggregationJob } from "../application/services/StatisticsAggregationJob.js";
 import { ImageCleanupJob } from "../application/services/ImageCleanupJob.js";
@@ -25,7 +26,7 @@ import { createAdminController } from "../controllers/adminController.js";
 import { createNotificationController } from "../controllers/notificationController.js";
 import { createStatisticsController } from "../controllers/statisticsController.js";
 import { createJobController } from "../controllers/jobController.js";
-import { createTagController } from "../controllers/tagController.js";
+import { createSubmissionController } from "../controllers/submissionController.js";
 import { AggregationThresholdPolicy } from "../domain/services/AggregationThresholdPolicy.js";
 import { BcryptPasswordHasher } from "../infrastructure/auth/BcryptPasswordHasher.js";
 import { JwtTokenService } from "../infrastructure/auth/JwtTokenService.js";
@@ -49,6 +50,8 @@ import { MongooseMoodRepository } from "../infrastructure/database/repositories/
 import { MongooseReactionRepository } from "../infrastructure/database/repositories/MongooseReactionRepository.js";
 import { MongooseReportRepository } from "../infrastructure/database/repositories/MongooseReportRepository.js";
 import { MongooseTagRepository } from "../infrastructure/database/repositories/MongooseTagRepository.js";
+import { createTagController } from "../controllers/tagController.js";
+import { MongooseSubmissionRepository } from "../infrastructure/database/repositories/MongooseSubmissionRepository.js";
 import { MongooseUserRepository } from "../infrastructure/database/repositories/MongooseUserRepository.js";
 import { createImageStorage } from "../infrastructure/storage/R2ImageStorage.js";
 import { createLogger } from "../infrastructure/logging/logger.js";
@@ -83,6 +86,7 @@ export interface AppDependencies {
   reportService: ReportService;
   statisticsService: StatisticsService;
   trendingService: TrendingService;
+  submissionService: SubmissionService;
   adminService: AdminService;
   notificationService: NotificationService;
   statisticsController: ReturnType<typeof createStatisticsController>;
@@ -93,6 +97,7 @@ export interface AppDependencies {
   facultyController: ReturnType<typeof createFacultyController>;
   moodController: ReturnType<typeof createMoodController>;
   imageController: ReturnType<typeof createImageController>;
+  submissionController: ReturnType<typeof createSubmissionController>;
   tagController: ReturnType<typeof createTagController>;
   commentController: ReturnType<typeof createCommentController>;
   reactionController: ReturnType<typeof createReactionController>;
@@ -126,6 +131,7 @@ export function createDependencies(env: Env): AppDependencies {
   const statisticsSourceRepository = new MongooseStatisticsSourceRepository();
   const auditLogRepository = new MongooseAuditLogRepository();
   const notificationRepository = new MongooseNotificationRepository();
+  const submissionRepository = new MongooseSubmissionRepository();
   const thresholdPolicy = new AggregationThresholdPolicy(env.AGGREGATION_THRESHOLD_MIN);
   const imageStorage = createImageStorage(env);
   const passwordHasher = new BcryptPasswordHasher(env.BCRYPT_ROUNDS);
@@ -164,6 +170,7 @@ export function createDependencies(env: Env): AppDependencies {
     thresholdPolicy,
   );
   const notificationService = new NotificationService(notificationRepository);
+  const submissionService = new SubmissionService(submissionRepository);
   const adminService = new AdminService(
     userRepository,
     moodRepository,
@@ -173,6 +180,7 @@ export function createDependencies(env: Env): AppDependencies {
     facultyRepository,
     auditLogRepository,
     notificationService,
+    submissionService,
   );
   const aggregationJob = new StatisticsAggregationJob(
     statisticsSourceRepository,
@@ -206,6 +214,7 @@ export function createDependencies(env: Env): AppDependencies {
     trendingService,
     adminService,
     notificationService,
+    submissionService,
     statisticsController,
     adminController: createAdminController(adminService),
     notificationController: createNotificationController(notificationService),
@@ -215,6 +224,7 @@ export function createDependencies(env: Env): AppDependencies {
     moodController: createMoodController(moodService),
     imageController: createImageController(imageService),
     tagController: createTagController(tagRepository),
+    submissionController: createSubmissionController(submissionService),
     commentController: createCommentController(commentService),
     reactionController: createReactionController(reactionService),
     bookmarkController: createBookmarkController(bookmarkService),

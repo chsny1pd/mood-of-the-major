@@ -5,6 +5,7 @@ import { EmptyState } from "../components/EmptyState";
 import { queryKeys } from "../constants/queryKeys";
 import { fetchAdminUsers, updateUserStatus, type AdminUserItem } from "../services/adminService";
 import { getApiErrorMessage } from "../services/apiClient";
+import { themeClasses } from "../lib/themeClasses";
 
 export function AdminUsersPage() {
   const { t } = useTranslation();
@@ -26,22 +27,22 @@ export function AdminUsersPage() {
 
   return (
     <section>
-      <h1 className="text-2xl font-bold text-stone-900">{t("admin.usersTitle")}</h1>
-      <p className="mt-1 text-sm text-stone-600">{t("admin.usersDescription")}</p>
+      <h1 className={`text-2xl font-bold ${themeClasses.heading}`}>{t("admin.usersTitle")}</h1>
+      <p className={`mt-1 text-sm ${themeClasses.body}`}>{t("admin.usersDescription")}</p>
 
-      <label className="mt-6 block max-w-md text-sm">
-        <span className="mb-1 block font-medium text-stone-700">{t("admin.searchByEmail")}</span>
+      <label className={`mt-6 block max-w-md text-sm ${themeClasses.label}`}>
+        <span className="mb-1 block font-medium">{t("admin.searchByEmail")}</span>
         <input
           type="search"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          className="w-full rounded-lg border border-stone-300 px-3 py-2"
+          className={themeClasses.input}
           placeholder={t("admin.searchPlaceholder")}
         />
       </label>
 
       {usersQuery.isLoading ? (
-        <p className="mt-6 text-stone-500">{t("admin.loadingUsers")}</p>
+        <p className={`mt-6 ${themeClasses.muted}`}>{t("admin.loadingUsers")}</p>
       ) : usersQuery.isError ? (
         <div className="mt-6">
           <EmptyState
@@ -50,9 +51,9 @@ export function AdminUsersPage() {
           />
         </div>
       ) : (
-        <div className="mt-6 overflow-x-auto rounded-xl border border-stone-200 bg-white shadow-sm">
+        <div className={`mt-6 overflow-x-auto ${themeClasses.card}`}>
           <table className="min-w-full text-left text-sm">
-            <thead className="border-b border-stone-200 bg-stone-50 text-stone-600">
+            <thead className={`border-b ${themeClasses.border} ${themeClasses.surfaceMuted} ${themeClasses.body}`}>
               <tr>
                 <th className="px-4 py-3 font-medium">{t("admin.tableEmail")}</th>
                 <th className="px-4 py-3 font-medium">{t("admin.tableRole")}</th>
@@ -90,19 +91,19 @@ function UserRow({
   const isAdmin = user.role === "administrator";
 
   return (
-    <tr className="border-b border-stone-100 last:border-0">
-      <td className="px-4 py-3">{user.email}</td>
-      <td className="px-4 py-3 capitalize">{user.role}</td>
-      <td className="px-4 py-3 capitalize">{user.status}</td>
+    <tr className={`border-b ${themeClasses.border} last:border-0 ${themeClasses.hoverRow}`}>
+      <td className={`px-4 py-3 ${themeClasses.subheading}`}>{user.email}</td>
+      <td className={`px-4 py-3 capitalize ${themeClasses.body}`}>{user.role}</td>
+      <td className={`px-4 py-3 capitalize ${themeClasses.body}`}>{user.status}</td>
       <td className="px-4 py-3">
         {isAdmin ? (
-          <span className="text-stone-400">{t("admin.protected")}</span>
+          <span className={themeClasses.faint}>{t("admin.protected")}</span>
         ) : user.status === "active" ? (
           <button
             type="button"
             disabled={isUpdating}
             onClick={() => onToggleStatus("suspended")}
-            className="text-red-700 hover:underline disabled:opacity-50"
+            className="text-red-700 hover:underline disabled:opacity-50 dark:text-red-400"
           >
             {t("admin.suspend")}
           </button>
@@ -111,7 +112,7 @@ function UserRow({
             type="button"
             disabled={isUpdating}
             onClick={() => onToggleStatus("active")}
-            className="text-teal-700 hover:underline disabled:opacity-50"
+            className="text-teal-700 hover:underline disabled:opacity-50 dark:text-teal-400"
           >
             {t("admin.reinstate")}
           </button>

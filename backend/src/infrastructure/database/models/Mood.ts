@@ -23,6 +23,8 @@ const moodSchema = new Schema(
     moderatedBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
     moderationNote: { type: String, default: null },
     deletedAt: { type: Date, default: null },
+    repostOfMoodId: { type: Schema.Types.ObjectId, ref: "Mood", default: null },
+    repostCount: { type: Number, required: true, default: 0, min: 0 },
   },
   { timestamps: true, collection: "moods" },
 );
@@ -35,6 +37,10 @@ moodSchema.index({ status: 1, lastActivityAt: -1 });
 moodSchema.index({ authorId: 1, createdAt: -1 });
 moodSchema.index({ createdAt: -1, _id: -1 });
 moodSchema.index({ content: "text" });
+moodSchema.index(
+  { authorId: 1, repostOfMoodId: 1 },
+  { unique: true, partialFilterExpression: { repostOfMoodId: { $type: "objectId" }, deletedAt: null } },
+);
 
 export type MoodDocument = InferSchemaType<typeof moodSchema> & {
   authorId: Types.ObjectId;

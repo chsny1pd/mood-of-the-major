@@ -23,6 +23,8 @@ export interface Mood {
   updatedAt: Date;
   deletedAt: Date | null;
   tags: MoodTagLink[];
+  repostOfMoodId: string | null;
+  repostCount: number;
 }
 
 export interface CreateMoodInput {

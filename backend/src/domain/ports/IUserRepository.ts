@@ -26,4 +26,5 @@ export interface IUserRepository {
   findManyAdmin(query: AdminUserListQuery): Promise<User[]>;
   updateStatus(id: string, status: UserStatus): Promise<User | null>;
   countActiveSince(since: Date): Promise<number>;
+  countAll(): Promise<number>;
 }

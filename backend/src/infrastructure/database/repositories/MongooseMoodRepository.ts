@@ -28,6 +28,8 @@ async function hydrateMoods(
     imageCount: number;
     primaryTagId?: { toString(): string } | null;
     reportCount: number;
+    repostOfMoodId?: { toString(): string } | null;
+    repostCount?: number;
     lastActivityAt: Date;
     editedAt?: Date | null;
     createdAt: Date;
@@ -44,8 +46,11 @@ async function hydrateMoods(
   const majorIds = [
     ...new Set(moodDocs.map((m) => m.majorId?.toString()).filter(Boolean) as string[]),
   ];
+  const repostSourceIds = [
+    ...new Set(moodDocs.map((m) => m.repostOfMoodId?.toString()).filter(Boolean) as string[]),
+  ];
 
-  const [moodTags, images, faculties, majors] = await Promise.all([
+  const [moodTags, images, faculties, majors, repostSources] = await Promise.all([
     MoodTagModel.find({ moodId: { $in: moodIds } }).lean(),
     MoodImageModel.find({
       moodId: { $in: moodIds },
@@ -58,6 +63,9 @@ async function hydrateMoods(
       ? FacultyModel.find({ _id: { $in: facultyIds } }).lean()
       : Promise.resolve([]),
     majorIds.length > 0 ? MajorModel.find({ _id: { $in: majorIds } }).lean() : Promise.resolve([]),
+    repostSourceIds.length > 0
+      ? MoodModel.find({ _id: { $in: repostSourceIds } }).select({ content: 1 }).lean()
+      : Promise.resolve([]),
   ]);
 
   const tagIds = [...new Set(moodTags.map((mt) => mt.tagId.toString()))];
@@ -66,6 +74,9 @@ async function hydrateMoods(
   const facultyMap = new Map(faculties.map((f) => [f._id.toString(), f]));
   const majorMap = new Map(majors.map((m) => [m._id.toString(), m]));
   const tagMap = new Map(tags.map((t) => [t._id.toString(), t]));
+  const repostMap = new Map(
+    repostSources.map((mood) => [mood._id.toString(), mood.content as string]),
+  );
 
   return moodDocs.map((mood) => {
     const moodId = mood._id.toString();
@@ -73,6 +84,7 @@ async function hydrateMoods(
     const moodImages = images.filter((img) => img.moodId?.toString() === moodId);
     const faculty = mood.facultyId ? facultyMap.get(mood.facultyId.toString()) : undefined;
     const major = mood.majorId ? majorMap.get(mood.majorId.toString()) : undefined;
+    const repostOfMoodId = mood.repostOfMoodId?.toString() ?? null;
 
     return {
       id: moodId,
@@ -86,6 +98,8 @@ async function hydrateMoods(
       imageCount: mood.imageCount,
       primaryTagId: mood.primaryTagId?.toString() ?? null,
       reportCount: mood.reportCount,
+      repostOfMoodId,
+      repostCount: mood.repostCount ?? 0,
       lastActivityAt: mood.lastActivityAt,
       editedAt: mood.editedAt ?? null,
       createdAt: mood.createdAt,
@@ -119,6 +133,12 @@ async function hydrateMoods(
         id: img._id.toString(),
         sortOrder: img.sortOrder,
       })),
+      repostOf: repostOfMoodId
+        ? {
+            id: repostOfMoodId,
+            content: repostMap.get(repostOfMoodId) ?? "",
+          }
+        : null,
     };
   });
 }
@@ -442,5 +462,93 @@ export class MongooseMoodRepository implements IMoodRepository {
       deletedAt: null,
       createdAt: { $gte: since },
     });
+  }
+
+  async countActive(): Promise<number> {
+    return MoodModel.countDocuments({ status: "active", deletedAt: null });
+  }
+
+  async findExistingRepost(authorId: string, repostOfMoodId: string) {
+    const doc = await MoodModel.findOne({
+      authorId,
+      repostOfMoodId,
+      deletedAt: null,
+      status: "active",
+    }).lean();
+
+    if (!doc) return null;
+
+    return {
+      id: doc._id.toString(),
+      authorId: doc.authorId.toString(),
+      content: doc.content,
+      facultyId: doc.facultyId?.toString() ?? null,
+      majorId: doc.majorId?.toString() ?? null,
+      status: doc.status,
+      commentCount: doc.commentCount,
+      reactionSummary: doc.reactionSummary ?? {},
+      imageCount: doc.imageCount,
+      primaryTagId: doc.primaryTagId?.toString() ?? null,
+      reportCount: doc.reportCount,
+      repostOfMoodId: doc.repostOfMoodId?.toString() ?? null,
+      repostCount: doc.repostCount ?? 0,
+      lastActivityAt: doc.lastActivityAt,
+      editedAt: doc.editedAt ?? null,
+      createdAt: doc.createdAt,
+      updatedAt: doc.updatedAt,
+      deletedAt: doc.deletedAt ?? null,
+      tags: [],
+    };
+  }
+
+  async hasUserReposted(authorId: string, repostOfMoodId: string): Promise<boolean> {
+    const existing = await MoodModel.findOne({
+      authorId,
+      repostOfMoodId,
+      deletedAt: null,
+      status: "active",
+    }).lean();
+    return Boolean(existing);
+  }
+
+  async createRepost(input: {
+    authorId: string;
+    repostOfMoodId: string;
+    content: string;
+    facultyId: string | null;
+    majorId: string | null;
+    tagIds: string[];
+    primaryTagId: string;
+  }): Promise<MoodWithRelations> {
+    const now = new Date();
+
+    const moodDoc = await MoodModel.create({
+      authorId: input.authorId,
+      content: input.content,
+      facultyId: input.facultyId,
+      majorId: input.majorId,
+      status: "active",
+      primaryTagId: input.primaryTagId,
+      imageCount: 0,
+      repostOfMoodId: input.repostOfMoodId,
+      lastActivityAt: now,
+    });
+
+    await MoodTagModel.insertMany(
+      input.tagIds.map((tagId) => ({
+        moodId: moodDoc._id,
+        tagId,
+        isPrimary: tagId === input.primaryTagId,
+      })),
+    );
+
+    await this.incrementRepostCount(input.repostOfMoodId);
+
+    const hydrated = await hydrateMoods([moodDoc.toObject()]);
+    return hydrated[0]!;
+  }
+
+  async incrementRepostCount(moodId: string): Promise<void> {
+    await MoodModel.updateOne({ _id: moodId }, { $inc: { repostCount: 1 } });
   }
 }

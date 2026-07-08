@@ -38,6 +38,14 @@ const AdminAuditLogPage = lazyRoute(
   () => import("../pages/AdminAuditLogPage"),
   "AdminAuditLogPage",
 );
+const AdminPostsPage = lazyRoute(() => import("../pages/AdminPostsPage"), "AdminPostsPage");
+const AdminFacultiesPage = lazyRoute(
+  () => import("../pages/AdminFacultiesPage"),
+  "AdminFacultiesPage",
+);
+const AdminMajorsPage = lazyRoute(() => import("../pages/AdminMajorsPage"), "AdminMajorsPage");
+const AdminMoodsPage = lazyRoute(() => import("../pages/AdminMoodsPage"), "AdminMoodsPage");
+const AdminPendingPage = lazyRoute(() => import("../pages/AdminPendingPage"), "AdminPendingPage");
 
 export const router = createBrowserRouter([
   {
@@ -158,6 +166,26 @@ export const router = createBrowserRouter([
       {
         path: ROUTES.adminAudit,
         element: <AdminAuditLogPage />,
+      },
+      {
+        path: ROUTES.adminPosts,
+        element: <AdminPostsPage />,
+      },
+      {
+        path: ROUTES.adminFaculties,
+        element: <AdminFacultiesPage />,
+      },
+      {
+        path: ROUTES.adminMajors,
+        element: <AdminMajorsPage />,
+      },
+      {
+        path: ROUTES.adminMoods,
+        element: <AdminMoodsPage />,
+      },
+      {
+        path: ROUTES.adminPending,
+        element: <AdminPendingPage />,
       },
     ],
   },

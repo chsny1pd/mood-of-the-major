@@ -41,10 +41,17 @@ export function createMoodController(moodService: MoodService) {
         req.userId,
         req.userRole === "administrator",
       );
+      const hasReposted =
+        req.userId && !mood.repostOfMoodId
+          ? await moodService.hasUserReposted(req.userId, mood.id)
+          : false;
 
       res.status(200).json({
         success: true,
-        data: toAnonymousMoodDto(mood, viewerFlags),
+        data: toAnonymousMoodDto(mood, {
+          ...viewerFlags,
+          hasReposted: hasReposted ? true : undefined,
+        }),
       });
     }),
 
@@ -136,6 +143,19 @@ export function createMoodController(moodService: MoodService) {
         success: true,
         data: result.items.map((item) => toAnonymousMoodDto(item)),
         meta: result.meta,
+      });
+    }),
+
+    repost: asyncHandler(async (req, res: Response) => {
+      if (!req.userId) {
+        throw new AuthenticationError("Authentication required", "AUTH_REQUIRED");
+      }
+
+      const mood = await moodService.repostMood(req.userId, String(req.params.moodId));
+
+      res.status(201).json({
+        success: true,
+        data: toAnonymousMoodDto(mood, { isOwner: true }),
       });
     }),
   };

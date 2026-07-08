@@ -159,4 +159,8 @@ export class MongooseUserRepository implements IUserRepository {
       lastLoginAt: { $gte: since },
     });
   }
+
+  async countAll(): Promise<number> {
+    return UserModel.countDocuments({ deletedAt: null });
+  }
 }

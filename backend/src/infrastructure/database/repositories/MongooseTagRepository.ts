@@ -36,6 +36,7 @@ export class MongooseTagRepository implements ITagRepository {
       _id: { $in: ids },
       type: "emotion",
       isActive: true,
+      approvalStatus: "approved",
     }).lean();
 
     return tags.map(toEmotionTag);
@@ -46,13 +47,14 @@ export class MongooseTagRepository implements ITagRepository {
       slug: slug.toLowerCase(),
       type: "emotion",
       isActive: true,
+      approvalStatus: "approved",
     }).lean();
 
     return tag ? toEmotionTag(tag) : null;
   }
 
   async findAllActiveEmotions(): Promise<EmotionTag[]> {
-    const tags = await TagModel.find({ type: "emotion", isActive: true })
+    const tags = await TagModel.find({ type: "emotion", isActive: true, approvalStatus: "approved" })
       .sort({ sortOrder: 1, name: 1 })
       .lean();
 

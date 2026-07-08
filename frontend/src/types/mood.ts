@@ -22,6 +22,10 @@ export interface AnonymousMood {
   editedAt: string | null;
   isOwner?: boolean;
   canEdit?: boolean;
+  isRepost?: boolean;
+  repostOf?: { moodId: string; excerpt: string } | null;
+  repostCount?: number;
+  hasReposted?: boolean;
 }
 
 export interface PaginatedMoods {

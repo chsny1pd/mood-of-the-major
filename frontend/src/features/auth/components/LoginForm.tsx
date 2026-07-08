@@ -3,8 +3,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { PasswordInput } from "../../../components/ui/PasswordInput";
 import { useAuth } from "../../../hooks/useAuth";
 import { ROUTES } from "../../../constants/routes";
+import { themeClasses } from "../../../lib/themeClasses";
 import { getApiErrorMessage, getApiFieldErrors } from "../../../services/apiClient";
 import { loginSchema, type LoginFormValues } from "../schemas";
 
@@ -43,14 +45,10 @@ export function LoginForm() {
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
-      {formError ? (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-100">
-          {formError}
-        </div>
-      ) : null}
+      {formError ? <div className={themeClasses.errorBox}>{formError}</div> : null}
 
       <div>
-        <label htmlFor="login-email" className="mb-1 block text-sm font-medium text-stone-700 dark:text-stone-300">
+        <label htmlFor="login-email" className={`mb-1 block ${themeClasses.label}`}>
           {t("auth.email")}
         </label>
         <input
@@ -59,29 +57,24 @@ export function LoginForm() {
           type="email"
           autoComplete="email"
           aria-label={t("auth.email")}
-          className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-stone-900 outline-none ring-teal-700 focus:ring-2 dark:border-stone-600 dark:bg-stone-950 dark:text-stone-100"
+          className={themeClasses.input}
         />
-        {errors.email ? <p className="mt-1 text-sm text-red-600">{errors.email.message}</p> : null}
+        {errors.email ? (
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>
+        ) : null}
       </div>
 
       <div>
-        <label
-          htmlFor="login-password"
-          className="mb-1 block text-sm font-medium text-stone-700 dark:text-stone-300"
-        >
+        <label htmlFor="login-password" className={`mb-1 block ${themeClasses.label}`}>
           {t("auth.password")}
         </label>
-        <input
+        <PasswordInput
           {...register("password")}
           id="login-password"
-          type="password"
           autoComplete="current-password"
           aria-label={t("auth.password")}
-          className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-stone-900 outline-none ring-teal-700 focus:ring-2 dark:border-stone-600 dark:bg-stone-950 dark:text-stone-100"
+          error={errors.password?.message}
         />
-        {errors.password ? (
-          <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
-        ) : null}
       </div>
 
       <button
@@ -92,9 +85,9 @@ export function LoginForm() {
         {isSubmitting ? t("auth.signingIn") : t("auth.signIn")}
       </button>
 
-      <p className="text-center text-sm text-stone-600 dark:text-stone-400">
+      <p className={`text-center text-sm ${themeClasses.body}`}>
         {t("auth.noAccount")}{" "}
-        <Link to={ROUTES.register} className="font-medium text-teal-800 hover:underline dark:text-teal-300">
+        <Link to={ROUTES.register} className={`font-medium ${themeClasses.link}`}>
           {t("auth.createAccount")}
         </Link>
       </p>

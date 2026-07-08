@@ -38,6 +38,14 @@ export function createMoodRoutes(deps: Dependencies): Router {
     moodController.create,
   );
 
+  router.post(
+    "/:moodId/repost",
+    authenticate,
+    authorize("student"),
+    rateLimiters.post,
+    moodController.repost,
+  );
+
   router.get("/:moodId", optionalAuthenticate, moodController.getById);
 
   router.patch(

@@ -6,6 +6,7 @@ import { queryKeys } from "../constants/queryKeys";
 import { fetchAdminReports, resolveReport, type AdminReportItem } from "../services/adminService";
 import { getApiErrorMessage } from "../services/apiClient";
 import { getReportReasonTranslationKey, type ReportReasonCode } from "../types/engagement";
+import { themeClasses } from "../lib/themeClasses";
 
 const pendingReportsQueryKey = queryKeys.adminReports({ status: "pending" });
 
@@ -81,7 +82,7 @@ export function AdminReportsPage() {
   );
 
   if (reportsQuery.isLoading) {
-    return <p className="text-stone-500">{t("admin.loadingReports")}</p>;
+    return <p className={themeClasses.muted}>{t("admin.loadingReports")}</p>;
   }
 
   if (reportsQuery.isError) {
@@ -98,14 +99,10 @@ export function AdminReportsPage() {
 
   return (
     <section>
-      <h1 className="text-2xl font-bold text-stone-900">{t("admin.reportQueueTitle")}</h1>
-      <p className="mt-1 text-sm text-stone-600">{t("admin.pendingReports", { count: pendingCount })}</p>
+      <h1 className={`text-2xl font-bold ${themeClasses.heading}`}>{t("admin.reportQueueTitle")}</h1>
+      <p className={`mt-1 text-sm ${themeClasses.body}`}>{t("admin.pendingReports", { count: pendingCount })}</p>
 
-      {actionError ? (
-        <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-          {actionError}
-        </p>
-      ) : null}
+      {actionError ? <p className={`mt-4 ${themeClasses.errorBox}`}>{actionError}</p> : null}
 
       {reports.length === 0 ? (
         <div className="mt-8">
@@ -144,17 +141,17 @@ const ReportRow = memo(function ReportRow({
   const reasonKey = getReportReasonTranslationKey(report.reasonCode as ReportReasonCode);
 
   return (
-    <li className="rounded-xl border border-stone-200 bg-white p-4 shadow-sm">
+    <li className={`p-4 ${themeClasses.card}`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-wide text-stone-500">
+          <p className={`text-xs uppercase tracking-wide ${themeClasses.muted}`}>
             {report.targetType} · {t(reasonKey)}
           </p>
-          <p className="mt-1 text-sm text-stone-800">{report.contentPreview ?? "—"}</p>
+          <p className={`mt-1 text-sm ${themeClasses.subheading}`}>{report.contentPreview ?? "—"}</p>
           {report.description ? (
-            <p className="mt-1 text-sm text-stone-600">{report.description}</p>
+            <p className={`mt-1 text-sm ${themeClasses.body}`}>{report.description}</p>
           ) : null}
-          <p className="mt-2 text-xs text-stone-400">
+          <p className={`mt-2 text-xs ${themeClasses.faint}`}>
             {new Date(report.createdAt).toLocaleString()}
           </p>
         </div>
@@ -163,7 +160,7 @@ const ReportRow = memo(function ReportRow({
             type="button"
             disabled={isResolving}
             onClick={() => onResolve(report.id, "resolved_dismissed")}
-            className="rounded-md border border-stone-300 px-3 py-1 text-sm hover:bg-stone-50 disabled:opacity-50"
+            className={`rounded-md border px-3 py-1 text-sm disabled:opacity-50 ${themeClasses.border} ${themeClasses.hoverRow}`}
           >
             {t("admin.dismiss")}
           </button>

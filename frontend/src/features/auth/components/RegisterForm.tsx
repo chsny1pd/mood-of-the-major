@@ -3,8 +3,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { PasswordInput } from "../../../components/ui/PasswordInput";
+import { SubmitReferenceModal } from "../../submissions/components/SubmitReferenceModal";
 import { useAuth } from "../../../hooks/useAuth";
 import { ROUTES } from "../../../constants/routes";
+import { themeClasses } from "../../../lib/themeClasses";
 import { getApiErrorMessage, getApiFieldErrors } from "../../../services/apiClient";
 import { fetchFaculties, fetchMajors, type FacultyOption, type MajorOption } from "../../../services/referenceService";
 import { useLocalizedName } from "../../../lib/useLocalizedName";
@@ -18,6 +21,7 @@ export function RegisterForm() {
   const [formError, setFormError] = useState<string | null>(null);
   const [faculties, setFaculties] = useState<FacultyOption[]>([]);
   const [majors, setMajors] = useState<MajorOption[]>([]);
+  const [suggestType, setSuggestType] = useState<"faculty" | "major" | null>(null);
 
   const {
     register,
@@ -71,136 +75,155 @@ export function RegisterForm() {
   });
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
-      {formError ? (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-          {formError}
+    <>
+      <form onSubmit={onSubmit} className="space-y-4">
+        {formError ? <div className={themeClasses.errorBox}>{formError}</div> : null}
+
+        <div>
+          <label htmlFor="register-email" className={`mb-1 block ${themeClasses.label}`}>
+            {t("auth.email")}
+          </label>
+          <input
+            {...register("email")}
+            id="register-email"
+            type="email"
+            autoComplete="email"
+            aria-label={t("auth.email")}
+            className={themeClasses.input}
+          />
+          {errors.email ? (
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>
+          ) : null}
         </div>
+
+        <div>
+          <label htmlFor="register-student-id" className={`mb-1 block ${themeClasses.label}`}>
+            {t("register.studentId")}
+          </label>
+          <input
+            {...register("studentId")}
+            id="register-student-id"
+            type="text"
+            autoComplete="off"
+            aria-label={t("register.studentId")}
+            placeholder={t("register.studentIdPlaceholder")}
+            className={themeClasses.input}
+          />
+          {errors.studentId ? (
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.studentId.message}</p>
+          ) : null}
+        </div>
+
+        <div>
+          <label htmlFor="register-year" className={`mb-1 block ${themeClasses.label}`}>
+            {t("register.yearOfStudy")}
+          </label>
+          <select
+            id="register-year"
+            aria-label={t("register.yearOfStudy")}
+            className={themeClasses.select}
+            {...register("yearOfStudy", { valueAsNumber: true })}
+          >
+            <option value="">{t("register.selectYear")}</option>
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((year) => (
+              <option key={year} value={year}>
+                {t("register.yearOption", { year })}
+              </option>
+            ))}
+          </select>
+          {errors.yearOfStudy ? (
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.yearOfStudy.message}</p>
+          ) : null}
+        </div>
+
+        <div>
+          <label htmlFor="register-password" className={`mb-1 block ${themeClasses.label}`}>
+            {t("auth.password")}
+          </label>
+          <PasswordInput
+            {...register("password")}
+            id="register-password"
+            autoComplete="new-password"
+            aria-label={t("auth.password")}
+            error={errors.password?.message}
+          />
+        </div>
+
+        <div>
+          <div className="mb-1 flex items-center justify-between">
+            <label htmlFor="facultyId" className={themeClasses.label}>
+              {t("register.facultyOptional")}
+            </label>
+            <button
+              type="button"
+              onClick={() => setSuggestType("faculty")}
+              className={`text-xs ${themeClasses.linkSubtle}`}
+            >
+              {t("submissions.suggestNew")}
+            </button>
+          </div>
+          <select id="facultyId" className={themeClasses.select} {...register("facultyId")}>
+            <option value="">{t("register.selectFaculty")}</option>
+            {faculties.map((faculty) => (
+              <option key={faculty.id} value={faculty.id}>
+                {localizedName(faculty)}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <div className="mb-1 flex items-center justify-between">
+            <label htmlFor="majorId" className={themeClasses.label}>
+              {t("register.majorOptional")}
+            </label>
+            <button
+              type="button"
+              onClick={() => setSuggestType("major")}
+              disabled={!facultyId}
+              className={`text-xs disabled:opacity-50 ${themeClasses.linkSubtle}`}
+            >
+              {t("submissions.suggestNew")}
+            </button>
+          </div>
+          <select
+            id="majorId"
+            disabled={!facultyId}
+            className={`disabled:opacity-60 ${themeClasses.select}`}
+            {...register("majorId")}
+          >
+            <option value="">{t("register.selectMajor")}</option>
+            {majors.map((major) => (
+              <option key={major.id} value={major.id}>
+                {localizedName(major)}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full rounded-xl bg-teal-800 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-900 disabled:opacity-60 dark:bg-teal-700 dark:hover:bg-teal-600"
+        >
+          {isSubmitting ? t("register.creatingAccount") : t("register.createAccount")}
+        </button>
+
+        <p className={`text-center text-sm ${themeClasses.body}`}>
+          {t("register.alreadyHaveAccount")}{" "}
+          <Link to={ROUTES.login} className={`font-medium ${themeClasses.link}`}>
+            {t("auth.signIn")}
+          </Link>
+        </p>
+      </form>
+
+      {suggestType ? (
+        <SubmitReferenceModal
+          type={suggestType}
+          facultyId={suggestType === "major" ? facultyId : undefined}
+          onClose={() => setSuggestType(null)}
+        />
       ) : null}
-
-      <div>
-        <label htmlFor="register-email" className="mb-1 block text-sm font-medium text-stone-700">
-          {t("auth.email")}
-        </label>
-        <input
-          {...register("email")}
-          id="register-email"
-          type="email"
-          autoComplete="email"
-          aria-label={t("auth.email")}
-          className="w-full rounded-xl border border-stone-300 px-3 py-2 text-stone-900 outline-none ring-teal-700 focus:ring-2"
-        />
-        {errors.email ? <p className="mt-1 text-sm text-red-600">{errors.email.message}</p> : null}
-      </div>
-
-      <div>
-        <label htmlFor="register-student-id" className="mb-1 block text-sm font-medium text-stone-700">
-          {t("register.studentId")}
-        </label>
-        <input
-          {...register("studentId")}
-          id="register-student-id"
-          type="text"
-          autoComplete="off"
-          aria-label={t("register.studentId")}
-          placeholder={t("register.studentIdPlaceholder")}
-          className="w-full rounded-xl border border-stone-300 px-3 py-2 text-stone-900 outline-none ring-teal-700 focus:ring-2"
-        />
-        {errors.studentId ? (
-          <p className="mt-1 text-sm text-red-600">{errors.studentId.message}</p>
-        ) : null}
-      </div>
-
-      <div>
-        <label htmlFor="register-year" className="mb-1 block text-sm font-medium text-stone-700">
-          {t("register.yearOfStudy")}
-        </label>
-        <select
-          id="register-year"
-          aria-label={t("register.yearOfStudy")}
-          className="w-full rounded-xl border border-stone-300 px-3 py-2 text-stone-900 outline-none ring-teal-700 focus:ring-2"
-          {...register("yearOfStudy", { valueAsNumber: true })}
-        >
-          <option value="">{t("register.selectYear")}</option>
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((year) => (
-            <option key={year} value={year}>
-              {t("register.yearOption", { year })}
-            </option>
-          ))}
-        </select>
-        {errors.yearOfStudy ? (
-          <p className="mt-1 text-sm text-red-600">{errors.yearOfStudy.message}</p>
-        ) : null}
-      </div>
-
-      <div>
-        <label htmlFor="register-password" className="mb-1 block text-sm font-medium text-stone-700">
-          {t("auth.password")}
-        </label>
-        <input
-          {...register("password")}
-          id="register-password"
-          type="password"
-          autoComplete="new-password"
-          aria-label={t("auth.password")}
-          className="w-full rounded-xl border border-stone-300 px-3 py-2 text-stone-900 outline-none ring-teal-700 focus:ring-2"
-        />
-        {errors.password ? (
-          <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
-        ) : null}
-      </div>
-
-      <div>
-        <label htmlFor="facultyId" className="mb-1 block text-sm font-medium text-stone-700">
-          {t("register.facultyOptional")}
-        </label>
-        <select
-          id="facultyId"
-          className="w-full rounded-xl border border-stone-300 px-3 py-2 text-stone-900 outline-none ring-teal-700 focus:ring-2"
-          {...register("facultyId")}
-        >
-          <option value="">{t("register.selectFaculty")}</option>
-          {faculties.map((faculty) => (
-            <option key={faculty.id} value={faculty.id}>
-              {localizedName(faculty)}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div>
-        <label htmlFor="majorId" className="mb-1 block text-sm font-medium text-stone-700">
-          {t("register.majorOptional")}
-        </label>
-        <select
-          id="majorId"
-          disabled={!facultyId}
-          className="w-full rounded-xl border border-stone-300 px-3 py-2 text-stone-900 outline-none ring-teal-700 focus:ring-2 disabled:bg-stone-100"
-          {...register("majorId")}
-        >
-          <option value="">{t("register.selectMajor")}</option>
-          {majors.map((major) => (
-            <option key={major.id} value={major.id}>
-              {localizedName(major)}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="w-full rounded-xl bg-teal-800 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-900 disabled:opacity-60"
-      >
-        {isSubmitting ? t("register.creatingAccount") : t("register.createAccount")}
-      </button>
-
-      <p className="text-center text-sm text-stone-600">
-        {t("register.alreadyHaveAccount")}{" "}
-        <Link to={ROUTES.login} className="font-medium text-teal-800 hover:underline">
-          {t("auth.signIn")}
-        </Link>
-      </p>
-    </form>
+    </>
   );
 }

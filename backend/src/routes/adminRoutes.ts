@@ -13,6 +13,7 @@ import {
   updateTagSchema,
   updateUserStatusSchema,
 } from "../validators/adminSchemas.js";
+import { pendingListQuerySchema, updatePendingSubmissionSchema } from "../validators/submissionSchemas.js";
 
 export function createAdminRoutes(deps: Dependencies): Router {
   const router = Router();
@@ -42,6 +43,7 @@ export function createAdminRoutes(deps: Dependencies): Router {
     validate(adminContentListSchema, "query"),
     adminController.listContentMoods,
   );
+  router.get("/moods", ...adminOnly, adminController.listMoodsAdmin);
   router.get("/moods/:moodId", ...adminOnly, adminController.getMood);
   router.post(
     "/moods/:moodId/remove",
@@ -79,6 +81,32 @@ export function createAdminRoutes(deps: Dependencies): Router {
     validate(updateTagSchema),
     adminController.updateTag,
   );
+
+  router.get(
+    "/submissions",
+    ...adminOnly,
+    validate(pendingListQuerySchema, "query"),
+    adminController.listPendingSubmissions,
+  );
+  router.patch(
+    "/submissions/:type/:id",
+    ...adminOnly,
+    validate(updatePendingSubmissionSchema),
+    adminController.updatePendingSubmission,
+  );
+  router.post(
+    "/submissions/:type/:id/approve",
+    ...adminOnly,
+    adminController.approveSubmission,
+  );
+  router.post(
+    "/submissions/:type/:id/reject",
+    ...adminOnly,
+    adminController.rejectSubmission,
+  );
+
+  router.get("/faculties", ...adminOnly, adminController.listFacultiesAdmin);
+  router.get("/majors", ...adminOnly, adminController.listMajorsAdmin);
 
   return router;
 }

@@ -67,6 +67,13 @@ export async function deleteMood(moodId: string): Promise<void> {
   await apiClient.delete(`/moods/${moodId}`);
 }
 
+export async function repostMood(moodId: string): Promise<AnonymousMood> {
+  const response = await apiClient.post<{ success: true; data: AnonymousMood }>(
+    `/moods/${moodId}/repost`,
+  );
+  return response.data.data;
+}
+
 export interface SearchParams {
   q: string;
   facultyId?: string;
