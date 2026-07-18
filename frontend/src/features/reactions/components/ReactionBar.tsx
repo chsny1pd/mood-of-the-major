@@ -97,8 +97,8 @@ export function ReactionBar({ targetType, targetId, compact = false }: ReactionB
             onClick={() => handleClick(reaction.type)}
             className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 transition ${
               isActive
-                ? "border-teal-600 bg-teal-50 text-teal-900"
-                : "border-stone-200 bg-white text-stone-600 hover:border-teal-300"
+                ? "border-orange-600 bg-orange-50 text-orange-900"
+                : "border-stone-200 bg-white text-stone-600 hover:border-orange-300"
             } disabled:cursor-not-allowed disabled:opacity-60`}
             title={label}
           >
@@ -108,7 +108,7 @@ export function ReactionBar({ targetType, targetId, compact = false }: ReactionB
         );
       })}
       {!isAuthenticated ? (
-        <Link to={ROUTES.login} className="self-center text-xs text-stone-500 hover:text-teal-800">
+        <Link to={ROUTES.login} className="self-center text-xs text-stone-500 hover:text-orange-800">
           {t("engagement.logInToReact")}
         </Link>
       ) : null}

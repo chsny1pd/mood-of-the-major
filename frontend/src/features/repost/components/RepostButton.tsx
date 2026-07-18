@@ -42,7 +42,7 @@ export function RepostButton({
 
   if (!isAuthenticated) {
     return (
-      <Link to={ROUTES.login} className="text-sm text-stone-500 hover:text-teal-800 dark:hover:text-teal-300">
+      <Link to={ROUTES.login} className="text-sm text-stone-500 hover:text-orange-800 dark:hover:text-orange-300">
         {t("repost.logInToRepost")}
       </Link>
     );
@@ -60,8 +60,8 @@ export function RepostButton({
         disabled={mutation.isPending || hasReposted}
         className={`rounded-full border px-3 py-1 text-sm transition disabled:opacity-60 ${
           hasReposted
-            ? "border-teal-300 bg-teal-50 text-teal-900 dark:border-teal-700 dark:bg-teal-950 dark:text-teal-100"
-            : "border-stone-300 text-stone-600 hover:border-teal-400 dark:border-stone-600 dark:text-stone-400 dark:hover:border-teal-500"
+            ? "border-orange-300 bg-orange-50 text-orange-900 dark:border-orange-700 dark:bg-orange-950 dark:text-orange-100"
+            : "border-stone-300 text-stone-600 hover:border-orange-400 dark:border-stone-600 dark:text-stone-400 dark:hover:border-orange-500"
         } ${compact ? "px-2 py-0.5 text-xs" : ""}`}
       >
         {mutation.isPending

@@ -31,7 +31,7 @@ export const MoodCard = memo(function MoodCard({
   );
 
   return (
-    <article className={`p-5 transition hover:border-teal-200 dark:hover:border-teal-800 ${themeClasses.cardLg}`}>
+    <article className={`p-5 transition hover:border-orange-200 dark:hover:border-orange-800 ${themeClasses.cardLg}`}>
       {mood.isRepost && mood.repostOf ? (
         <p className={`mb-2 text-xs ${themeClasses.muted}`}>
           {t("repost.repostedFrom")}{" "}

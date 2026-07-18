@@ -26,7 +26,7 @@ export function FacultyFeedPage() {
 
   return (
     <section className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-      <Link to={ROUTES.feed} className="text-sm text-teal-800 hover:underline">
+      <Link to={ROUTES.feed} className="text-sm text-orange-800 hover:underline">
         {t("facultyFeed.backToAll")}
       </Link>
       <h1 className="mt-4 text-3xl font-semibold text-stone-900">
@@ -44,7 +44,7 @@ export function FacultyFeedPage() {
             title={t("facultyFeed.notFoundTitle")}
             description={t("facultyFeed.notFoundDescription")}
             action={
-              <Link to={ROUTES.feed} className="text-sm font-medium text-teal-800 hover:underline">
+              <Link to={ROUTES.feed} className="text-sm font-medium text-orange-800 hover:underline">
                 {t("feed.backToFeed")}
               </Link>
             }

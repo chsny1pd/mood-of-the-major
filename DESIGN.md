@@ -692,7 +692,7 @@ Landing (/)
 
 Color supports **emotional clarity** without stereotyping mental health. Categories receive distinct but harmonious hues — never red-for-danger by default for sadness or anxiety. The overall palette balances **warmth** (community, belonging) with **calm** (safety, reflection).
 
-Neutrals carry most of the interface. Category colors appear as accents — badges, chart segments, subtle borders — not full-screen backgrounds.
+Neutrals carry most of the interface. Category colors appear as accents — badges, chart segments, subtle borders — not full-screen backgrounds. Soft amber ambient glow may appear on marketing, auth, and header surfaces only — never behind every feed card.
 
 Contrast ratios target readable text on all backgrounds; final WCAG 2.1 AA audit is deferred per README Future Improvements, but palette choices should aim for compliance.
 
@@ -700,9 +700,9 @@ Contrast ratios target readable text on all backgrounds; final WCAG 2.1 AA audit
 
 | Role | Intent | Description |
 |------|--------|-------------|
-| **Primary** | Brand, primary CTAs | Muted indigo-violet — thoughtful, not corporate blue |
-| **Secondary** | Supporting actions | Soft teal — calm, secondary buttons |
-| **Background** | Page canvas | Off-white (light) / deep blue-gray (dark) |
+| **Primary** | Brand, primary CTAs | Soft amber-orange (`#EA580C` light / `#FB923C` dark) — warm, calm, approachable |
+| **Secondary** | Supporting actions | Warm stone outline / ghost — secondary buttons stay neutral |
+| **Background** | Page canvas | Off-white (light) / deep warm stone (dark) |
 | **Surface** | Cards, modals | White (light) / elevated gray (dark) |
 | **Text primary** | Body and headings | Near-black (light) / near-white (dark) |
 | **Text muted** | Timestamps, hints | Mid-gray |
@@ -975,7 +975,7 @@ Dark mode is a **first-class theme**, not an afterthought inversion. Both themes
 | **Surface / cards** | White | Elevated dark gray |
 | **Primary text** | Near-black | Near-white |
 | **Muted text** | Mid-gray | Light gray |
-| **Primary brand** | Indigo-violet (slightly desaturated in dark) | Lighter tint for contrast |
+| **Primary brand** | Soft amber-orange | Lighter amber tint for contrast |
 | **Category badges** | Pastel backgrounds | Desaturated dark-friendly variants |
 | **Charts** | Light gridlines | Subtle dark gridlines, bright data colors |
 

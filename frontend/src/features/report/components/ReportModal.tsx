@@ -51,7 +51,7 @@ export function ReportModal({ targetType, targetId, onClose }: ReportModalProps)
         <p className="mt-1 text-sm text-stone-600">{t("engagement.reportModal.description")}</p>
 
         {message ? (
-          <p className="mt-4 rounded-xl bg-teal-50 px-4 py-3 text-sm text-teal-900">{message}</p>
+          <p className="mt-4 rounded-xl bg-orange-50 px-4 py-3 text-sm text-orange-900">{message}</p>
         ) : (
           <form
             className="mt-4 space-y-4"
@@ -120,7 +120,7 @@ export function ReportModal({ targetType, targetId, onClose }: ReportModalProps)
           <button
             type="button"
             onClick={onClose}
-            className="mt-4 w-full rounded-xl bg-teal-800 px-4 py-2 text-sm font-semibold text-white"
+            className="mt-4 w-full rounded-xl bg-orange-800 px-4 py-2 text-sm font-semibold text-white"
           >
             {t("engagement.reportModal.close")}
           </button>

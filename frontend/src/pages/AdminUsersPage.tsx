@@ -112,7 +112,7 @@ function UserRow({
             type="button"
             disabled={isUpdating}
             onClick={() => onToggleStatus("active")}
-            className="text-teal-700 hover:underline disabled:opacity-50 dark:text-teal-400"
+            className="text-orange-700 hover:underline disabled:opacity-50 dark:text-orange-400"
           >
             {t("admin.reinstate")}
           </button>

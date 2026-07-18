@@ -117,7 +117,7 @@ export function SettingsPage() {
             {t("settings.logoutButton")}
           </Button>
           <p className="mt-4 text-sm text-stone-500 dark:text-stone-400">
-            <Link to={ROUTES.howToUse} className="text-teal-800 hover:underline dark:text-teal-300">
+            <Link to={ROUTES.howToUse} className="text-orange-800 hover:underline dark:text-orange-300">
               {t("nav.howToUse")}
             </Link>
           </p>

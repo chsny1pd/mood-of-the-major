@@ -12,7 +12,7 @@ export function TrendingEmotionChip({ item }: TrendingEmotionChipProps) {
 
   const directionClass =
     item.direction === "rising"
-      ? "border-teal-200 bg-teal-50 text-teal-900"
+      ? "border-orange-200 bg-orange-50 text-orange-900"
       : item.direction === "declining"
         ? "border-stone-200 bg-stone-50 text-stone-700"
         : "border-amber-200 bg-amber-50 text-amber-900";

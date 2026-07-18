@@ -31,15 +31,21 @@ export function FeedPage() {
   );
 
   return (
-    <section className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-      <div className="mb-8 flex items-center justify-between gap-4">
+    <section className="relative mx-auto max-w-3xl px-4 py-12 sm:px-6">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -left-16 top-0 h-40 w-40 rounded-full bg-orange-400/15 blur-3xl dark:bg-orange-500/10"
+      />
+      <div className="relative mb-8 flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-semibold text-stone-900 dark:text-stone-100">{t("feed.title")}</h1>
+          <h1 className="font-display text-3xl font-semibold text-stone-900 dark:text-stone-100">
+            {t("feed.title")}
+          </h1>
           <p className="mt-2 text-stone-600 dark:text-stone-300">{t("feed.description")}</p>
         </div>
         <Link
           to={ROUTES.create}
-          className="rounded-full bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500"
+          className="rounded-full bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 dark:bg-orange-500 dark:text-stone-950 dark:hover:bg-orange-400"
         >
           {t("feed.shareMood")}
         </Link>
@@ -75,7 +81,7 @@ export function FeedPage() {
           action={
             <Link
               to={ROUTES.create}
-              className="inline-block rounded-full bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500"
+              className="inline-block rounded-full bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 dark:bg-orange-500 dark:text-stone-950 dark:hover:bg-orange-400"
             >
               {t("feed.shareMood")}
             </Link>

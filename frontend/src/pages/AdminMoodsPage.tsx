@@ -43,7 +43,7 @@ export function AdminMoodsPage() {
         <button
           type="button"
           onClick={() => setShowAddMore(true)}
-          className="shrink-0 rounded-xl bg-teal-800 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-900 dark:bg-teal-700 dark:hover:bg-teal-600"
+          className="shrink-0 rounded-xl bg-orange-800 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-900 dark:bg-orange-700 dark:hover:bg-orange-600"
         >
           {t("submissions.addMore")}
         </button>

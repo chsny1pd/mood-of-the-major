@@ -84,7 +84,7 @@ export function EditMoodForm({ mood, onCancel, onSaved }: EditMoodFormProps) {
         <textarea
           id="edit-content"
           rows={6}
-          className="w-full rounded-xl border border-stone-300 px-3 py-2 text-stone-900 outline-none ring-teal-700 focus:ring-2"
+          className="w-full rounded-xl border border-stone-300 px-3 py-2 text-stone-900 outline-none ring-orange-700 focus:ring-2"
           {...register("content")}
         />
         {errors.content ? <p className="mt-1 text-sm text-red-600">{errors.content.message}</p> : null}
@@ -109,8 +109,8 @@ export function EditMoodForm({ mood, onCancel, onSaved }: EditMoodFormProps) {
                   className={`rounded-full px-3 py-1 text-sm transition ${
                     selected
                       ? isPrimary
-                        ? "bg-teal-700 text-white"
-                        : "bg-teal-100 text-teal-900 ring-1 ring-teal-300"
+                        ? "bg-orange-700 text-white"
+                        : "bg-orange-100 text-orange-900 ring-1 ring-orange-300"
                       : "bg-stone-100 text-stone-700 hover:bg-stone-200"
                   }`}
                 >
@@ -128,7 +128,7 @@ export function EditMoodForm({ mood, onCancel, onSaved }: EditMoodFormProps) {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded-xl bg-teal-800 px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-900 disabled:opacity-60"
+          className="rounded-xl bg-orange-800 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-900 disabled:opacity-60"
         >
           {isSubmitting ? t("moodForm.saving") : t("moodForm.saveChanges")}
         </button>

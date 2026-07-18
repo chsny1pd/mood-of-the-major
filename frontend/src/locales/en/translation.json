@@ -159,7 +159,9 @@
       }
     },
     "authLive": "Authentication is live.",
-    "authLiveBody": "Create an account to access your feed — browse anonymous moods or share your own."
+    "authLiveBody": "Create an account to access your feed — browse anonymous moods or share your own.",
+    "ctaSignIn": "Sign in",
+    "ctaJoin": "Join the community"
   },
   "feed": {
     "title": "Mood feed",

@@ -85,7 +85,7 @@ export function NotificationsPage() {
             <li
               key={item.id}
               className={`rounded-xl border p-4 shadow-sm ${
-                item.isRead ? "border-stone-200 bg-white" : "border-teal-200 bg-teal-50/40"
+                item.isRead ? "border-stone-200 bg-white" : "border-orange-200 bg-orange-50/40"
               }`}
             >
               <div className="flex items-start justify-between gap-3">
@@ -101,7 +101,7 @@ export function NotificationsPage() {
                     <button
                       type="button"
                       onClick={() => void markReadMutation.mutate(item.id)}
-                      className="text-xs text-teal-700 hover:underline"
+                      className="text-xs text-orange-700 hover:underline"
                     >
                       {t("notifications.markRead")}
                     </button>

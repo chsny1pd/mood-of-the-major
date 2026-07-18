@@ -22,8 +22,8 @@ function navLinkClass({ isActive }: { isActive: boolean }) {
   return [
     "rounded-md px-2.5 py-1.5 transition",
     isActive
-      ? "bg-teal-50 font-medium text-teal-900 dark:bg-teal-950 dark:text-teal-100"
-      : "text-stone-600 hover:bg-stone-100 hover:text-teal-800 dark:text-stone-300 dark:hover:bg-stone-800 dark:hover:text-teal-300",
+      ? "bg-orange-50 font-medium text-orange-900 dark:bg-orange-950 dark:text-orange-100"
+      : "text-stone-600 hover:bg-stone-100 hover:text-orange-700 dark:text-stone-300 dark:hover:bg-stone-800 dark:hover:text-orange-300",
   ].join(" ");
 }
 
@@ -33,12 +33,16 @@ export function PublicNavbar() {
   const closeMobile = () => setMobileOpen(false);
 
   return (
-    <header className="border-b border-stone-200 bg-white/80 backdrop-blur dark:border-stone-700 dark:bg-stone-950/80">
-      <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 sm:px-6">
+    <header className="relative border-b border-stone-200/80 bg-white/80 backdrop-blur dark:border-stone-700 dark:bg-stone-950/80">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 -bottom-6 h-6 bg-gradient-to-b from-orange-400/15 to-transparent dark:from-orange-500/10"
+      />
+      <div className="relative mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 sm:px-6">
         <div className="flex min-w-0 flex-1 items-center gap-4">
           <Link
             to={ROUTES.home}
-            className="shrink-0 text-lg font-semibold tracking-tight text-teal-800 dark:text-teal-300"
+            className="font-display shrink-0 text-lg font-semibold tracking-tight text-orange-700 dark:text-orange-300"
           >
             {t("app.name")}
           </Link>

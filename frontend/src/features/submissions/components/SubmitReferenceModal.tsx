@@ -105,7 +105,7 @@ export function SubmitReferenceModal({
               </button>
               <Link
                 to={ROUTES.login}
-                className="rounded-xl bg-teal-800 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-900 dark:bg-teal-700 dark:hover:bg-teal-600"
+                className="rounded-xl bg-orange-800 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-900 dark:bg-orange-700 dark:hover:bg-orange-600"
               >
                 {t("auth.signIn")}
               </Link>
@@ -113,13 +113,13 @@ export function SubmitReferenceModal({
           </div>
         ) : successMessage ? (
           <>
-            <p className="mt-4 rounded-xl border border-teal-200 bg-teal-50 px-4 py-3 text-sm text-teal-900 dark:border-teal-800 dark:bg-teal-950 dark:text-teal-100">
+            <p className="mt-4 rounded-xl border border-orange-200 bg-orange-50 px-4 py-3 text-sm text-orange-900 dark:border-orange-800 dark:bg-orange-950 dark:text-orange-100">
               {successMessage}
             </p>
             <button
               type="button"
               onClick={onClose}
-              className="mt-4 w-full rounded-xl bg-teal-800 px-4 py-2 text-sm font-semibold text-white dark:bg-teal-700"
+              className="mt-4 w-full rounded-xl bg-orange-800 px-4 py-2 text-sm font-semibold text-white dark:bg-orange-700"
             >
               {t("submissions.close")}
             </button>
@@ -203,7 +203,7 @@ export function SubmitReferenceModal({
               <button
                 type="submit"
                 disabled={mutation.isPending || name.trim().length < 2 || (type === "major" && !resolvedFacultyId)}
-                className="rounded-xl bg-teal-800 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-900 disabled:opacity-60 dark:bg-teal-700 dark:hover:bg-teal-600"
+                className="rounded-xl bg-orange-800 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-900 disabled:opacity-60 dark:bg-orange-700 dark:hover:bg-orange-600"
               >
                 {mutation.isPending ? t("submissions.submitting") : t("submissions.submit")}
               </button>

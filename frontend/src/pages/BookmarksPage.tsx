@@ -34,7 +34,7 @@ export function BookmarksPage() {
           title={t("bookmarks.loadErrorTitle")}
           description={t("bookmarks.loadErrorDescription")}
           action={
-            <Link to={ROUTES.feed} className="text-sm font-medium text-teal-800 hover:underline">
+            <Link to={ROUTES.feed} className="text-sm font-medium text-orange-800 hover:underline">
               {t("bookmarks.backToFeed")}
             </Link>
           }
@@ -44,7 +44,7 @@ export function BookmarksPage() {
           title={t("bookmarks.emptyTitle")}
           description={t("bookmarks.emptyDescription")}
           action={
-            <Link to={ROUTES.feed} className="text-sm font-medium text-teal-800 hover:underline">
+            <Link to={ROUTES.feed} className="text-sm font-medium text-orange-800 hover:underline">
               {t("bookmarks.browseFeed")}
             </Link>
           }

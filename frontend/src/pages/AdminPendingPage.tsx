@@ -234,7 +234,7 @@ function PendingRow({
                     ...(item.type === "major" ? { facultyId } : {}),
                   })
                 }
-                className="rounded-md bg-teal-800 px-3 py-1 text-sm text-white disabled:opacity-50 dark:bg-teal-700"
+                className="rounded-md bg-orange-800 px-3 py-1 text-sm text-white disabled:opacity-50 dark:bg-orange-700"
               >
                 {t("common.save")}
               </button>
@@ -261,7 +261,7 @@ function PendingRow({
                 type="button"
                 disabled={isBusy}
                 onClick={onApprove}
-                className="rounded-md bg-teal-800 px-3 py-1 text-sm text-white disabled:opacity-50 dark:bg-teal-700"
+                className="rounded-md bg-orange-800 px-3 py-1 text-sm text-white disabled:opacity-50 dark:bg-orange-700"
               >
                 {t("admin.approve")}
               </button>

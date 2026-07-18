@@ -32,7 +32,7 @@ export function Avatar({ src, alt, name, email, size = "md", className = "" }: A
   return (
     <span
       aria-hidden={Boolean(alt)}
-      className={`inline-flex items-center justify-center rounded-full bg-teal-700 font-semibold text-white ring-2 ring-stone-200 dark:bg-teal-600 dark:ring-stone-700 ${sizeClasses[size]} ${className}`}
+      className={`inline-flex items-center justify-center rounded-full bg-orange-600 font-semibold text-white ring-2 ring-stone-200 dark:bg-orange-500 dark:ring-stone-700 ${sizeClasses[size]} ${className}`}
     >
       {initials}
     </span>

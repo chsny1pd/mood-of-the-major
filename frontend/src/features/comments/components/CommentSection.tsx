@@ -82,7 +82,7 @@ export function CommentSection({ moodId }: CommentSectionProps) {
               <button
                 type="button"
                 onClick={() => setReplyToId(null)}
-                className="font-medium text-teal-800 hover:underline"
+                className="font-medium text-orange-800 hover:underline"
               >
                 {t("common.cancel")}
               </button>
@@ -94,13 +94,13 @@ export function CommentSection({ moodId }: CommentSectionProps) {
             rows={3}
             maxLength={2000}
             placeholder={t("comments.placeholder")}
-            className="w-full rounded-xl border border-stone-300 px-3 py-2 text-stone-900 outline-none ring-teal-700 focus:ring-2"
+            className="w-full rounded-xl border border-stone-300 px-3 py-2 text-stone-900 outline-none ring-orange-700 focus:ring-2"
           />
           {error ? <p className="text-sm text-red-600">{error}</p> : null}
           <button
             type="submit"
             disabled={mutation.isPending || !content.trim()}
-            className="rounded-xl bg-teal-800 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-900 disabled:opacity-60"
+            className="rounded-xl bg-orange-800 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-900 disabled:opacity-60"
           >
             {mutation.isPending
               ? t("comments.posting")
@@ -111,7 +111,7 @@ export function CommentSection({ moodId }: CommentSectionProps) {
         </form>
       ) : (
         <p className="mb-6 text-sm text-stone-600">
-          <Link to={ROUTES.login} className="font-medium text-teal-800 hover:underline">
+          <Link to={ROUTES.login} className="font-medium text-orange-800 hover:underline">
             {t("nav.logIn")}
           </Link>{" "}
           {t("comments.logInPrompt")}
@@ -142,7 +142,7 @@ export function CommentSection({ moodId }: CommentSectionProps) {
                       <button
                         type="button"
                         onClick={() => setReplyToId(comment.id)}
-                        className="text-teal-800 hover:underline"
+                        className="text-orange-800 hover:underline"
                       >
                         {t("comments.reply")}
                       </button>

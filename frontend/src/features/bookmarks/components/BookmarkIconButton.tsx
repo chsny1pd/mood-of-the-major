@@ -62,7 +62,7 @@ export function BookmarkIconButton({ moodId }: BookmarkIconButtonProps) {
       }}
       disabled={mutation.isPending || statusQuery.isLoading}
       className={`rounded-full p-1.5 text-sm transition ${
-        bookmarked ? "text-amber-600 hover:bg-amber-50" : "text-stone-400 hover:bg-stone-100 hover:text-teal-700"
+        bookmarked ? "text-amber-600 hover:bg-amber-50" : "text-stone-400 hover:bg-stone-100 hover:text-orange-700"
       } disabled:opacity-60`}
     >
       {bookmarked ? "★" : "☆"}

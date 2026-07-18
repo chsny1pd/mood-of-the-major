@@ -32,7 +32,7 @@ export function AuthCallbackPage() {
           {error}
         </div>
         <p className="text-center text-sm">
-          <Link to={ROUTES.login} className="font-medium text-teal-800 hover:underline dark:text-teal-300">
+          <Link to={ROUTES.login} className="font-medium text-orange-800 hover:underline dark:text-orange-300">
             {t("auth.backToLogin")}
           </Link>
         </p>

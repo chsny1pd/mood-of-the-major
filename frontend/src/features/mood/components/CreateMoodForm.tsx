@@ -158,8 +158,8 @@ export function CreateMoodForm() {
                     className={`rounded-full px-3 py-1 text-sm transition ${
                       selected
                         ? isPrimary
-                          ? "bg-teal-700 text-white dark:bg-teal-600"
-                          : "bg-teal-100 text-teal-900 ring-1 ring-teal-300 dark:bg-teal-950 dark:text-teal-100 dark:ring-teal-700"
+                          ? "bg-orange-700 text-white dark:bg-orange-600"
+                          : "bg-orange-100 text-orange-900 ring-1 ring-orange-300 dark:bg-orange-950 dark:text-orange-100 dark:ring-orange-700"
                         : "bg-stone-100 text-stone-700 hover:bg-stone-200 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700"
                     }`}
                   >
@@ -275,7 +275,7 @@ export function CreateMoodForm() {
         <button
           type="submit"
           disabled={isSubmitting || uploading}
-          className="w-full rounded-xl bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-800 disabled:opacity-60 dark:bg-teal-600 dark:hover:bg-teal-500"
+          className="w-full rounded-xl bg-orange-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-orange-800 disabled:opacity-60 dark:bg-orange-600 dark:hover:bg-orange-500"
         >
           {isSubmitting ? t("moodForm.publishing") : t("moodForm.publishAnonymously")}
         </button>

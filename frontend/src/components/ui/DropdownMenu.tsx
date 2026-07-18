@@ -71,7 +71,7 @@ export function DropdownMenu({
           aria-label={label}
           data-testid={triggerTestId}
           onClick={() => setOpen((value) => !value)}
-          className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700"
+          className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-600"
         >
           {trigger}
         </button>

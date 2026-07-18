@@ -50,7 +50,7 @@ export function BookmarkButton({ moodId }: BookmarkButtonProps) {
 
   if (!isAuthenticated) {
     return (
-      <Link to={ROUTES.login} className="text-sm text-stone-500 hover:text-teal-800">
+      <Link to={ROUTES.login} className="text-sm text-stone-500 hover:text-orange-800">
         {t("bookmarks.logInToSave")}
       </Link>
     );
@@ -76,7 +76,7 @@ export function BookmarkButton({ moodId }: BookmarkButtonProps) {
         className={`rounded-full border px-3 py-1 text-sm transition ${
           bookmarked
             ? "border-amber-400 bg-amber-50 text-amber-900"
-            : "border-stone-300 text-stone-600 hover:border-teal-400"
+            : "border-stone-300 text-stone-600 hover:border-orange-400"
         } disabled:opacity-60`}
       >
         {mutation.isPending

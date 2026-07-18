@@ -33,14 +33,14 @@ export function MajorFeedPage() {
 
   return (
     <section className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-      <Link to={ROUTES.feed} className="text-sm text-teal-800 hover:underline">
+      <Link to={ROUTES.feed} className="text-sm text-orange-800 hover:underline">
         {t("majorFeed.backToAll")}
       </Link>
 
       {majorQuery.data?.faculty ? (
         <Link
           to={ROUTES.facultyFeed(majorQuery.data.faculty.slug)}
-          className="mt-4 inline-block text-sm text-teal-800 hover:underline"
+          className="mt-4 inline-block text-sm text-orange-800 hover:underline"
         >
           {localizedName(majorQuery.data.faculty)}
         </Link>
@@ -59,7 +59,7 @@ export function MajorFeedPage() {
             title={t("majorFeed.notFoundTitle")}
             description={t("majorFeed.notFoundDescription")}
             action={
-              <Link to={ROUTES.feed} className="text-sm font-medium text-teal-800 hover:underline">
+              <Link to={ROUTES.feed} className="text-sm font-medium text-orange-800 hover:underline">
                 {t("feed.backToFeed")}
               </Link>
             }

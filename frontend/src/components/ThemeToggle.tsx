@@ -55,7 +55,7 @@ export function ThemeToggle() {
         <DropdownMenuItem
           key={option}
           onSelect={() => setTheme(option)}
-          className={theme === option ? "bg-teal-50 text-teal-900 dark:bg-teal-950 dark:text-teal-100" : ""}
+          className={theme === option ? "bg-orange-50 text-orange-900 dark:bg-orange-950 dark:text-orange-100" : ""}
         >
           <ThemeIcon mode={option} />
           {t(`theme.${option}`)}
