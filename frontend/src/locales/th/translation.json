@@ -438,6 +438,7 @@
     "searchPlaceholder": "ค้นหาจากชื่อกลุ่ม",
     "myGroups": "กลุ่มของฉัน",
     "moreJoined": "+อีก {{count}}",
+    "moreJoinedMenu": "แสดงกลุ่มที่เข้าร่วมอีก {{count}} กลุ่ม",
     "create": "สร้างกลุ่ม",
     "createTitle": "สร้างกลุ่มใหม่",
     "createSubmit": "สร้าง",

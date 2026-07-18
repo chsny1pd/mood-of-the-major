@@ -1,9 +1,15 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { EmptyState } from "../components/EmptyState";
 import { Button } from "../components/ui/Button";
+import {
+  DropdownMenu,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "../components/ui/DropdownMenu";
 import { GroupCard } from "../features/groups/components/GroupCard";
 import { queryKeys } from "../constants/queryKeys";
 import { ROUTES } from "../constants/routes";
@@ -15,6 +21,7 @@ const MY_GROUPS_CHIP_LIMIT = 8;
 
 export function GroupsPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [searchInput, setSearchInput] = useState("");
   const [debouncedQ, setDebouncedQ] = useState("");
@@ -63,7 +70,8 @@ export function GroupsPage() {
   const groups = groupsQuery.data?.pages.flatMap((page) => page.data) ?? [];
   const myGroups = myGroupsQuery.data ?? [];
   const visibleMyGroups = myGroups.slice(0, MY_GROUPS_CHIP_LIMIT);
-  const hiddenMyGroupCount = Math.max(0, myGroups.length - visibleMyGroups.length);
+  const hiddenMyGroups = myGroups.slice(MY_GROUPS_CHIP_LIMIT);
+  const hiddenMyGroupCount = hiddenMyGroups.length;
 
   return (
     <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
@@ -158,9 +166,30 @@ export function GroupsPage() {
               </Link>
             ))}
             {hiddenMyGroupCount > 0 ? (
-              <span className="inline-flex shrink-0 items-center rounded-full border border-stone-300 px-3 py-1.5 text-xs text-stone-600 dark:border-stone-600 dark:text-stone-300">
-                {t("groups.moreJoined", { count: hiddenMyGroupCount })}
-              </span>
+              <div className="shrink-0">
+                <DropdownMenu
+                  align="start"
+                  label={t("groups.moreJoinedMenu", { count: hiddenMyGroupCount })}
+                  trigger={
+                    <span className="inline-flex items-center rounded-full border border-stone-300 px-3 py-1.5 text-xs text-stone-600 hover:bg-stone-100 dark:border-stone-600 dark:text-stone-300 dark:hover:bg-stone-800">
+                      {t("groups.moreJoined", { count: hiddenMyGroupCount })}
+                    </span>
+                  }
+                >
+                  <DropdownMenuLabel>{t("groups.myGroups")}</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <div className="max-h-64 overflow-y-auto">
+                    {hiddenMyGroups.map((group) => (
+                      <DropdownMenuItem
+                        key={group.id}
+                        onSelect={() => navigate(ROUTES.groupDetail(group.id))}
+                      >
+                        <span className="truncate">{group.name}</span>
+                      </DropdownMenuItem>
+                    ))}
+                  </div>
+                </DropdownMenu>
+              </div>
             ) : null}
           </div>
         </div>
