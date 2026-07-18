@@ -2,8 +2,18 @@ export const COMMENT_CONTENT_MIN_LENGTH = 1;
 export const COMMENT_CONTENT_MAX_LENGTH = 2000;
 export const COMMENT_MAX_THREAD_DEPTH = 3;
 
-export const REACTION_TYPES = ["empathy", "support", "relate", "solidarity"] as const;
-export type ReactionType = (typeof REACTION_TYPES)[number];
+export const DEFAULT_REACTION_EMOJIS = ["💙", "🤝", "🫂", "✊"] as const;
+export type DefaultReactionEmoji = (typeof DEFAULT_REACTION_EMOJIS)[number];
+
+export const MAX_REACTIONS_PER_USER = 7;
+export const EMOJI_MAX_LENGTH = 8;
+
+export const LEGACY_REACTION_SLUG_TO_EMOJI = {
+  empathy: "💙",
+  support: "🤝",
+  relate: "🫂",
+  solidarity: "✊",
+} as const;
 
 export const REPORT_REASON_CODES = [
   "harassment",
