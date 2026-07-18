@@ -1,13 +1,10 @@
-import type { ReactionType } from "../../../domain/constants/engagementConstants.js";
 import type {
+  ReactionMutationResult,
   RemoveReactionInput,
   ReactionTargetType,
-  UpsertReactionInput,
+  ToggleReactionInput,
 } from "../../../domain/entities/Reaction.js";
-import type {
-  IReactionRepository,
-  ReactionUpsertResult,
-} from "../../../domain/ports/IReactionRepository.js";
+import type { IReactionRepository } from "../../../domain/ports/IReactionRepository.js";
 import { CommentModel } from "../models/Comment.js";
 import { MoodModel } from "../models/Mood.js";
 import { ReactionModel } from "../models/Reaction.js";
@@ -28,10 +25,10 @@ async function getTargetSummary(
 async function adjustTargetSummary(
   targetType: ReactionTargetType,
   targetId: string,
-  reactionType: string,
+  emoji: string,
   delta: number,
 ): Promise<Record<string, number>> {
-  const key = `reactionSummary.${reactionType}`;
+  const key = `reactionSummary.${emoji}`;
 
   if (targetType === "mood") {
     const updated = await MoodModel.findOneAndUpdate(
@@ -52,84 +49,122 @@ async function adjustTargetSummary(
 }
 
 export class MongooseReactionRepository implements IReactionRepository {
-  async upsert(input: UpsertReactionInput): Promise<ReactionUpsertResult> {
+  async toggle(input: ToggleReactionInput): Promise<ReactionMutationResult> {
     const existing = await ReactionModel.findOne({
       userId: input.userId,
       targetType: input.targetType,
       targetId: input.targetId,
+      emoji: input.emoji,
     });
 
     if (existing) {
-      if (existing.reactionType === input.reactionType) {
-        return {
-          reactionType: input.reactionType,
-          reactionSummary: await getTargetSummary(input.targetType, input.targetId),
-        };
-      }
-
-      const oldType = existing.reactionType;
-      existing.reactionType = input.reactionType;
-      await existing.save();
-
-      await adjustTargetSummary(input.targetType, input.targetId, oldType, -1);
+      await existing.deleteOne();
       const reactionSummary = await adjustTargetSummary(
         input.targetType,
         input.targetId,
-        input.reactionType,
-        1,
+        input.emoji,
+        -1,
+      );
+      const userReactions = await this.findUserReactions(
+        input.userId,
+        input.targetType,
+        input.targetId,
       );
 
-      return { reactionType: input.reactionType, reactionSummary };
+      return {
+        emoji: input.emoji,
+        toggledOn: false,
+        reactionSummary,
+        userReactions,
+      };
     }
 
     await ReactionModel.create({
       userId: input.userId,
       targetType: input.targetType,
       targetId: input.targetId,
-      reactionType: input.reactionType,
+      emoji: input.emoji,
     });
 
     const reactionSummary = await adjustTargetSummary(
       input.targetType,
       input.targetId,
-      input.reactionType,
+      input.emoji,
       1,
     );
+    const userReactions = await this.findUserReactions(
+      input.userId,
+      input.targetType,
+      input.targetId,
+    );
 
-    return { reactionType: input.reactionType, reactionSummary };
+    return {
+      emoji: input.emoji,
+      toggledOn: true,
+      reactionSummary,
+      userReactions,
+    };
   }
 
-  async remove(input: RemoveReactionInput): Promise<ReactionUpsertResult> {
+  async remove(input: RemoveReactionInput): Promise<ReactionMutationResult> {
     const existing = await ReactionModel.findOneAndDelete({
       userId: input.userId,
       targetType: input.targetType,
       targetId: input.targetId,
+      emoji: input.emoji,
     });
 
     if (!existing) {
+      const [reactionSummary, userReactions] = await Promise.all([
+        getTargetSummary(input.targetType, input.targetId),
+        this.findUserReactions(input.userId, input.targetType, input.targetId),
+      ]);
+
       return {
-        reactionType: null,
-        reactionSummary: await getTargetSummary(input.targetType, input.targetId),
+        emoji: null,
+        toggledOn: false,
+        reactionSummary,
+        userReactions,
       };
     }
 
     const reactionSummary = await adjustTargetSummary(
       input.targetType,
       input.targetId,
-      existing.reactionType,
+      input.emoji,
       -1,
     );
+    const userReactions = await this.findUserReactions(
+      input.userId,
+      input.targetType,
+      input.targetId,
+    );
 
-    return { reactionType: null, reactionSummary };
+    return {
+      emoji: null,
+      toggledOn: false,
+      reactionSummary,
+      userReactions,
+    };
   }
 
-  async findUserReaction(
+  async findUserReactions(
     userId: string,
     targetType: ReactionTargetType,
     targetId: string,
-  ): Promise<ReactionType | null> {
-    const reaction = await ReactionModel.findOne({ userId, targetType, targetId }).lean();
-    return (reaction?.reactionType as ReactionType | undefined) ?? null;
+  ): Promise<string[]> {
+    const reactions = await ReactionModel.find({ userId, targetType, targetId })
+      .select("emoji")
+      .lean();
+    return reactions.map((reaction) => reaction.emoji);
+  }
+
+  async countUserReactions(
+    userId: string,
+    targetType: ReactionTargetType,
+    targetId: string,
+  ): Promise<number> {
+    return ReactionModel.countDocuments({ userId, targetType, targetId });
   }
 
   async getReactionSummary(
