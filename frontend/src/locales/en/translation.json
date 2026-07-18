@@ -269,6 +269,8 @@
     "logInToReact": "Log in to react",
     "reactionLimit": "You can add up to 7 reactions",
     "addReaction": "Add reaction",
+    "reactionInvalid": "Enter one emoji (up to 8 characters)",
+    "reactionUpdateError": "Could not update reaction",
     "reportModal": {
       "title": "Report content",
       "description": "Help keep the community safe. Reports are anonymous.",

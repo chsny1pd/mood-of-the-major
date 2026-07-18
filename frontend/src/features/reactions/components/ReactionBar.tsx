@@ -125,6 +125,11 @@ export function ReactionBar({ targetType, targetId, compact = false }: ReactionB
         disabled={!isAuthenticated || mutation.isPending || isAtLimit}
         onPick={handleClick}
       />
+      {mutation.isError ? (
+        <span role="alert" className="text-xs text-red-600 dark:text-red-400">
+          {t("engagement.reactionUpdateError")}
+        </span>
+      ) : null}
       {isAuthenticated && isAtLimit ? (
         <span className={`text-xs ${themeClasses.muted}`}>{t("engagement.reactionLimit")}</span>
       ) : null}
