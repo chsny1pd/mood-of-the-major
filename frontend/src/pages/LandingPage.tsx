@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AmbientBackground } from "../components/AmbientBackground";
@@ -8,9 +8,32 @@ import { ensureDisplayFont } from "../lib/displayFont";
 
 export const LandingPage = memo(function LandingPage() {
   const { t } = useTranslation();
+  const [showAmbient, setShowAmbient] = useState(false);
 
   useEffect(() => {
     ensureDisplayFont();
+  }, []);
+
+  // Defer blur-heavy ambient glow until after first paint so LCP text can commit sooner.
+  useEffect(() => {
+    let idleId: number | undefined;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    const enable = () => setShowAmbient(true);
+
+    if (typeof requestIdleCallback !== "undefined") {
+      idleId = requestIdleCallback(enable, { timeout: 2000 });
+    } else {
+      timeoutId = setTimeout(enable, 1);
+    }
+
+    return () => {
+      if (idleId !== undefined && typeof cancelIdleCallback !== "undefined") {
+        cancelIdleCallback(idleId);
+      }
+      if (timeoutId !== undefined) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, []);
 
   const cards = useMemo(
@@ -24,7 +47,7 @@ export const LandingPage = memo(function LandingPage() {
 
   return (
     <div className="relative overflow-hidden">
-      <AmbientBackground />
+      {showAmbient ? <AmbientBackground /> : null}
       <section className="relative z-10 mx-auto max-w-5xl px-4 py-16 sm:px-6 sm:py-24">
         <div className="max-w-2xl">
           <p className="font-display text-3xl font-semibold tracking-tight text-orange-700 dark:text-orange-300 sm:text-4xl">
