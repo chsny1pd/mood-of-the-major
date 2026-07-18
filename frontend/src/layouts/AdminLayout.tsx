@@ -1,10 +1,16 @@
+import { useEffect } from "react";
 import { Link, Outlet } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ROUTES } from "../constants/routes";
+import { ensureFullTranslations } from "../lib/i18n";
 import { themeClasses } from "../lib/themeClasses";
 
 export function AdminLayout() {
   const { t } = useTranslation();
+
+  useEffect(() => {
+    void ensureFullTranslations();
+  }, []);
 
   const navItems = [
     { to: ROUTES.admin, label: t("admin.overview") },

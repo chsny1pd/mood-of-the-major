@@ -3,15 +3,9 @@ import { ROUTES } from "../constants/routes";
 
 export const router = createBrowserRouter([
   {
+    path: ROUTES.home,
     lazy: () =>
-      import("./routes/publicRoutes").then((module) => ({ Component: module.Component })),
-    children: [
-      {
-        path: ROUTES.home,
-        lazy: () =>
-          import("../pages/LandingPage").then((module) => ({ Component: module.LandingPage })),
-      },
-    ],
+      import("./routes/homeRoute").then((module) => ({ Component: module.Component })),
   },
   {
     lazy: () => import("./routes/authRoutes").then((module) => ({ Component: module.Component })),

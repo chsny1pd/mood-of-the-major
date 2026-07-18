@@ -74,6 +74,13 @@ void (async () => {
   }
   applyDocumentLanguage(initialLanguage.startsWith("th") ? "th" : "en");
 
+  const path = typeof window !== "undefined" ? window.location.pathname : "";
+  const isMarketingHome = path === "/" || path === "";
+  // Landing uses public.json only; avoid competing with LCP for the full catalog.
+  if (isMarketingHome) {
+    return;
+  }
+
   const loadFullTranslations = async () => {
     if (initialLanguage.startsWith("th")) {
       await ensureThaiResources();

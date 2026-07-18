@@ -1,12 +1,17 @@
-import { memo, useMemo } from "react";
+import { memo, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AmbientBackground } from "../components/AmbientBackground";
 import { Button } from "../components/ui/Button";
 import { ROUTES } from "../constants/routes";
+import { ensureDisplayFont } from "../lib/displayFont";
 
 export const LandingPage = memo(function LandingPage() {
   const { t } = useTranslation();
+
+  useEffect(() => {
+    ensureDisplayFont();
+  }, []);
 
   const cards = useMemo(
     () => [
@@ -25,7 +30,8 @@ export const LandingPage = memo(function LandingPage() {
           <p className="font-display text-3xl font-semibold tracking-tight text-orange-700 dark:text-orange-300 sm:text-4xl">
             {t("app.name")}
           </p>
-          <h1 className="font-display mt-4 text-4xl font-semibold tracking-tight text-stone-900 dark:text-stone-100 sm:text-5xl">
+          {/* LCP element: body font (DM Sans) so paint is not blocked on Fraunces */}
+          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-stone-900 dark:text-stone-100 sm:text-5xl">
             {t("landing.headline")}
           </h1>
           <p className="mt-6 text-lg leading-relaxed text-stone-600 dark:text-stone-300">

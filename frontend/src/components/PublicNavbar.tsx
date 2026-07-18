@@ -1,7 +1,8 @@
-import { Suspense, lazy, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ROUTES } from "../constants/routes";
+import { ensureDisplayFont } from "../lib/displayFont";
 import { Button } from "./ui/Button";
 
 const LanguageSwitcher = lazy(() =>
@@ -22,10 +23,60 @@ function navLinkClass({ isActive }: { isActive: boolean }) {
   ].join(" ");
 }
 
+/** Load language/theme controls after LCP — on idle or first input. */
+function DeferredChrome() {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    let idleId: number | undefined;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    const enable = () => setReady(true);
+
+    window.addEventListener("pointerdown", enable, { once: true, passive: true });
+    window.addEventListener("keydown", enable, { once: true });
+
+    if (typeof requestIdleCallback !== "undefined") {
+      idleId = requestIdleCallback(enable, { timeout: 4000 });
+    } else {
+      timeoutId = setTimeout(enable, 2500);
+    }
+
+    return () => {
+      window.removeEventListener("pointerdown", enable);
+      window.removeEventListener("keydown", enable);
+      if (idleId !== undefined && typeof cancelIdleCallback !== "undefined") {
+        cancelIdleCallback(idleId);
+      }
+      if (timeoutId !== undefined) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, []);
+
+  if (!ready) {
+    return null;
+  }
+
+  return (
+    <>
+      <Suspense fallback={null}>
+        <LanguageSwitcher />
+      </Suspense>
+      <Suspense fallback={null}>
+        <ThemeToggle />
+      </Suspense>
+    </>
+  );
+}
+
 export function PublicNavbar() {
   const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const closeMobile = () => setMobileOpen(false);
+
+  useEffect(() => {
+    ensureDisplayFont();
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 border-b border-stone-200/80 bg-white/80 backdrop-blur dark:border-stone-700 dark:bg-stone-950/80">
@@ -68,12 +119,7 @@ export function PublicNavbar() {
             </Button>
           </Link>
 
-          <Suspense fallback={null}>
-            <LanguageSwitcher />
-          </Suspense>
-          <Suspense fallback={null}>
-            <ThemeToggle />
-          </Suspense>
+          <DeferredChrome />
 
           <button
             type="button"

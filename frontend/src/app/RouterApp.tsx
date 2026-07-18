@@ -3,8 +3,18 @@ import { StaticHomeFallback } from "./StaticHomeFallback";
 
 const RouterShell = lazy(() => import("./RouterShell"));
 
+const isMarketingHome =
+  typeof window !== "undefined" &&
+  (window.location.pathname === "/" || window.location.pathname === "");
+
+// Warm the home critical path in parallel with the shell lazy() boundary.
+if (isMarketingHome) {
+  void import("./RouterShell");
+  void import("./routes/homeRoute");
+}
+
 function RouterFallback() {
-  if (typeof window !== "undefined" && window.location.pathname === "/") {
+  if (isMarketingHome) {
     return <StaticHomeFallback />;
   }
 

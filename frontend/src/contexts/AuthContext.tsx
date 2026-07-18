@@ -6,7 +6,6 @@ import {
   type ReactNode,
 } from "react";
 import { flushSync } from "react-dom";
-import { getOAuthStartUrl, parseOAuthCallbackHash } from "../lib/oauth";
 import { ROUTES } from "../constants/routes";
 import { clearAccessToken, getAccessToken, setAccessToken } from "../utils/token";
 import type { UserProfile } from "../services/authService";
@@ -74,10 +73,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [refreshProfile]);
 
   const loginWithOAuth = useCallback((provider: "google" | "github", returnUrl: string = ROUTES.dashboard) => {
-    window.location.assign(getOAuthStartUrl(provider, returnUrl));
+    void import("../lib/oauth").then(({ getOAuthStartUrl }) => {
+      window.location.assign(getOAuthStartUrl(provider, returnUrl));
+    });
   }, []);
 
   const completeOAuthCallback = useCallback(async () => {
+    const { parseOAuthCallbackHash } = await import("../lib/oauth");
     const { accessToken, displayName, avatarUrl, returnUrl, error } = parseOAuthCallbackHash();
 
     if (error) {
