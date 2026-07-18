@@ -25,6 +25,19 @@ export function createGroupController(groupService: GroupService) {
       });
     }),
 
+    listMine: asyncHandler(async (req, res: Response) => {
+      if (!req.userId) {
+        throw new AuthenticationError("Authentication required", "AUTH_REQUIRED");
+      }
+
+      const items = await groupService.listMyGroups(req.userId);
+
+      res.status(200).json({
+        success: true,
+        data: items,
+      });
+    }),
+
     create: asyncHandler(async (req, res: Response) => {
       if (!req.userId) {
         throw new AuthenticationError("Authentication required", "AUTH_REQUIRED");

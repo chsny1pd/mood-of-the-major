@@ -436,6 +436,8 @@
     "pageDescription": "Join interest and support spaces. Posts stay anonymous and inside each group.",
     "searchLabel": "Search groups",
     "searchPlaceholder": "Search by group name",
+    "myGroups": "My groups",
+    "moreJoined": "+{{count}} more",
     "create": "Create group",
     "createTitle": "Create a group",
     "createSubmit": "Create",

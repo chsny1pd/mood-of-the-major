@@ -80,6 +80,22 @@ export class MongooseGroupMemberRepository implements IGroupMemberRepository {
     );
   }
 
+  async listByUser(userId: string): Promise<GroupMember[]> {
+    const docs = await GroupMemberModel.find({ userId }).sort({ joinedAt: -1 }).lean();
+    return docs.map((doc) =>
+      toMember(
+        doc as {
+          _id: { toString(): string };
+          groupId: { toString(): string };
+          userId: { toString(): string };
+          role: GroupMemberRole;
+          joinedAt?: Date;
+          createdAt?: Date;
+        },
+      ),
+    );
+  }
+
   async countByGroup(groupId: string): Promise<number> {
     return GroupMemberModel.countDocuments({ groupId });
   }

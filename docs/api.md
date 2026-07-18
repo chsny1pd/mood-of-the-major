@@ -1558,6 +1558,7 @@ Anonymous interest/support groups (ADR-016). Posts with `moods.groupId` are excl
 | Method | Endpoint | Notes |
 |--------|----------|--------|
 | `GET` | `/api/v1/groups?q=&limit=&cursor=` | Search/list groups |
+| `GET` | `/api/v1/groups/mine` | Groups the caller has joined |
 | `POST` | `/api/v1/groups` | Create (max **3** owned per user) |
 | `GET` | `/api/v1/groups/:groupId` | Detail + `isMember` / `isOwner` |
 | `POST` | `/api/v1/groups/:groupId/join` | Open join |

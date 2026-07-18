@@ -1,13 +1,17 @@
-import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { EmptyState } from "../components/EmptyState";
 import { Button } from "../components/ui/Button";
 import { GroupCard } from "../features/groups/components/GroupCard";
 import { queryKeys } from "../constants/queryKeys";
+import { ROUTES } from "../constants/routes";
 import { themeClasses } from "../lib/themeClasses";
 import { getApiErrorMessage } from "../services/apiClient";
-import { createGroup, fetchGroups } from "../services/groupService";
+import { createGroup, fetchGroups, fetchMyGroups } from "../services/groupService";
+
+const MY_GROUPS_CHIP_LIMIT = 8;
 
 export function GroupsPage() {
   const { t } = useTranslation();
@@ -24,6 +28,11 @@ export function GroupsPage() {
     const timer = window.setTimeout(() => setDebouncedQ(searchInput.trim()), 300);
     return () => window.clearTimeout(timer);
   }, [searchInput]);
+
+  const myGroupsQuery = useQuery({
+    queryKey: queryKeys.myGroups,
+    queryFn: fetchMyGroups,
+  });
 
   const groupsQuery = useInfiniteQuery({
     queryKey: queryKeys.groups(debouncedQ || undefined),
@@ -52,6 +61,9 @@ export function GroupsPage() {
   });
 
   const groups = groupsQuery.data?.pages.flatMap((page) => page.data) ?? [];
+  const myGroups = myGroupsQuery.data ?? [];
+  const visibleMyGroups = myGroups.slice(0, MY_GROUPS_CHIP_LIMIT);
+  const hiddenMyGroupCount = Math.max(0, myGroups.length - visibleMyGroups.length);
 
   return (
     <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
@@ -127,7 +139,34 @@ export function GroupsPage() {
         </form>
       ) : null}
 
-      <div className="mt-8">
+      {visibleMyGroups.length > 0 ? (
+        <div className="mt-8">
+          <p className={`mb-2 text-xs font-medium uppercase tracking-wide ${themeClasses.muted}`}>
+            {t("groups.myGroups")}
+          </p>
+          <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+            {visibleMyGroups.map((group) => (
+              <Link key={group.id} to={ROUTES.groupDetail(group.id)} className="shrink-0">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="max-w-[12rem] rounded-full"
+                  title={group.name}
+                >
+                  <span className="truncate">{group.name}</span>
+                </Button>
+              </Link>
+            ))}
+            {hiddenMyGroupCount > 0 ? (
+              <span className="inline-flex shrink-0 items-center rounded-full border border-stone-300 px-3 py-1.5 text-xs text-stone-600 dark:border-stone-600 dark:text-stone-300">
+                {t("groups.moreJoined", { count: hiddenMyGroupCount })}
+              </span>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
+
+      <div className={visibleMyGroups.length > 0 ? "mt-4" : "mt-8"}>
         <label htmlFor="group-search" className="sr-only">
           {t("groups.searchLabel")}
         </label>

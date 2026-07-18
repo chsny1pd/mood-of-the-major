@@ -52,6 +52,19 @@ export class MongooseGroupRepository implements IGroupRepository {
     return doc ? toGroup(doc) : null;
   }
 
+  async findByIds(ids: string[]): Promise<Group[]> {
+    if (ids.length === 0) return [];
+
+    const docs = await GroupModel.find({
+      _id: { $in: ids },
+      status: "active",
+      deletedAt: null,
+    }).lean();
+
+    const byId = new Map(docs.map((doc) => [doc._id.toString(), toGroup(doc)]));
+    return ids.map((id) => byId.get(id)).filter((group): group is Group => Boolean(group));
+  }
+
   async list(query: GroupListQuery): Promise<Group[]> {
     const filter: Record<string, unknown> = {
       status: "active",

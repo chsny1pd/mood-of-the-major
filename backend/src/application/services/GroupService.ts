@@ -97,6 +97,18 @@ export class GroupService {
     };
   }
 
+  async listMyGroups(userId: string): Promise<GroupPublicDto[]> {
+    const memberships = await this.members.listByUser(userId);
+    if (memberships.length === 0) {
+      return [];
+    }
+
+    const groups = await this.groups.findByIds(memberships.map((m) => m.groupId));
+    const membershipByGroupId = new Map(memberships.map((m) => [m.groupId, m]));
+
+    return groups.map((group) => this.toPublicDto(group, membershipByGroupId.get(group.id) ?? null));
+  }
+
   async createGroup(
     userId: string,
     input: { name: string; description?: string; coverImageUrl?: string | null },

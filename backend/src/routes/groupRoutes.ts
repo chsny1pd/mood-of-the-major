@@ -33,6 +33,13 @@ export function createGroupRoutes(deps: Dependencies): Router {
   );
 
   router.get(
+    "/mine",
+    authenticate,
+    authorize("student", "administrator"),
+    groupController.listMine,
+  );
+
+  router.get(
     "/:groupId",
     authenticate,
     authorize("student", "administrator"),

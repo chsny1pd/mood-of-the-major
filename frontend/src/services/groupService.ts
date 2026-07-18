@@ -21,6 +21,11 @@ export async function fetchGroups(params: {
   return { data: response.data.data, meta: response.data.meta };
 }
 
+export async function fetchMyGroups(): Promise<GroupSummary[]> {
+  const response = await apiClient.get<{ success: true; data: GroupSummary[] }>("/groups/mine");
+  return response.data.data;
+}
+
 export async function fetchGroup(groupId: string): Promise<GroupSummary> {
   const response = await apiClient.get<{ success: true; data: GroupSummary }>(`/groups/${groupId}`);
   return response.data.data;

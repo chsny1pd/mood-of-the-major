@@ -436,6 +436,8 @@
     "pageDescription": "เข้าร่วมพื้นที่สนใจและซัพพอร์ต โพสต์ยังไม่เปิดเผยตัวตนและอยู่เฉพาะในกลุ่ม",
     "searchLabel": "ค้นหากลุ่ม",
     "searchPlaceholder": "ค้นหาจากชื่อกลุ่ม",
+    "myGroups": "กลุ่มของฉัน",
+    "moreJoined": "+อีก {{count}}",
     "create": "สร้างกลุ่ม",
     "createTitle": "สร้างกลุ่มใหม่",
     "createSubmit": "สร้าง",
