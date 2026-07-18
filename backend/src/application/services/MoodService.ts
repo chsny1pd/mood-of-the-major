@@ -357,9 +357,12 @@ export class MoodService {
   async getFeed(input: FeedQueryInput): Promise<FeedResult> {
     const maxLimit = input.isAuthenticated ? FEED_MAX_LIMIT : GUEST_FEED_MAX_LIMIT;
     const limit = Math.min(Math.max(input.limit ?? FEED_DEFAULT_LIMIT, 1), maxLimit);
+    const sort = input.sort ?? "newest";
 
     let cursorCreatedAt: Date | undefined;
     let cursorId: string | undefined;
+    let cursorReactionCount: number | undefined;
+    let cursorCommentCount: number | undefined;
 
     if (input.cursor) {
       const decoded = decodeCursor(input.cursor);
@@ -370,25 +373,47 @@ export class MoodService {
         ]);
       }
 
+      if (sort === "most_reacted" && typeof decoded.reactionCount !== "number") {
+        throw new ValidationError("Invalid cursor", [
+          { field: "cursor", message: "Cursor is invalid or expired." },
+        ]);
+      }
+
+      if (sort === "most_commented" && typeof decoded.commentCount !== "number") {
+        throw new ValidationError("Invalid cursor", [
+          { field: "cursor", message: "Cursor is invalid or expired." },
+        ]);
+      }
+
       cursorCreatedAt = new Date(decoded.createdAt);
       cursorId = decoded.id;
+      cursorReactionCount = decoded.reactionCount;
+      cursorCommentCount = decoded.commentCount;
     }
 
     const items = await this.moods.findActiveFeed({
       limit,
       cursorCreatedAt,
       cursorId,
+      cursorReactionCount,
+      cursorCommentCount,
       facultyId: input.facultyId,
       majorId: input.majorId,
       tagSlug: input.tagSlug,
       from: input.from ? new Date(input.from) : undefined,
       to: input.to ? new Date(input.to) : undefined,
-      sort: input.sort,
+      sort,
     });
 
     const pagination = buildNextCursor(
-      items.map((item) => ({ id: item.id, createdAt: item.createdAt })),
+      items.map((item) => ({
+        id: item.id,
+        createdAt: item.createdAt,
+        reactionCount: item.reactionCount,
+        commentCount: item.commentCount,
+      })),
       limit,
+      sort,
     );
 
     return {

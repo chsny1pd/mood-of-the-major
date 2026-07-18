@@ -15,6 +15,8 @@ export interface MoodFeedQuery extends MoodFeedFilters {
   limit: number;
   cursorCreatedAt?: Date;
   cursorId?: string;
+  cursorReactionCount?: number;
+  cursorCommentCount?: number;
 }
 
 export interface MoodWithRelations extends Mood {

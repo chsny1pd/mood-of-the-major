@@ -15,6 +15,8 @@ export interface Mood {
   status: MoodStatus;
   commentCount: number;
   reactionSummary: Record<string, number>;
+  /** Denormalized sum of reactionSummary; used for most_reacted feed sort */
+  reactionCount: number;
   imageCount: number;
   primaryTagId: string | null;
   reportCount: number;

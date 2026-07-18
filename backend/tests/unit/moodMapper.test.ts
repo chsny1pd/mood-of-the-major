@@ -12,6 +12,7 @@ const sampleMood: MoodWithRelations = {
   status: "active",
   commentCount: 5,
   reactionSummary: { "💙": 12, "🤝": 8 },
+  reactionCount: 20,
   imageCount: 1,
   primaryTagId: "665a1b2c3d4e5f6789012349",
   reportCount: 0,

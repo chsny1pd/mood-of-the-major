@@ -14,6 +14,7 @@ import { MoodModel } from "../models/Mood.js";
 import { MoodTagModel } from "../models/MoodTag.js";
 import { TagModel } from "../models/Tag.js";
 import { escapeRegex } from "../../../utils/escapeRegex.js";
+import { buildDescendingCountCursorOr } from "../../../utils/cursorPagination.js";
 
 async function hydrateMoods(
   moodDocs: Array<{
@@ -26,6 +27,7 @@ async function hydrateMoods(
     status: MoodWithRelations["status"];
     commentCount: number;
     reactionSummary: Record<string, number>;
+    reactionCount?: number;
     imageCount: number;
     primaryTagId?: { toString(): string } | null;
     reportCount: number;
@@ -97,6 +99,7 @@ async function hydrateMoods(
       status: mood.status,
       commentCount: mood.commentCount,
       reactionSummary: mood.reactionSummary ?? {},
+      reactionCount: mood.reactionCount ?? 0,
       imageCount: mood.imageCount,
       primaryTagId: mood.primaryTagId?.toString() ?? null,
       reportCount: mood.reportCount,
@@ -170,10 +173,26 @@ function buildFeedFilter(query: MoodFeedQuery): Record<string, unknown> {
   }
 
   if (query.cursorCreatedAt && query.cursorId) {
-    filter.$or = [
-      { createdAt: { $lt: query.cursorCreatedAt } },
-      { createdAt: query.cursorCreatedAt, _id: { $lt: query.cursorId } },
-    ];
+    if (query.sort === "most_reacted" && query.cursorReactionCount !== undefined) {
+      filter.$or = buildDescendingCountCursorOr({
+        countField: "reactionCount",
+        cursorCount: query.cursorReactionCount,
+        cursorCreatedAt: query.cursorCreatedAt,
+        cursorId: query.cursorId,
+      });
+    } else if (query.sort === "most_commented" && query.cursorCommentCount !== undefined) {
+      filter.$or = buildDescendingCountCursorOr({
+        countField: "commentCount",
+        cursorCount: query.cursorCommentCount,
+        cursorCreatedAt: query.cursorCreatedAt,
+        cursorId: query.cursorId,
+      });
+    } else {
+      filter.$or = [
+        { createdAt: { $lt: query.cursorCreatedAt } },
+        { createdAt: query.cursorCreatedAt, _id: { $lt: query.cursorId } },
+      ];
+    }
   }
 
   return filter;
@@ -498,6 +517,7 @@ export class MongooseMoodRepository implements IMoodRepository {
       status: doc.status,
       commentCount: doc.commentCount,
       reactionSummary: doc.reactionSummary ?? {},
+      reactionCount: doc.reactionCount ?? 0,
       imageCount: doc.imageCount,
       primaryTagId: doc.primaryTagId?.toString() ?? null,
       reportCount: doc.reportCount,

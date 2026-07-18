@@ -138,7 +138,7 @@ Never includes stack traces or internal paths (`NFR-SEC-009`).
 }
 ```
 
-Cursor encodes `(createdAt, _id)` sort position per `database.md` index strategy.
+Cursor encodes sort position: `(createdAt, _id)` for `newest`; `(reactionCount, createdAt, _id)` for `most_reacted`; `(commentCount, createdAt, _id)` for `most_commented`.
 
 ### Filtering
 
