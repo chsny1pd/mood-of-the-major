@@ -298,7 +298,8 @@
     "faculty": "คณะ",
     "major": "สาขา",
     "selectFaculty": "เลือกคณะ",
-    "selectMajor": "เลือกสาขา"
+    "selectMajor": "เลือกสาขา",
+    "noMajors": "ไม่พบสาขาในคณะนี้"
   },
   "charts": {
     "insufficientData": "ข้อมูลไม่เพียงพอ",

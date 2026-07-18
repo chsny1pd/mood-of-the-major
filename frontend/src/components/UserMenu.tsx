@@ -31,6 +31,12 @@ export function UserMenu() {
 
   const displayName = profileMeta.displayName ?? user.email.split("@")[0] ?? user.email;
 
+  const handleLogout = () => {
+    void logout().finally(() => {
+      navigate(ROUTES.home, { replace: true });
+    });
+  };
+
   return (
     <DropdownMenu
       label={displayName}
@@ -50,8 +56,11 @@ export function UserMenu() {
       </div>
       <DropdownMenuSeparator />
       <DropdownMenuItem onSelect={() => navigate(ROUTES.settings)}>{t("nav.settings")}</DropdownMenuItem>
+      {user.role === "administrator" ? (
+        <DropdownMenuItem onSelect={() => navigate(ROUTES.admin)}>{t("nav.admin")}</DropdownMenuItem>
+      ) : null}
       <DropdownMenuSeparator />
-      <DropdownMenuItem testId="user-menu-logout" onSelect={() => void logout()}>
+      <DropdownMenuItem testId="user-menu-logout" onSelect={handleLogout}>
         {t("nav.logout")}
       </DropdownMenuItem>
     </DropdownMenu>

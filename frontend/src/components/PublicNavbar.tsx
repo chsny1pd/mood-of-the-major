@@ -11,10 +11,7 @@ const ThemeToggle = lazy(() =>
   import("./ThemeToggle").then((module) => ({ default: module.ThemeToggle })),
 );
 
-const publicNavItems = [
-  { to: ROUTES.feed, labelKey: "nav.feed" },
-  { to: ROUTES.howToUse, labelKey: "nav.howToUse" },
-] as const;
+const publicNavItems = [{ to: ROUTES.feed, labelKey: "nav.feed" }] as const;
 
 function navLinkClass({ isActive }: { isActive: boolean }) {
   return [
@@ -31,7 +28,7 @@ export function PublicNavbar() {
   const closeMobile = () => setMobileOpen(false);
 
   return (
-    <header className="relative border-b border-stone-200/80 bg-white/80 backdrop-blur dark:border-stone-700 dark:bg-stone-950/80">
+    <header className="sticky top-0 z-50 border-b border-stone-200/80 bg-white/80 backdrop-blur dark:border-stone-700 dark:bg-stone-950/80">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 -bottom-6 h-6 bg-gradient-to-b from-orange-400/15 to-transparent dark:from-orange-500/10"
@@ -54,7 +51,12 @@ export function PublicNavbar() {
           </nav>
         </div>
 
-        <div className="flex items-center gap-1 sm:gap-2">
+        <div className="relative z-10 flex items-center gap-1 sm:gap-2">
+          <Link to={ROUTES.howToUse} className="hidden sm:inline-flex">
+            <Button variant="outline" size="sm" className="rounded-full">
+              {t("nav.howToUse")}
+            </Button>
+          </Link>
           <Link to={ROUTES.login} className="hidden sm:inline-flex">
             <Button variant="ghost" size="sm">
               {t("nav.logIn")}
@@ -89,7 +91,7 @@ export function PublicNavbar() {
 
       {mobileOpen ? (
         <nav
-          className="border-t border-stone-200 px-4 py-3 lg:hidden dark:border-stone-700"
+          className="relative z-10 border-t border-stone-200 px-4 py-3 lg:hidden dark:border-stone-700"
           aria-label="Mobile navigation"
         >
           <div className="flex flex-col gap-1">
@@ -98,6 +100,9 @@ export function PublicNavbar() {
                 {t(item.labelKey)}
               </NavLink>
             ))}
+            <NavLink to={ROUTES.howToUse} className={navLinkClass} onClick={closeMobile}>
+              {t("nav.howToUse")}
+            </NavLink>
             <NavLink to={ROUTES.login} className={navLinkClass} onClick={closeMobile}>
               {t("nav.logIn")}
             </NavLink>

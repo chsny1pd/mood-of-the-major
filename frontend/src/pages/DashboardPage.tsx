@@ -1,17 +1,34 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { EmptyState } from "../components/EmptyState";
 import { queryKeys } from "../constants/queryKeys";
 import { ChartContainer } from "../features/statistics/components/ChartContainer";
-import { DistributionChart } from "../features/statistics/components/DistributionChart";
 import { ScopeSelector, type ScopeSelection } from "../features/statistics/components/ScopeSelector";
-import { TimeSeriesChart } from "../features/statistics/components/TimeSeriesChart";
 import { TrendingEmotionChip } from "../features/statistics/components/TrendingEmotionChip";
-import { WeekdayActivityChart } from "../features/statistics/components/WeekdayActivityChart";
 import { fetchStatisticsDashboard, fetchTrendingEmotions } from "../services/statisticsService";
 import { getApiErrorMessage } from "../services/apiClient";
 import { themeClasses } from "../lib/themeClasses";
+
+const DistributionChart = lazy(() =>
+  import("../features/statistics/components/DistributionChart").then((module) => ({
+    default: module.DistributionChart,
+  })),
+);
+const TimeSeriesChart = lazy(() =>
+  import("../features/statistics/components/TimeSeriesChart").then((module) => ({
+    default: module.TimeSeriesChart,
+  })),
+);
+const WeekdayActivityChart = lazy(() =>
+  import("../features/statistics/components/WeekdayActivityChart").then((module) => ({
+    default: module.WeekdayActivityChart,
+  })),
+);
+
+function ChartFallback() {
+  return <div className="h-64 animate-pulse rounded-xl bg-stone-100 dark:bg-stone-800" />;
+}
 
 export function DashboardPage() {
   const { t } = useTranslation();
@@ -100,18 +117,20 @@ export function DashboardPage() {
               <KpiCard label={t("statistics.kpiReactions")} value={data.overview.totalReactions} />
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-2">
-              <ChartContainer title={t("statistics.emotionDistribution")} meetsThreshold={data.meetsThreshold}>
-                <DistributionChart data={data.distribution} />
-              </ChartContainer>
-              <ChartContainer title={t("dashboard.weekdayActivity")} meetsThreshold={data.overview.meetsThreshold}>
-                <WeekdayActivityChart data={data.timeSeries} />
-              </ChartContainer>
-            </div>
+            <Suspense fallback={<ChartFallback />}>
+              <div className="grid gap-6 lg:grid-cols-2">
+                <ChartContainer title={t("statistics.emotionDistribution")} meetsThreshold={data.meetsThreshold}>
+                  <DistributionChart data={data.distribution} />
+                </ChartContainer>
+                <ChartContainer title={t("dashboard.weekdayActivity")} meetsThreshold={data.overview.meetsThreshold}>
+                  <WeekdayActivityChart data={data.timeSeries} />
+                </ChartContainer>
+              </div>
 
-            <ChartContainer title={t("statistics.activityOverTime")} meetsThreshold={data.overview.meetsThreshold}>
-              <TimeSeriesChart data={data.timeSeries} />
-            </ChartContainer>
+              <ChartContainer title={t("statistics.activityOverTime")} meetsThreshold={data.overview.meetsThreshold}>
+                <TimeSeriesChart data={data.timeSeries} />
+              </ChartContainer>
+            </Suspense>
 
             <div className={`p-5 ${themeClasses.cardLg}`}>
               <h2 className={`text-base font-semibold ${themeClasses.heading}`}>

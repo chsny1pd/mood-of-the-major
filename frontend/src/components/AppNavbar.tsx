@@ -23,11 +23,9 @@ interface NavItem {
 const primaryNavItems: NavItem[] = [
   { to: ROUTES.feed, labelKey: "nav.feed" },
   { to: ROUTES.dashboard, labelKey: "nav.dashboard" },
-  { to: ROUTES.howToUse, labelKey: "nav.howToUse" },
 ];
 
 const authenticatedNavItems: NavItem[] = [
-  { to: ROUTES.search, labelKey: "nav.search", requiresAuth: true },
   { to: ROUTES.bookmarks, labelKey: "nav.saved", requiresAuth: true },
   { to: ROUTES.notifications, labelKey: "nav.inbox", requiresAuth: true },
   { to: ROUTES.admin, labelKey: "nav.admin", requiresAuth: true, adminOnly: true },
@@ -69,7 +67,7 @@ export function AppNavbar({ variant = "app" }: AppNavbarProps) {
   const closeMobile = () => setMobileOpen(false);
 
   return (
-    <header className="relative border-b border-stone-200/80 bg-white/80 backdrop-blur dark:border-stone-700 dark:bg-stone-950/80">
+    <header className="sticky top-0 z-50 border-b border-stone-200/80 bg-white/80 backdrop-blur dark:border-stone-700 dark:bg-stone-950/80">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 -bottom-6 h-6 bg-gradient-to-b from-orange-400/15 to-transparent dark:from-orange-500/10"
@@ -78,7 +76,7 @@ export function AppNavbar({ variant = "app" }: AppNavbarProps) {
         <div className="flex min-w-0 flex-1 items-center gap-4">
           <Link
             to={isAuthenticated ? ROUTES.dashboard : ROUTES.home}
-            className="font-display shrink-0 text-lg font-semibold tracking-tight text-orange-700 dark:text-orange-300"
+            className="shrink-0 text-lg font-semibold tracking-tight text-orange-700 dark:text-orange-300"
           >
             {t("app.name")}
           </Link>
@@ -92,7 +90,13 @@ export function AppNavbar({ variant = "app" }: AppNavbarProps) {
           </nav>
         </div>
 
-        <div className="flex items-center gap-1 sm:gap-2">
+        <div className="relative z-10 flex items-center gap-1 sm:gap-2">
+          <Link to={ROUTES.howToUse} className="hidden sm:inline-flex">
+            <Button variant="outline" size="sm" className="rounded-full">
+              {t("nav.howToUse")}
+            </Button>
+          </Link>
+
           {isAuthenticated ? (
             <Link to={ROUTES.create} className="hidden sm:inline-flex">
               <Button size="sm" className="rounded-full">
@@ -140,7 +144,7 @@ export function AppNavbar({ variant = "app" }: AppNavbarProps) {
 
       {mobileOpen ? (
         <nav
-          className="border-t border-stone-200 px-4 py-3 lg:hidden dark:border-stone-700"
+          className="relative z-10 border-t border-stone-200 px-4 py-3 lg:hidden dark:border-stone-700"
           aria-label="Mobile navigation"
         >
           <div className="flex flex-col gap-1">
@@ -149,6 +153,10 @@ export function AppNavbar({ variant = "app" }: AppNavbarProps) {
                 {t(item.labelKey)}
               </NavLink>
             ))}
+
+            <NavLink to={ROUTES.howToUse} className={navLinkClass} onClick={closeMobile}>
+              {t("nav.howToUse")}
+            </NavLink>
 
             {isAuthenticated ? (
               <NavLink to={ROUTES.create} className={navLinkClass} onClick={closeMobile}>

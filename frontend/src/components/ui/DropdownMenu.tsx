@@ -4,10 +4,13 @@ import {
   useContext,
   useEffect,
   useId,
+  useLayoutEffect,
   useRef,
   useState,
+  type CSSProperties,
   type ReactNode,
 } from "react";
+import { createPortal } from "react-dom";
 
 interface DropdownMenuContextValue {
   close: () => void;
@@ -31,9 +34,39 @@ export function DropdownMenu({
   triggerTestId,
 }: DropdownMenuProps) {
   const [open, setOpen] = useState(false);
+  const [menuStyle, setMenuStyle] = useState<CSSProperties>({});
   const menuId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const close = useCallback(() => setOpen(false), []);
+
+  const updatePosition = useCallback(() => {
+    const triggerEl = containerRef.current;
+    if (!triggerEl) {
+      return;
+    }
+
+    const rect = triggerEl.getBoundingClientRect();
+    const width = Math.max(menuRef.current?.offsetWidth ?? 192, 192);
+    const left =
+      align === "end"
+        ? Math.min(rect.right - width, window.innerWidth - width - 8)
+        : Math.max(8, rect.left);
+
+    setMenuStyle({
+      position: "fixed",
+      top: rect.bottom + 8,
+      left: Math.max(8, left),
+      zIndex: 1000,
+    });
+  }, [align]);
+
+  useLayoutEffect(() => {
+    if (!open) {
+      return;
+    }
+    updatePosition();
+  }, [open, updatePosition, children]);
 
   useEffect(() => {
     if (!open) {
@@ -41,9 +74,11 @@ export function DropdownMenu({
     }
 
     const onPointerDown = (event: MouseEvent) => {
-      if (!containerRef.current?.contains(event.target as Node)) {
-        close();
+      const target = event.target as Node;
+      if (containerRef.current?.contains(target) || menuRef.current?.contains(target)) {
+        return;
       }
+      close();
     };
 
     const onKeyDown = (event: KeyboardEvent) => {
@@ -52,13 +87,19 @@ export function DropdownMenu({
       }
     };
 
+    const onReposition = () => updatePosition();
+
     document.addEventListener("mousedown", onPointerDown);
     document.addEventListener("keydown", onKeyDown);
+    window.addEventListener("resize", onReposition);
+    window.addEventListener("scroll", onReposition, true);
     return () => {
       document.removeEventListener("mousedown", onPointerDown);
       document.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("resize", onReposition);
+      window.removeEventListener("scroll", onReposition, true);
     };
-  }, [open, close]);
+  }, [open, close, updatePosition]);
 
   return (
     <DropdownMenuContext.Provider value={{ close }}>
@@ -76,17 +117,20 @@ export function DropdownMenu({
           {trigger}
         </button>
 
-        {open ? (
-          <div
-            id={menuId}
-            role="menu"
-            className={`absolute top-[calc(100%+0.5rem)] z-50 min-w-[12rem] overflow-hidden rounded-xl border border-stone-200 bg-white py-1 shadow-lg dark:border-stone-700 dark:bg-stone-900 ${
-              align === "end" ? "right-0" : "left-0"
-            }`}
-          >
-            {children}
-          </div>
-        ) : null}
+        {open
+          ? createPortal(
+              <div
+                ref={menuRef}
+                id={menuId}
+                role="menu"
+                style={menuStyle}
+                className="min-w-[12rem] overflow-hidden rounded-xl border border-stone-200 bg-white py-1 shadow-lg dark:border-stone-700 dark:bg-stone-900"
+              >
+                {children}
+              </div>,
+              document.body,
+            )
+          : null}
       </div>
     </DropdownMenuContext.Provider>
   );

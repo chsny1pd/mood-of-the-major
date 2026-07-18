@@ -21,8 +21,8 @@ export function createMoodRoutes(deps: Dependencies): Router {
 
   router.get(
     "/search",
-    authenticate,
-    authorize("student", "advisor", "administrator"),
+    optionalAuthenticate,
+    rateLimiters.feed,
     validate(searchQuerySchema, "query"),
     moodController.search,
   );

@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "@fontsource-variable/dm-sans/wght.css";
+@import "@fontsource-variable/fraunces/wght.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -7,7 +9,7 @@
   --brand-hover: #c2410c;
   --brand-soft: #fff7ed;
   --glow: rgb(251 146 60 / 0.22);
-  font-family: "DM Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-family: "DM Sans Variable", "DM Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   font-synthesis: none;
@@ -26,7 +28,7 @@
 }
 
 .font-display {
-  font-family: "Fraunces", Georgia, "Times New Roman", serif;
+  font-family: "Fraunces Variable", "Fraunces", Georgia, "Times New Roman", serif;
 }
 
 .ambient-glow {
@@ -91,6 +93,58 @@
 @media (prefers-reduced-motion: reduce) {
   .ambient-glow::before,
   .ambient-glow::after {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .mood-list__item {
+    animation: mood-item-enter 0.28s ease-out both;
+  }
+
+  .mood-list__item:nth-child(1) {
+    animation-delay: 0.02s;
+  }
+
+  .mood-list__item:nth-child(2) {
+    animation-delay: 0.06s;
+  }
+
+  .mood-list__item:nth-child(3) {
+    animation-delay: 0.1s;
+  }
+
+  .mood-list__item:nth-child(4) {
+    animation-delay: 0.14s;
+  }
+
+  .mood-list__item:nth-child(5) {
+    animation-delay: 0.18s;
+  }
+
+  .mood-list__item:nth-child(6) {
+    animation-delay: 0.22s;
+  }
+
+  .mood-list__item:nth-child(n + 7) {
+    animation-delay: 0.26s;
+  }
+}
+
+@keyframes mood-item-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mood-list__item {
     animation: none;
   }
 }

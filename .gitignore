@@ -31,3 +31,9 @@ frontend/dist/
 
 # Test
 .nyc_output/
+
+# Local tooling scratch
+frontend/.tmp/
+frontend/.lighthouseci/
+frontend/lh-*.json
+frontend/lhci-out.txt

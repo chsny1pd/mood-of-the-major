@@ -1,5 +1,5 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
@@ -25,6 +25,7 @@ import { useLocalizedName } from "../lib/useLocalizedName";
 
 export function SettingsPage() {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const localizedName = useLocalizedName();
   const { user, profileMeta, logout, refreshProfile } = useAuth();
   const { theme, setTheme } = useTheme();
@@ -328,7 +329,15 @@ export function SettingsPage() {
         <SettingsCard title={t("settings.account")}>
           <p className={`text-sm ${themeClasses.body}`}>{t("settings.logoutDescription")}</p>
           <div className="mt-4 flex flex-wrap gap-3">
-            <Button type="button" variant="outline" onClick={() => void logout()}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                void logout().finally(() => {
+                  navigate(ROUTES.home, { replace: true });
+                });
+              }}
+            >
               {t("settings.logoutButton")}
             </Button>
             <Link to={ROUTES.howToUse} className={themeClasses.link}>

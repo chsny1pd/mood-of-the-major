@@ -1342,8 +1342,9 @@ Default: cursor pagination limits DOM size. Add virtualization when profiling wa
 | Debounced search | Debounce search input before navigation to `/search` |
 | Avoid unnecessary context | ThemeContext and AuthContext only — prevent broad re-renders |
 | Production build | Vite minification, tree-shaking |
-| Font loading | `font-display: swap` for web fonts in `assets/` |
-| Lighthouse targets | Post creation and mood feed pages ≥ 80 performance score |
+| Font loading | Self-hosted variable fonts (`@fontsource-variable/dm-sans`, `@fontsource-variable/fraunces`) with `font-display: swap`; Fraunces reserved for landing/brand |
+| Bundle splitting | Prefer route-level code splitting; avoid vendor `manualChunks` that pull React into heavy library chunks (Rolldown/Vite 8) |
+| Lighthouse targets | `/`, `/feed`, and `/login` performance ≥ 0.80 |
 
 ---
 

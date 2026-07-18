@@ -1,15 +1,15 @@
 import { createBrowserRouter } from "react-router-dom";
 import { ROUTES } from "../constants/routes";
-import { PublicLayout } from "../layouts/PublicLayout";
-import { LandingPage } from "../pages/LandingPage";
 
 export const router = createBrowserRouter([
   {
-    element: <PublicLayout />,
+    lazy: () =>
+      import("./routes/publicRoutes").then((module) => ({ Component: module.Component })),
     children: [
       {
         path: ROUTES.home,
-        Component: LandingPage,
+        lazy: () =>
+          import("../pages/LandingPage").then((module) => ({ Component: module.LandingPage })),
       },
     ],
   },
@@ -81,7 +81,15 @@ export const router = createBrowserRouter([
       },
       {
         path: ROUTES.search,
-        lazy: () => import("../pages/SearchPage").then((module) => ({ Component: module.SearchPage })),
+        lazy: async () => {
+          const { Navigate } = await import("react-router-dom");
+          const { ROUTES: routes } = await import("../constants/routes");
+          return {
+            Component: function SearchRedirect() {
+              return <Navigate to={routes.feed} replace />;
+            },
+          };
+        },
       },
       {
         path: ROUTES.dashboard,

@@ -298,7 +298,8 @@
     "faculty": "Faculty",
     "major": "Major",
     "selectFaculty": "Select faculty",
-    "selectMajor": "Select major"
+    "selectMajor": "Select major",
+    "noMajors": "No majors found for this faculty."
   },
   "charts": {
     "insufficientData": "Insufficient data",

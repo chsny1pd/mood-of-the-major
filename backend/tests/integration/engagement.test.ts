@@ -13,11 +13,14 @@ describe("Engagement routes", () => {
   const deps = createDependencies(env);
   const app = createApp(deps);
 
-  it("GET /api/v1/moods/search requires authentication", async () => {
+  it("GET /api/v1/moods/search is public with optional auth", async () => {
     const response = await request(app).get("/api/v1/moods/search").query({ q: "hello" });
 
-    expect(response.status).toBe(401);
-    expect(response.body.error.code).toBe("AUTH_REQUIRED");
+    // Without a live DB this may 500/503; it must not require auth (401).
+    expect(response.status).not.toBe(401);
+    if (response.body?.error?.code) {
+      expect(response.body.error.code).not.toBe("AUTH_REQUIRED");
+    }
   });
 
   it("GET /api/v1/bookmarks requires authentication", async () => {
