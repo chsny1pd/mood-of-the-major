@@ -1,13 +1,14 @@
 @import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap");
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  font-family:
-    "Segoe UI",
-    system-ui,
-    -apple-system,
-    sans-serif;
+  --brand: #ea580c;
+  --brand-hover: #c2410c;
+  --brand-soft: #fff7ed;
+  --glow: rgb(251 146 60 / 0.22);
+  font-family: "DM Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   font-synthesis: none;
@@ -18,7 +19,81 @@
 }
 
 :root.dark {
+  --brand: #fb923c;
+  --brand-hover: #fdba74;
+  --brand-soft: #431407;
+  --glow: rgb(249 115 22 / 0.16);
   color-scheme: dark;
+}
+
+.font-display {
+  font-family: "Fraunces", Georgia, "Times New Roman", serif;
+}
+
+.ambient-glow {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.ambient-glow::before,
+.ambient-glow::after {
+  content: "";
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(64px);
+  opacity: 1;
+}
+
+.ambient-glow::before {
+  top: -12%;
+  left: -8%;
+  width: min(52vw, 28rem);
+  height: min(52vw, 28rem);
+  background: var(--glow);
+}
+
+.ambient-glow::after {
+  right: -10%;
+  bottom: -18%;
+  width: min(48vw, 24rem);
+  height: min(48vw, 24rem);
+  background: rgb(253 186 116 / 0.18);
+}
+
+.ambient-glow--subtle::before {
+  opacity: 0.65;
+  width: min(40vw, 18rem);
+  height: min(40vw, 18rem);
+}
+
+.ambient-glow--subtle::after {
+  opacity: 0.45;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ambient-glow::before,
+  .ambient-glow::after {
+    animation: ambient-breathe 12s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes ambient-breathe {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(2%, 3%, 0) scale(1.06);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-glow::before,
+  .ambient-glow::after {
+    animation: none;
+  }
 }
 
 body {
