@@ -1,21 +1,22 @@
-import { REACTION_TYPES, type ReactionType } from "../../domain/constants/engagementConstants.js";
+import { MAX_REACTIONS_PER_USER } from "../../domain/constants/engagementConstants.js";
 import type { ReactionTargetType } from "../../domain/entities/Reaction.js";
-import { NotFoundError, ValidationError } from "../../domain/errors/AppError.js";
+import { AppError, NotFoundError, ValidationError } from "../../domain/errors/AppError.js";
 import type { ICommentRepository } from "../../domain/ports/ICommentRepository.js";
 import type { IMoodRepository } from "../../domain/ports/IMoodRepository.js";
 import type { IReactionRepository } from "../../domain/ports/IReactionRepository.js";
+import { isValidReactionEmoji } from "../../domain/utils/isValidReactionEmoji.js";
 
-export interface UpsertReactionServiceInput {
+export interface ToggleReactionServiceInput {
   targetType: ReactionTargetType;
   targetId: string;
-  reactionType: ReactionType;
+  emoji: string;
 }
 
 export interface ReactionView {
   targetType: ReactionTargetType;
   targetId: string;
   reactionSummary: Record<string, number>;
-  userReaction: ReactionType | null;
+  userReactions: string[];
 }
 
 export class ReactionService {
@@ -36,27 +37,46 @@ export class ReactionService {
     if (!comment) throw new NotFoundError("Comment not found", "COMMENT_NOT_FOUND");
   }
 
-  async upsertReaction(userId: string, input: UpsertReactionServiceInput) {
-    if (!REACTION_TYPES.includes(input.reactionType)) {
-      throw new ValidationError("Invalid reaction type", [
-        { field: "reactionType", message: "Reaction type is not allowed." },
+  async toggleReaction(userId: string, input: ToggleReactionServiceInput) {
+    const emoji = input.emoji.trim();
+    if (!isValidReactionEmoji(emoji)) {
+      throw new ValidationError("Invalid reaction emoji", [
+        { field: "emoji", message: "Must be a single emoji." },
       ]);
     }
 
     await this.assertTargetExists(input.targetType, input.targetId);
 
-    const result = await this.reactions.upsert({
+    const existing = await this.reactions.findUserReactions(
+      userId,
+      input.targetType,
+      input.targetId,
+    );
+    if (!existing.includes(emoji)) {
+      const count = await this.reactions.countUserReactions(
+        userId,
+        input.targetType,
+        input.targetId,
+      );
+      if (count >= MAX_REACTIONS_PER_USER) {
+        throw new AppError("Reaction limit reached", {
+          statusCode: 422,
+          code: "REACTION_LIMIT_REACHED",
+        });
+      }
+    }
+
+    const result = await this.reactions.toggle({
       userId,
       targetType: input.targetType,
       targetId: input.targetId,
-      reactionType: input.reactionType,
+      emoji,
     });
 
     return {
       targetType: input.targetType,
       targetId: input.targetId,
-      reactionType: result.reactionType,
-      reactionSummary: result.reactionSummary,
+      ...result,
     };
   }
 
@@ -64,15 +84,16 @@ export class ReactionService {
     userId: string,
     targetType: ReactionTargetType,
     targetId: string,
+    emoji: string,
   ) {
     await this.assertTargetExists(targetType, targetId);
 
-    const result = await this.reactions.remove({ userId, targetType, targetId });
+    const result = await this.reactions.remove({ userId, targetType, targetId, emoji });
 
     return {
       targetType,
       targetId,
-      reactionSummary: result.reactionSummary,
+      ...result,
     };
   }
 
@@ -84,10 +105,10 @@ export class ReactionService {
     await this.assertTargetExists(targetType, targetId);
 
     const reactionSummary = await this.reactions.getReactionSummary(targetType, targetId);
-    const userReaction = userId
-      ? await this.reactions.findUserReaction(userId, targetType, targetId)
-      : null;
+    const userReactions = userId
+      ? await this.reactions.findUserReactions(userId, targetType, targetId)
+      : [];
 
-    return { targetType, targetId, reactionSummary, userReaction };
+    return { targetType, targetId, reactionSummary, userReactions };
   }
 }

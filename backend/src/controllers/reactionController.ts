@@ -1,16 +1,22 @@
 import type { Response } from "express";
-import type { ReactionService, UpsertReactionServiceInput } from "../application/services/ReactionService.js";
+import type {
+  ReactionService,
+  ToggleReactionServiceInput,
+} from "../application/services/ReactionService.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { AuthenticationError } from "../domain/errors/AppError.js";
 
 export function createReactionController(reactionService: ReactionService) {
   return {
-    upsert: asyncHandler(async (req, res: Response) => {
+    toggle: asyncHandler(async (req, res: Response) => {
       if (!req.userId) {
         throw new AuthenticationError("Authentication required", "AUTH_REQUIRED");
       }
 
-      const result = await reactionService.upsertReaction(req.userId, req.body as UpsertReactionServiceInput);
+      const result = await reactionService.toggleReaction(
+        req.userId,
+        req.body as ToggleReactionServiceInput,
+      );
 
       res.status(200).json({ success: true, data: result });
     }),
@@ -20,11 +26,16 @@ export function createReactionController(reactionService: ReactionService) {
         throw new AuthenticationError("Authentication required", "AUTH_REQUIRED");
       }
 
-      const body = req.body as { targetType: "mood" | "comment"; targetId: string };
+      const body = req.body as {
+        targetType: "mood" | "comment";
+        targetId: string;
+        emoji: string;
+      };
       const result = await reactionService.removeReaction(
         req.userId,
         body.targetType,
         body.targetId,
+        body.emoji,
       );
 
       res.status(200).json({ success: true, data: result });

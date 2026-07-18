@@ -17,7 +17,7 @@ export function createReactionRoutes(deps: Dependencies): Router {
     authenticate,
     authorize("student", "administrator"),
     validate(upsertReactionSchema),
-    reactionController.upsert,
+    reactionController.toggle,
   );
 
   router.delete(

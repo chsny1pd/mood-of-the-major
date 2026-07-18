@@ -50,7 +50,7 @@ describe("Engagement routes", () => {
     const response = await request(app).put("/api/v1/reactions").send({
       targetType: "mood",
       targetId: "665a1b2c3d4e5f6789012348",
-      reactionType: "empathy",
+      emoji: "💙",
     });
 
     expect(response.status).toBe(401);

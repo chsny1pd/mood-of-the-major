@@ -4,7 +4,7 @@ import { loadEnv } from "../src/config/env.js";
 import { connectDatabase, disconnectDatabase } from "../src/infrastructure/database/connection.js";
 import { createLogger } from "../src/infrastructure/logging/logger.js";
 import { BcryptPasswordHasher } from "../src/infrastructure/auth/BcryptPasswordHasher.js";
-import { REACTION_TYPES } from "../src/domain/constants/engagementConstants.js";
+import { DEFAULT_REACTION_EMOJIS } from "../src/domain/constants/engagementConstants.js";
 import { FacultyModel } from "../src/infrastructure/database/models/Faculty.js";
 import { MajorModel } from "../src/infrastructure/database/models/Major.js";
 import { MoodModel } from "../src/infrastructure/database/models/Mood.js";
@@ -218,17 +218,17 @@ async function seedMockData(): Promise<void> {
         continue;
       }
 
-      const reactionType = pickOne(REACTION_TYPES);
+      const emoji = pickOne(DEFAULT_REACTION_EMOJIS);
       try {
         await ReactionModel.create({
           userId,
           targetType: "mood",
           targetId: mood._id,
-          reactionType,
+          emoji,
           createdAt,
           updatedAt: createdAt,
         });
-        reactionSummary[reactionType] = (reactionSummary[reactionType] ?? 0) + 1;
+        reactionSummary[emoji] = (reactionSummary[emoji] ?? 0) + 1;
         reactionsCreated += 1;
       } catch {
         // duplicate reaction for same user/target — skip
@@ -264,20 +264,20 @@ async function seedMockData(): Promise<void> {
 
         if (randomInt(0, 100) < 35) {
           const commentReactor = pickOne(studentIds);
-          const reactionType = pickOne(REACTION_TYPES);
+          const emoji = pickOne(DEFAULT_REACTION_EMOJIS);
           try {
             await ReactionModel.create({
               userId: commentReactor,
               targetType: "comment",
               targetId: comment._id,
-              reactionType,
+              emoji,
               createdAt: commentAt,
               updatedAt: commentAt,
             });
             reactionsCreated += 1;
             await CommentModel.updateOne(
               { _id: comment._id },
-              { reactionSummary: { [reactionType]: 1 } },
+              { reactionSummary: { [emoji]: 1 } },
             );
           } catch {
             // skip duplicate

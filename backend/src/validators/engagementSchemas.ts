@@ -2,7 +2,7 @@ import { z } from "zod";
 import {
   COMMENT_CONTENT_MAX_LENGTH,
   COMMENT_CONTENT_MIN_LENGTH,
-  REACTION_TYPES,
+  EMOJI_MAX_LENGTH,
   REPORT_DESCRIPTION_MAX_LENGTH,
   REPORT_REASON_CODES,
   SEARCH_QUERY_MIN_LENGTH,
@@ -30,12 +30,13 @@ export const moodIdParamSchema = z.object({
 export const upsertReactionSchema = z.object({
   targetType: z.enum(["mood", "comment"]),
   targetId: z.string().min(1),
-  reactionType: z.enum(REACTION_TYPES),
+  emoji: z.string().trim().min(1).max(EMOJI_MAX_LENGTH),
 });
 
 export const removeReactionSchema = z.object({
   targetType: z.enum(["mood", "comment"]),
   targetId: z.string().min(1),
+  emoji: z.string().trim().min(1).max(EMOJI_MAX_LENGTH),
 });
 
 export const reactionQuerySchema = z.object({

@@ -10,7 +10,7 @@ const sampleMood: MoodWithRelations = {
   majorId: "665a1b2c3d4e5f6789012346",
   status: "active",
   commentCount: 5,
-  reactionSummary: { empathy: 12, support: 8 },
+  reactionSummary: { "💙": 12, "🤝": 8 },
   imageCount: 1,
   primaryTagId: "665a1b2c3d4e5f6789012349",
   reportCount: 0,

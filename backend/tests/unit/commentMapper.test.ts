@@ -12,7 +12,7 @@ const sampleComment: Comment = {
   parentId: null,
   content: "You're not alone in this.",
   status: "active",
-  reactionSummary: { support: 3 },
+  reactionSummary: { "🤝": 3 },
   depth: 0,
   createdAt: new Date("2026-07-05T09:00:00.000Z"),
   updatedAt: new Date("2026-07-05T09:00:00.000Z"),
@@ -28,7 +28,7 @@ describe("commentMapper", () => {
       content: sampleComment.content,
       parentId: null,
       depth: 0,
-      reactionSummary: { support: 3 },
+      reactionSummary: { "🤝": 3 },
       createdAt: "2026-07-05T09:00:00.000Z",
     });
 
