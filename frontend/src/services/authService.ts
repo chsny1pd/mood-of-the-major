@@ -82,8 +82,3 @@ export async function updateMe(input: UpdateProfileInput): Promise<UserProfile> 
   const response = await apiClient.patch<{ success: true; data: UserProfile }>("/auth/me", input);
   return response.data.data;
 }
-
-export async function updateMe(input: UpdateProfileInput): Promise<UserProfile> {
-  const response = await apiClient.patch<{ success: true; data: UserProfile }>("/auth/me", input);
-  return response.data.data;
-}

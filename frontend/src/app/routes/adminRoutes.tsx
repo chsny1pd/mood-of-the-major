@@ -2,7 +2,7 @@ import { RequireAdmin } from "../../components/RequireAdmin";
 import { AdminLayout } from "../../layouts/AdminLayout";
 import { LazyQueryProvider } from "../LazyQueryProvider";
 
-export function Component() {
+function AdminShell() {
   return (
     <RequireAdmin>
       <LazyQueryProvider>
@@ -10,4 +10,8 @@ export function Component() {
       </LazyQueryProvider>
     </RequireAdmin>
   );
+}
+
+export function Component() {
+  return <AdminShell />;
 }

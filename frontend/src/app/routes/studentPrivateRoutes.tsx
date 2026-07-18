@@ -2,7 +2,7 @@ import { RequireAuth } from "../../components/RequireAuth";
 import { StudentLayout } from "../../layouts/StudentLayout";
 import { LazyQueryProvider } from "../LazyQueryProvider";
 
-export function Component() {
+function PrivateStudentShell() {
   return (
     <RequireAuth>
       <LazyQueryProvider>
@@ -10,4 +10,8 @@ export function Component() {
       </LazyQueryProvider>
     </RequireAuth>
   );
+}
+
+export function Component() {
+  return <PrivateStudentShell />;
 }

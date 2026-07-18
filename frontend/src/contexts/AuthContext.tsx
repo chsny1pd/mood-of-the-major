@@ -20,29 +20,34 @@ import {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(null);
-  const [profileMeta, setProfileMeta] = useState<ProfileMeta>(defaultProfileMeta);
+  const [oauthMeta, setOauthMeta] = useState<ProfileMeta>(defaultProfileMeta);
   const [isLoading, setIsLoading] = useState(() => Boolean(getAccessToken()));
+
+  // Once the full profile has loaded from /me, it is the source of truth for
+  // displayName/avatarUrl. The OAuth callback hash values are only a
+  // transient fallback shown before that first refresh completes.
+  const profileMeta = useMemo<ProfileMeta>(
+    () => ({
+      displayName: user?.displayName ?? oauthMeta.displayName,
+      avatarUrl: user?.avatarUrl ?? oauthMeta.avatarUrl,
+    }),
+    [user, oauthMeta],
+  );
 
   const refreshProfile = useCallback(async () => {
     const token = getAccessToken();
     if (!token) {
       setUser(null);
-      setProfileMeta(defaultProfileMeta);
       return;
     }
 
     const { fetchMe } = await import("../services/authService");
     const profile = await fetchMe();
     setUser(profile);
-    setProfileMeta({
-      displayName: profile.displayName,
-      avatarUrl: profile.avatarUrl,
-    });
   }, []);
 
   useEffect(() => {
     if (!getAccessToken()) {
-      setIsLoading(false);
       return;
     }
 
@@ -52,7 +57,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } catch {
         clearAccessToken();
         setUser(null);
-        setProfileMeta(defaultProfileMeta);
       } finally {
         setIsLoading(false);
       }
@@ -64,10 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const authUser = await loginRequest({ email, password });
     flushSync(() => {
       setUser(toInitialProfile(authUser));
-      setProfileMeta({
-        displayName: authUser.displayName,
-        avatarUrl: authUser.avatarUrl,
-      });
+      setOauthMeta(defaultProfileMeta);
     });
     void refreshProfile().catch(() => undefined);
   }, [refreshProfile]);
@@ -90,7 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAccessToken(accessToken);
 
     flushSync(() => {
-      setProfileMeta({
+      setOauthMeta({
         displayName,
         avatarUrl,
       });
@@ -115,10 +116,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const authUser = await registerRequest(input);
       flushSync(() => {
         setUser(toInitialProfile(authUser));
-        setProfileMeta({
-          displayName: authUser.displayName,
-          avatarUrl: authUser.avatarUrl,
-        });
+        setOauthMeta(defaultProfileMeta);
       });
       void refreshProfile().catch(() => undefined);
     },
@@ -132,7 +130,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       clearAccessToken();
       setUser(null);
-      setProfileMeta(defaultProfileMeta);
+      setOauthMeta(defaultProfileMeta);
     }
   }, []);
 
