@@ -179,12 +179,12 @@ function buildFeedFilter(query: MoodFeedQuery): Record<string, unknown> {
   return filter;
 }
 
-function buildSort(query: MoodFeedQuery): Record<string, 1 | -1> {
+export function buildMoodFeedSort(query: MoodFeedQuery): Record<string, 1 | -1> {
   switch (query.sort) {
     case "most_commented":
       return { commentCount: -1, createdAt: -1, _id: -1 };
     case "most_reacted":
-      return { lastActivityAt: -1, createdAt: -1, _id: -1 };
+      return { reactionCount: -1, createdAt: -1, _id: -1 };
     default:
       return { createdAt: -1, _id: -1 };
   }
@@ -347,7 +347,10 @@ export class MongooseMoodRepository implements IMoodRepository {
     const key = `reactionSummary.${emoji}`;
     const updated = await MoodModel.findOneAndUpdate(
       { _id: moodId },
-      { $inc: { [key]: delta }, $set: { lastActivityAt: new Date() } },
+      {
+        $inc: { [key]: delta, reactionCount: delta },
+        $set: { lastActivityAt: new Date() },
+      },
       { new: true },
     ).lean();
 
@@ -391,7 +394,7 @@ export class MongooseMoodRepository implements IMoodRepository {
     }
 
     const moodDocs = await MoodModel.find(filter)
-      .sort(buildSort(query))
+      .sort(buildMoodFeedSort(query))
       .limit(query.limit)
       .lean();
 

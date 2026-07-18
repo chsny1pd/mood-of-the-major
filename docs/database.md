@@ -52,7 +52,7 @@ The schema uses a **hybrid approach** — normalized references for entities wit
 |---------|-----------|----------|
 | **Reference (normalize)** | Entity has its own lifecycle, is shared, or must be queried independently | `Users`, `Faculties`, `Majors`, `Tags`, `MoodImages` |
 | **Junction collection** | Many-to-many relationships with queryable edges | `MoodTags`, `Bookmarks` |
-| **Denormalized counters** | High-frequency reads on feeds; updated on write | `Moods.commentCount`, `Moods.reactionSummary` |
+| **Denormalized counters** | High-frequency reads on feeds; updated on write | `Moods.commentCount`, `Moods.reactionCount`, `Moods.reactionSummary` |
 | **Pre-aggregated statistics** | Expensive analytics queries; tolerates slight staleness | `EmotionStatistics`, `DailyStatistics` |
 | **Embed (limited)** | Small, bounded, always-read-with-parent data | Not used for comments (unbounded growth); comments are a separate collection |
 
@@ -327,10 +327,11 @@ Core content entity — anonymous mood posts containing text, optional images (v
 | `status` | String | ✓ | | `active` | `active`, `hidden`, `moderated_removed`, `deleted_by_author` |
 | `commentCount` | Number | ✓ | | `0` | Denormalized count of active comments |
 | `reactionSummary` | Object | ✓ | | `{}` | Map of `emoji → count` (e.g., `{ "💙": 12, "🔥": 3 }`) |
+| `reactionCount` | Number | ✓ | | `0` | Denormalized sum of `reactionSummary` values; feed `most_reacted` sort |
 | `imageCount` | Number | ✓ | | `0` | Denormalized count of confirmed images |
 | `primaryTagId` | ObjectId | | ✓ | `null` | Denormalized primary emotion tag for feed badge display |
 | `reportCount` | Number | ✓ | | `0` | Open + resolved reports count (admin signal) |
-| `lastActivityAt` | Date | ✓ | | `createdAt` | Updated on comment/reaction; feed sort option |
+| `lastActivityAt` | Date | ✓ | | `createdAt` | Updated on comment/reaction |
 | `editedAt` | Date | | ✓ | `null` | Set on author edit within policy window (`FR-POST-007`) |
 | `moderatedAt` | Date | | ✓ | `null` | Admin removal timestamp |
 | `moderatedBy` | ObjectId | | ✓ | `null` | Admin user ref |
@@ -356,7 +357,8 @@ Core content entity — anonymous mood posts containing text, optional images (v
 | `{ status: 1, facultyId: 1, createdAt: -1 }` | Compound | Faculty feed |
 | `{ status: 1, majorId: 1, createdAt: -1 }` | Compound | Major feed |
 | `{ status: 1, primaryTagId: 1, createdAt: -1 }` | Compound | Category filter |
-| `{ status: 1, lastActivityAt: -1 }` | Compound | Activity sort (`FR-FEED-008`) |
+| `{ status: 1, lastActivityAt: -1 }` | Compound | Recent activity queries |
+| `{ status: 1, reactionCount: -1, createdAt: -1 }` | Compound | Most-reacted feed sort (`FR-FEED-008`) |
 | `{ authorId: 1, createdAt: -1 }` | Compound | Author's own posts (owner delete/edit) |
 | `{ content: "text" }` | Text | Full-text search (`FR-SRCH-001`) |
 | `{ createdAt: -1, _id: -1 }` | Compound | Cursor pagination |
@@ -569,7 +571,7 @@ Stores emoji reactions on mood posts and comments. Each user may have **up to 7 
 
 - `PUT /reactions` **toggles** one emoji: insert and `$inc` summary on add; delete row and decrement on remove if already owned
 - Eighth distinct emoji on a target rejected with `REACTION_LIMIT_REACHED` (`422`)
-- Application service updates `reactionSummary` on target document (emoji keys)
+- Application service updates `reactionSummary` and `reactionCount` on mood targets (emoji keys + total)
 - Default UI shortcuts `💙`, `🤝`, `🫂`, `✊` are presentation-only; any valid emoji may appear in storage
 - Public API returns counts only — never `userId` or per-user reaction lists (`FR-REACT-004`, `BR-ANON-002`)
 - Authenticated read returns caller's `userReactions: string[]` only
@@ -1156,7 +1158,7 @@ auditlogs ──► users (adminId)
 |---------|------------|
 | Feed p95 500ms (`NFR-PERF-001`) | Indexed sorts + denormalized counts; limit page size (default 20) |
 | Statistics p95 2s (`NFR-PERF-004`) | Read `emotionstatistics` / `dailystatistics`, not live scan of `moods` |
-| Write contention on popular moods | Atomic `$inc` on `reactionSummary` and `commentCount` |
+| Write contention on popular moods | Atomic `$inc` on `reactionSummary`, `reactionCount`, and `commentCount` |
 | Large skip offset pagination | Avoid offset pagination; use cursor on `(createdAt, _id)` per `docs/requirements.md` (`OD-005`) |
 | Working set memory | Monitor Atlas metrics; archive old `dailystatistics` beyond 2 years to cold storage (future) |
 
@@ -1213,7 +1215,8 @@ auditlogs ──► users (adminId)
 | `readAt` | `notifications` | User read timestamp |
 | `resolvedAt` | `reports` | Admin resolution time |
 | `lastLoginAt` | `users` | Auth tracking |
-| `lastActivityAt` | `moods` | Feed sort by engagement |
+| `lastActivityAt` | `moods` | Updated on comment/reaction activity |
+| `reactionCount` | `moods` | Feed sort by total reactions (`most_reacted`) |
 | `calculatedAt` | `emotionstatistics`, `dailystatistics` | Aggregation job freshness |
 | `date` | `dailystatistics` | UTC bucket key |
 
@@ -1573,7 +1576,7 @@ When `moods` exceeds single-shard capacity, shard key `{ facultyId: 1, createdAt
 | **Least privilege** | Atlas database user with readWrite on app DB only; no admin credentials in app |
 | **Connection pooling** | Mongoose default pool; tune per Railway instance count |
 | **Index monitoring** | Review slow query logs in Atlas; use `explain()` in staging |
-| **Denormalize deliberately** | `commentCount`, `reactionSummary` on `moods` — update atomically |
+| **Denormalize deliberately** | `commentCount`, `reactionSummary`, `reactionCount` on `moods` — update atomically |
 | **Idempotent jobs** | Statistics upserts use unique compound keys — safe to rerun |
 | **UTC everywhere** | All buckets and ranges in UTC (`BR-STAT-002`) |
 | **No binary in DB** | Images in R2 only (`INT-DB-003`) |

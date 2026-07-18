@@ -236,7 +236,8 @@ async function seedMockData(): Promise<void> {
     }
 
     if (Object.keys(reactionSummary).length > 0) {
-      await MoodModel.updateOne({ _id: mood._id }, { reactionSummary });
+      const reactionCount = Object.values(reactionSummary).reduce((sum, count) => sum + count, 0);
+      await MoodModel.updateOne({ _id: mood._id }, { reactionSummary, reactionCount });
     }
 
     if (randomInt(0, 100) < 42) {

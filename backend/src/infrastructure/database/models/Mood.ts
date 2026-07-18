@@ -15,6 +15,7 @@ const moodSchema = new Schema(
     },
     commentCount: { type: Number, required: true, default: 0, min: 0 },
     reactionSummary: { type: Schema.Types.Mixed, required: true, default: {} },
+    reactionCount: { type: Number, required: true, default: 0, min: 0 },
     imageCount: { type: Number, required: true, default: 0, min: 0 },
     primaryTagId: { type: Schema.Types.ObjectId, ref: "Tag", default: null },
     reportCount: { type: Number, required: true, default: 0, min: 0 },
@@ -36,6 +37,7 @@ moodSchema.index({ status: 1, majorId: 1, createdAt: -1 });
 moodSchema.index({ status: 1, groupId: 1, createdAt: -1 });
 moodSchema.index({ status: 1, primaryTagId: 1, createdAt: -1 });
 moodSchema.index({ status: 1, lastActivityAt: -1 });
+moodSchema.index({ status: 1, reactionCount: -1, createdAt: -1 });
 moodSchema.index({ authorId: 1, createdAt: -1 });
 moodSchema.index({ createdAt: -1, _id: -1 });
 moodSchema.index({ content: "text" });

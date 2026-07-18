@@ -35,7 +35,10 @@ async function adjustTargetSummary(
   if (targetType === "mood") {
     const updated = await MoodModel.findOneAndUpdate(
       { _id: targetId },
-      { $inc: { [key]: delta }, $set: { lastActivityAt: new Date() } },
+      {
+        $inc: { [key]: delta, reactionCount: delta },
+        $set: { lastActivityAt: new Date() },
+      },
       { new: true },
     ).lean();
     return (updated?.reactionSummary as Record<string, number>) ?? {};

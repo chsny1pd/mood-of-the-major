@@ -160,7 +160,7 @@ Combined filters use AND logic (`FR-SRCH-008`).
 |-------|--------|---------|
 | `sort` | `newest`, `oldest`, `most_reacted`, `most_commented` | `newest` |
 
-Maps to indexed fields: `createdAt`, `lastActivityAt`, `reactionSummary` totals.
+Maps to indexed fields: `createdAt` (`newest`), `reactionCount` (`most_reacted`), `commentCount` (`most_commented`).
 
 ### Searching
 
