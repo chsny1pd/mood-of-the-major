@@ -1,6 +1,16 @@
-import { Schema, model, type InferSchemaType, type Types } from "mongoose";
+import { Schema, model, type HydratedDocument, type Types } from "mongoose";
 
-const groupMemberSchema = new Schema(
+export type GroupMemberRole = "owner" | "member";
+
+/** Explicit doc type — InferSchemaType mis-infers Date index signatures when createdAt is renamed. */
+export interface GroupMemberAttrs {
+  groupId: Types.ObjectId;
+  userId: Types.ObjectId;
+  role: GroupMemberRole;
+  joinedAt: Date;
+}
+
+const groupMemberSchema = new Schema<GroupMemberAttrs>(
   {
     groupId: { type: Schema.Types.ObjectId, ref: "Group", required: true },
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
@@ -18,9 +28,6 @@ groupMemberSchema.index({ groupId: 1, userId: 1 }, { unique: true });
 groupMemberSchema.index({ userId: 1, joinedAt: -1 });
 groupMemberSchema.index({ groupId: 1, joinedAt: -1 });
 
-export type GroupMemberDocument = InferSchemaType<typeof groupMemberSchema> & {
-  groupId: Types.ObjectId;
-  userId: Types.ObjectId;
-};
+export type GroupMemberDocument = HydratedDocument<GroupMemberAttrs>;
 
-export const GroupMemberModel = model("GroupMember", groupMemberSchema);
+export const GroupMemberModel = model<GroupMemberAttrs>("GroupMember", groupMemberSchema);
