@@ -29,28 +29,23 @@ export function SettingsPage() {
   const { user, profileMeta, logout, refreshProfile } = useAuth();
   const { theme, setTheme } = useTheme();
 
-  const [realName, setRealName] = useState("");
-  const [displayName, setDisplayName] = useState("");
-  const [birthYear, setBirthYear] = useState("");
-  const [facultyId, setFacultyId] = useState("");
-  const [majorId, setMajorId] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  // `user` is guaranteed to be loaded by the time this page renders (RequireAuth
+  // blocks rendering until the profile fetch completes), so the form fields can be
+  // seeded once from it via lazy initializers instead of an effect + resync.
+  const [realName, setRealName] = useState(() => user?.realName ?? "");
+  const [displayName, setDisplayName] = useState(() => user?.displayName ?? profileMeta.displayName ?? "");
+  const [birthYear, setBirthYear] = useState(() => (user?.birthYear != null ? String(user.birthYear) : ""));
+  const [facultyId, setFacultyId] = useState(() => user?.facultyId ?? "");
+  const [majorId, setMajorId] = useState(() => user?.majorId ?? "");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(() => user?.avatarUrl ?? profileMeta.avatarUrl);
   const [faculties, setFaculties] = useState<FacultyOption[]>([]);
-  const [majors, setMajors] = useState<MajorOption[]>([]);
+  const [rawMajors, setMajors] = useState<MajorOption[]>([]);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!user) return;
-    setRealName(user.realName ?? "");
-    setDisplayName(user.displayName ?? profileMeta.displayName ?? "");
-    setBirthYear(user.birthYear != null ? String(user.birthYear) : "");
-    setFacultyId(user.facultyId ?? "");
-    setMajorId(user.majorId ?? "");
-    setAvatarUrl(user.avatarUrl ?? profileMeta.avatarUrl);
-  }, [user, profileMeta]);
+  const majors = facultyId ? rawMajors : [];
 
   useEffect(() => {
     void fetchFaculties()
@@ -60,12 +55,21 @@ export function SettingsPage() {
 
   useEffect(() => {
     if (!facultyId) {
-      setMajors([]);
       return;
     }
+
+    let active = true;
     void fetchMajors(facultyId)
-      .then(setMajors)
-      .catch(() => setMajors([]));
+      .then((data) => {
+        if (active) setMajors(data);
+      })
+      .catch(() => {
+        if (active) setMajors([]);
+      });
+
+    return () => {
+      active = false;
+    };
   }, [facultyId]);
 
   if (!user) {
