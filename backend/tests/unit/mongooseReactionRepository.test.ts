@@ -64,7 +64,10 @@ describe("MongooseReactionRepository.toggle", () => {
     expect(modelMocks.mood.findOneAndUpdate).toHaveBeenNthCalledWith(
       2,
       { _id: "m1" },
-      expect.objectContaining({ $inc: { "reactionSummary.🎉": -1 } }),
+      expect.objectContaining({
+        $inc: { "reactionSummary.🎉": -1, reactionCount: -1 },
+        $set: { lastActivityAt: expect.any(Date) },
+      }),
       { new: true },
     );
   });

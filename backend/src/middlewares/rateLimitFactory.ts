@@ -1,5 +1,9 @@
 import type { NextFunction, Request, Response } from "express";
-import rateLimit, { type Options, type RateLimitRequestHandler } from "express-rate-limit";
+import rateLimit, {
+  ipKeyGenerator,
+  type Options,
+  type RateLimitRequestHandler,
+} from "express-rate-limit";
 import type { Env } from "../config/env.js";
 import { DEFAULT_RATE_LIMITS } from "../domain/constants/rateLimits.js";
 import type { Logger } from "../infrastructure/logging/logger.js";
@@ -32,12 +36,16 @@ export function resolveRateLimitConfig(env: Env): RateLimitConfig {
   };
 }
 
-function ipKeyGenerator(req: Request): string {
-  return req.ip ?? "unknown";
+function clientIpKey(req: Request): string {
+  return ipKeyGenerator(req.ip ?? "unknown");
 }
 
 function userOrIpKeyGenerator(req: Request): string {
-  return req.userId ?? req.ip ?? "unknown";
+  if (req.userId) {
+    return req.userId;
+  }
+
+  return ipKeyGenerator(req.ip ?? "unknown");
 }
 
 function createRateLimiter(
@@ -89,7 +97,7 @@ export function createRateLimiters(env: Env, logger: Logger): AppRateLimiters {
   return {
     auth: createRateLimiter(
       logger,
-      { windowMs: config.auth.windowMs, max: config.auth.max, keyGenerator: ipKeyGenerator },
+      { windowMs: config.auth.windowMs, max: config.auth.max, keyGenerator: clientIpKey },
       "Too many authentication attempts. Please try again later.",
     ),
     post: createRateLimiter(
@@ -114,7 +122,7 @@ export function createRateLimiters(env: Env, logger: Logger): AppRateLimiters {
     ),
     general: createRateLimiter(
       logger,
-      { windowMs: config.general.windowMs, max: config.general.max, keyGenerator: ipKeyGenerator },
+      { windowMs: config.general.windowMs, max: config.general.max, keyGenerator: clientIpKey },
       "Too many requests. Please try again later.",
     ),
   };
