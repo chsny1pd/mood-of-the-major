@@ -276,7 +276,7 @@ Response headers: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Res
 | `guest` | Public read endpoints only (see per-endpoint) |
 | `student` | Create content, engage, bookmarks, reports |
 | `advisor` | Statistics read (TBD scope `OD-011`) |
-| `administrator` | Admin namespace, moderation, identity on audit |
+| `administrator` | Admin namespace, moderation, identity on audit; same content creation and engagement as `student`; may assign roles |
 
 ### CORS
 
@@ -833,7 +833,7 @@ All public mood responses use this shape — **no author identity**:
 | **Method** | `POST` |
 | **Endpoint** | `/api/v1/moods` |
 | **Authentication** | Yes |
-| **Authorization** | `student` |
+| **Authorization** | `student`, `administrator` |
 
 **Request Body:**
 
@@ -1135,7 +1135,7 @@ See [Pagination](#pagination). Applies to all list endpoints above.
 | **Method** | `POST` |
 | **Endpoint** | `/api/v1/images/upload-url` |
 | **Authentication** | Yes |
-| **Authorization** | `student` |
+| **Authorization** | `student`, `administrator` |
 
 **Request Body:**
 
@@ -1317,7 +1317,7 @@ Validation occurs within **Generate Presigned Upload URL** (pre-upload) and **Co
 | **Method** | `POST` |
 | **Endpoint** | `/api/v1/moods/:moodId/comments` |
 | **Authentication** | Yes |
-| **Authorization** | `student` |
+| **Authorization** | `student`, `administrator` |
 
 **Request Body:**
 
@@ -1421,7 +1421,7 @@ Cursor pagination on `GET /moods/:moodId/comments` per global strategy.
 | **Method** | `PUT` |
 | **Endpoint** | `/api/v1/reactions` |
 | **Authentication** | Yes |
-| **Authorization** | `student` |
+| **Authorization** | `student`, `administrator` |
 
 **Request Body:**
 
@@ -1467,7 +1467,7 @@ Cursor pagination on `GET /moods/:moodId/comments` per global strategy.
 | **Method** | `DELETE` |
 | **Endpoint** | `/api/v1/reactions` |
 | **Authentication** | Yes |
-| **Authorization** | `student` |
+| **Authorization** | `student`, `administrator` |
 
 **Request Body:**
 
@@ -1526,7 +1526,7 @@ Cursor pagination on `GET /moods/:moodId/comments` per global strategy.
 | **Method** | `POST` |
 | **Endpoint** | `/api/v1/bookmarks` |
 | **Authentication** | Yes |
-| **Authorization** | `student` |
+| **Authorization** | `student`, `administrator` |
 
 **Request Body:**
 
@@ -2136,6 +2136,29 @@ All admin routes require `Authorization: Bearer` with `role: administrator` (`BR
 
 ---
 
+### Manage Users — Change Role
+
+| | |
+|---|---|
+| **Method** | `PATCH` |
+| **Endpoint** | `/api/v1/admin/users/:userId/role` |
+| **Authentication** | Yes |
+| **Authorization** | `administrator` |
+
+**Request Body:** `{ "role": "student" | "administrator" | "advisor" }`
+
+**Success Response:** `200` — `{ "id", "role" }`
+
+**Business Rules:**
+- Cannot change your own role (`CANNOT_CHANGE_OWN_ROLE`)
+- Cannot demote the last administrator (`LAST_ADMIN_PROTECTED`)
+- Writes `auditlogs` with action `user.role_change`
+- Role is re-read from the database on each authenticated request
+
+**Related Collections:** `users`, `auditlogs`
+
+---
+
 ### Manage Reports
 
 See [List Reports (Admin)](#list-reports-admin) and [Resolve Report](#resolve-report).
@@ -2373,6 +2396,9 @@ Includes `reporterId` (admin only), full content snapshot, target metadata.
 | `INVALID_MIME_TYPE` | 422 | Image type not allowed |
 | `UPLOAD_NOT_FOUND_IN_R2` | 422 | Confirm failed |
 | `ACCOUNT_SUSPENDED` | 403 | User suspended |
+| `ADMIN_PROTECTED` | 409 | Cannot suspend administrators |
+| `CANNOT_CHANGE_OWN_ROLE` | 409 | Admin cannot change own role |
+| `LAST_ADMIN_PROTECTED` | 409 | Cannot demote the last administrator |
 | `RATE_LIMIT_EXCEEDED` | 429 | Too many requests |
 | `INTERNAL_ERROR` | 500 | Server error |
 

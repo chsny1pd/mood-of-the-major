@@ -12,6 +12,7 @@ import {
   resolveReportSchema,
   updateTagSchema,
   updateUserStatusSchema,
+  updateUserRoleSchema,
 } from "../validators/adminSchemas.js";
 import { pendingListQuerySchema, updatePendingSubmissionSchema } from "../validators/submissionSchemas.js";
 
@@ -64,6 +65,12 @@ export function createAdminRoutes(deps: Dependencies): Router {
     ...adminOnly,
     validate(updateUserStatusSchema),
     adminController.updateUserStatus,
+  );
+  router.patch(
+    "/users/:userId/role",
+    ...adminOnly,
+    validate(updateUserRoleSchema),
+    adminController.updateUserRole,
   );
 
   router.get(

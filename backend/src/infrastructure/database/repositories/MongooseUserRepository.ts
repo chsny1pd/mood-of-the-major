@@ -1,4 +1,10 @@
-import type { CreateUserInput, UpdateUserProfileInput, User, UserStatus } from "../../../domain/entities/User.js";
+import type {
+  CreateUserInput,
+  UpdateUserProfileInput,
+  User,
+  UserRole,
+  UserStatus,
+} from "../../../domain/entities/User.js";
 import type { AdminUserListQuery, IUserRepository } from "../../../domain/ports/IUserRepository.js";
 import { UserModel } from "../models/User.js";
 import { escapeRegex } from "../../../utils/escapeRegex.js";
@@ -160,6 +166,16 @@ export class MongooseUserRepository implements IUserRepository {
     return doc ? mapUser(doc) : null;
   }
 
+  async updateRole(id: string, role: UserRole): Promise<User | null> {
+    const doc = await UserModel.findOneAndUpdate(
+      { _id: id, deletedAt: null },
+      { role },
+      { returnDocument: "after" },
+    ).lean();
+
+    return doc ? mapUser(doc) : null;
+  }
+
   async updateProfile(id: string, input: UpdateUserProfileInput): Promise<User | null> {
     const $set: Record<string, unknown> = {};
 
@@ -193,5 +209,9 @@ export class MongooseUserRepository implements IUserRepository {
 
   async countAll(): Promise<number> {
     return UserModel.countDocuments({ deletedAt: null });
+  }
+
+  async countByRole(role: UserRole): Promise<number> {
+    return UserModel.countDocuments({ deletedAt: null, role });
   }
 }

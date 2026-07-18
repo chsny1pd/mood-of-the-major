@@ -74,7 +74,7 @@ export function FeedPage() {
       />
       <div className="relative mb-8 flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-semibold text-stone-900 dark:text-stone-100">
+          <h1 className={themeClasses.pageTitle}>
             {t("feed.title")}
           </h1>
           <p className="mt-2 text-stone-600 dark:text-stone-300">{t("feed.description")}</p>

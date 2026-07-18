@@ -1,7 +1,8 @@
-import { Suspense, lazy, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ROUTES } from "../constants/routes";
+import { ensureDisplayFont } from "../lib/displayFont";
 import { useAuth } from "../hooks/useAuth";
 import { Button } from "./ui/Button";
 
@@ -74,6 +75,10 @@ export function AppNavbar({ variant = "app" }: AppNavbarProps) {
   const { user, isAuthenticated } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  useEffect(() => {
+    ensureDisplayFont();
+  }, []);
+
   const visibleItems = [
     ...primaryNavItems,
     ...authenticatedNavItems.filter((item) => {
@@ -101,7 +106,7 @@ export function AppNavbar({ variant = "app" }: AppNavbarProps) {
         <div className="flex min-w-0 flex-1 items-center gap-4">
           <Link
             to={isAuthenticated ? ROUTES.dashboard : ROUTES.home}
-            className="shrink-0 text-lg font-semibold tracking-tight text-orange-700 dark:text-orange-300"
+            className="font-display shrink-0 text-lg font-semibold tracking-tight text-orange-700 dark:text-orange-300"
           >
             {t("app.name")}
           </Link>

@@ -9,6 +9,7 @@ import { ScopeSelector, type ScopeSelection } from "../features/statistics/compo
 import { TimeSeriesChart } from "../features/statistics/components/TimeSeriesChart";
 import { fetchStatisticsDashboard } from "../services/statisticsService";
 import { getApiErrorMessage } from "../services/apiClient";
+import { themeClasses } from "../lib/themeClasses";
 
 export function StatisticsPage() {
   const { t } = useTranslation();
@@ -35,7 +36,7 @@ export function StatisticsPage() {
 
   return (
     <section className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
-      <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-100">{t("statistics.pageTitle")}</h1>
+      <h1 className={themeClasses.pageTitle}>{t("statistics.pageTitle")}</h1>
       <p className="mt-1 text-sm text-stone-600">{t("statistics.description")}</p>
 
       <div className="mt-6 space-y-4">

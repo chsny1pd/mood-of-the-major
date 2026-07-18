@@ -6,7 +6,7 @@ import {
 } from "../../domain/constants/adminConstants.js";
 import type { ReportStatus } from "../../domain/entities/Report.js";
 import type { ReactionTargetType } from "../../domain/entities/Reaction.js";
-import type { UserStatus } from "../../domain/entities/User.js";
+import type { UserRole, UserStatus } from "../../domain/entities/User.js";
 import {
   ConflictError,
   NotFoundError,
@@ -448,6 +448,56 @@ export class AdminService {
     return {
       id: updated.id,
       status: updated.status,
+    };
+  }
+
+  async updateUserRole(
+    adminId: string,
+    userId: string,
+    input: { role: UserRole },
+    ipAddress?: string | null,
+  ) {
+    if (adminId === userId) {
+      throw new ConflictError("Cannot change your own role", "CANNOT_CHANGE_OWN_ROLE");
+    }
+
+    const user = await this.users.findById(userId);
+    if (!user) {
+      throw new NotFoundError("User not found", "RESOURCE_NOT_FOUND");
+    }
+
+    if (user.role === input.role) {
+      return {
+        id: user.id,
+        role: user.role,
+      };
+    }
+
+    if (user.role === "administrator" && input.role !== "administrator") {
+      const adminCount = await this.users.countByRole("administrator");
+      if (adminCount <= 1) {
+        throw new ConflictError("Cannot demote the last administrator", "LAST_ADMIN_PROTECTED");
+      }
+    }
+
+    const updated = await this.users.updateRole(userId, input.role);
+    if (!updated) {
+      throw new NotFoundError("User not found", "RESOURCE_NOT_FOUND");
+    }
+
+    await this.auditLogs.append({
+      adminId,
+      action: "user.role_change",
+      targetType: "user",
+      targetId: userId,
+      identityAccessed: true,
+      metadata: { priorRole: user.role, newRole: input.role },
+      ipAddress,
+    });
+
+    return {
+      id: updated.id,
+      role: updated.role,
     };
   }
 

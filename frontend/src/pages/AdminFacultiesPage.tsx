@@ -37,7 +37,7 @@ export function AdminFacultiesPage() {
     <section>
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className={`text-2xl font-bold ${themeClasses.heading}`}>{t("admin.facultiesTitle")}</h1>
+          <h1 className={themeClasses.pageTitle}>{t("admin.facultiesTitle")}</h1>
           <p className={`mt-1 text-sm ${themeClasses.body}`}>{t("admin.facultiesDescription")}</p>
         </div>
         <button

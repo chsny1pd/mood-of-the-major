@@ -34,11 +34,14 @@ export function DropdownMenu({
   triggerTestId,
 }: DropdownMenuProps) {
   const [open, setOpen] = useState(false);
-  const [menuStyle, setMenuStyle] = useState<CSSProperties>({});
+  const [menuStyle, setMenuStyle] = useState<CSSProperties | null>(null);
   const menuId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-  const close = useCallback(() => setOpen(false), []);
+  const close = useCallback(() => {
+    setOpen(false);
+    setMenuStyle(null);
+  }, []);
 
   const updatePosition = useCallback(() => {
     const triggerEl = containerRef.current;
@@ -47,18 +50,52 @@ export function DropdownMenu({
     }
 
     const rect = triggerEl.getBoundingClientRect();
-    const width = Math.max(menuRef.current?.offsetWidth ?? 192, 192);
-    const left =
-      align === "end"
-        ? Math.min(rect.right - width, window.innerWidth - width - 8)
-        : Math.max(8, rect.left);
+    // Ignore zero-size triggers (not laid out yet / detached) so we don't pin to (8,0).
+    if (rect.width === 0 && rect.height === 0) {
+      return;
+    }
 
-    setMenuStyle({
+    const menuWidth = Math.max(menuRef.current?.offsetWidth ?? 0, 192);
+    const menuHeight = menuRef.current?.offsetHeight ?? 0;
+    const gap = 8;
+    const viewportPadding = 8;
+
+    let top = rect.bottom + gap;
+    if (menuHeight > 0 && top + menuHeight > window.innerHeight - viewportPadding) {
+      const above = rect.top - gap - menuHeight;
+      if (above >= viewportPadding) {
+        top = above;
+      }
+    }
+
+    const nextStyle: CSSProperties = {
       position: "fixed",
-      top: rect.bottom + 8,
-      left: Math.max(8, left),
+      top,
       zIndex: 1000,
-    });
+      minWidth: "12rem",
+    };
+
+    if (align === "end") {
+      // Anchor to the trigger's right edge — avoids left:8 when width math goes wrong.
+      const right = Math.max(viewportPadding, window.innerWidth - rect.right);
+      const overflowsLeft = rect.right - menuWidth < viewportPadding;
+      if (overflowsLeft) {
+        nextStyle.left = viewportPadding;
+        nextStyle.right = "auto";
+      } else {
+        nextStyle.right = right;
+        nextStyle.left = "auto";
+      }
+    } else {
+      const left = Math.min(
+        Math.max(viewportPadding, rect.left),
+        window.innerWidth - menuWidth - viewportPadding,
+      );
+      nextStyle.left = left;
+      nextStyle.right = "auto";
+    }
+
+    setMenuStyle(nextStyle);
   }, [align]);
 
   useLayoutEffect(() => {
@@ -66,6 +103,9 @@ export function DropdownMenu({
       return;
     }
     updatePosition();
+    // Remeasure after the menu paints at full width (first pass may use the 192 fallback).
+    const frame = requestAnimationFrame(() => updatePosition());
+    return () => cancelAnimationFrame(frame);
   }, [open, updatePosition, children]);
 
   useEffect(() => {
@@ -103,7 +143,7 @@ export function DropdownMenu({
 
   return (
     <DropdownMenuContext.Provider value={{ close }}>
-      <div ref={containerRef} className="relative">
+      <div ref={containerRef} className="relative inline-flex">
         <button
           type="button"
           aria-haspopup="menu"
@@ -111,7 +151,14 @@ export function DropdownMenu({
           aria-controls={menuId}
           aria-label={label}
           data-testid={triggerTestId}
-          onClick={() => setOpen((value) => !value)}
+          onClick={() =>
+            setOpen((value) => {
+              if (value) {
+                setMenuStyle(null);
+              }
+              return !value;
+            })
+          }
           className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-600"
         >
           {trigger}
@@ -123,7 +170,7 @@ export function DropdownMenu({
                 ref={menuRef}
                 id={menuId}
                 role="menu"
-                style={menuStyle}
+                style={menuStyle ?? { position: "fixed", top: 0, left: 0, visibility: "hidden" }}
                 className="min-w-[12rem] overflow-hidden rounded-xl border border-stone-200 bg-white py-1 shadow-lg dark:border-stone-700 dark:bg-stone-900"
               >
                 {children}

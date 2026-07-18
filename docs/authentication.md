@@ -68,16 +68,16 @@ The platform enforces **role-based access control (RBAC)** (`FR-AUTH-006`). Role
 | **Restrictions** | Cannot access `/api/v1/admin/*`; cannot view other users' identity on public content |
 | **Content creation** | Requires `status: active` on user account (`BR-AUTH-001`) |
 
-Students are the only role that may **create** mood posts (`FR-POST-001`). Administrators engage with content for moderation but do not publish anonymous student posts.
+Students and administrators may create mood posts and engage with content. Advisor remains a statistics-oriented role.
 
 ### Administrator
 
 | Attribute | Detail |
 |-----------|--------|
-| **Assignment** | Set manually in database or seed script — not self-selectable at registration |
+| **Assignment** | Set manually in database, seed script, or by another administrator via role management — not self-selectable at registration |
 | **Database value** | `administrator` |
 | **Primary persona** | Dr. Chen — student affairs administrator (`DESIGN.md`) |
-| **Capabilities** | All student read capabilities plus admin namespace: moderation, report resolution, user management, tag management, audit logs |
+| **Capabilities** | All student content and engagement capabilities, plus admin namespace: moderation, report resolution, user management (status + role), tag management, audit logs |
 | **Identity access** | May view `authorId` and `email` on admin mood endpoints; every such access writes `auditlogs` with `identityAccessed: true` |
 | **UI surface** | Separate admin shell (`DESIGN.md` Admin Layout) |
 
@@ -369,9 +369,9 @@ A route is **protected** when it requires a valid access JWT. The `authenticate`
 
 | Pattern | Usage |
 |---------|-------|
-| `authorize('student')` | Content creation endpoints |
+| `authorize('student', 'administrator')` | Content creation and engagement endpoints |
 | `authorize('administrator')` | All `/admin/*` routes |
-| `authorize('student', 'administrator')` | Report submission (any authenticated user) |
+| `authorize('student', 'advisor', 'administrator')` | Report submission |
 | `authorize('student', 'advisor', 'administrator')` | Statistics read (per `OD-009`) |
 | No `authorize` after `authenticate` | Any authenticated role permitted |
 
@@ -492,20 +492,20 @@ Valid access JWT required. Default role: any authenticated active user.
 | `PATCH` | `/api/v1/auth/me` | Self |
 | `POST` | `/api/v1/auth/change-password` | Self |
 | `DELETE` | `/api/v1/auth/me` | Self |
-| `POST` | `/api/v1/moods` | `student` |
+| `POST` | `/api/v1/moods` | `student`, `administrator` |
 | `PATCH` | `/api/v1/moods/:moodId` | Owner or admin |
 | `DELETE` | `/api/v1/moods/:moodId` | Owner or admin |
 | `GET` | `/api/v1/moods/search` | Authenticated (`api.md`) |
-| `POST` | `/api/v1/images/upload-url` | `student` |
+| `POST` | `/api/v1/images/upload-url` | `student`, `administrator` |
 | `POST` | `/api/v1/images/:imageId/confirm` | Uploader |
 | `DELETE` | `/api/v1/images/:imageId` | Uploader or admin |
 | `GET` | `/api/v1/images/:imageId/url` | Authorized viewer |
-| `POST` | `/api/v1/moods/:moodId/comments` | `student` |
+| `POST` | `/api/v1/moods/:moodId/comments` | `student`, `administrator` |
 | `PATCH` | `/api/v1/comments/:commentId` | Owner |
 | `DELETE` | `/api/v1/comments/:commentId` | Owner or admin |
-| `PUT` | `/api/v1/reactions` | `student` |
-| `DELETE` | `/api/v1/reactions` | `student` |
-| `POST` | `/api/v1/bookmarks` | `student` |
+| `PUT` | `/api/v1/reactions` | `student`, `administrator` |
+| `DELETE` | `/api/v1/reactions` | `student`, `administrator` |
+| `POST` | `/api/v1/bookmarks` | `student`, `administrator` |
 | `DELETE` | `/api/v1/bookmarks/:moodId` | Owner |
 | `GET` | `/api/v1/bookmarks` | Self |
 | `GET` | `/api/v1/notifications` | Self |
@@ -528,6 +528,7 @@ Valid access JWT with `role: administrator` required. All paths under `/api/v1/a
 | `GET` | `/api/v1/admin/users` |
 | `GET` | `/api/v1/admin/users/:userId` |
 | `PATCH` | `/api/v1/admin/users/:userId/status` |
+| `PATCH` | `/api/v1/admin/users/:userId/role` |
 | `GET` | `/api/v1/admin/reports` |
 | `GET` | `/api/v1/admin/reports/:reportId` |
 | `POST` | `/api/v1/admin/reports/:reportId/resolve` |

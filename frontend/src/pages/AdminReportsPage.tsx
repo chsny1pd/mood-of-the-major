@@ -101,7 +101,7 @@ export function AdminReportsPage() {
 
   return (
     <section>
-      <h1 className={`text-2xl font-bold ${themeClasses.heading}`}>{t("admin.reportQueueTitle")}</h1>
+      <h1 className={themeClasses.pageTitle}>{t("admin.reportQueueTitle")}</h1>
       <p className={`mt-1 text-sm ${themeClasses.body}`}>{t("admin.pendingReports", { count: pendingCount })}</p>
 
       {actionError ? <p className={`mt-4 ${themeClasses.errorBox}`}>{actionError}</p> : null}

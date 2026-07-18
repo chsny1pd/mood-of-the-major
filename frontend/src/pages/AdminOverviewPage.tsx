@@ -30,7 +30,7 @@ export function AdminOverviewPage() {
 
   return (
     <section>
-      <h1 className={`text-2xl font-bold ${themeClasses.heading}`}>{t("admin.overviewTitle")}</h1>
+      <h1 className={themeClasses.pageTitle}>{t("admin.overviewTitle")}</h1>
       <p className={`mt-1 text-sm ${themeClasses.body}`}>{t("admin.overviewDescription")}</p>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

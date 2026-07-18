@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "../components/ui/Card";
+import { themeClasses } from "../lib/themeClasses";
 
 export function HowToUsePage() {
   const { t } = useTranslation();
@@ -19,7 +20,7 @@ export function HowToUsePage() {
 
   return (
     <section className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-      <h1 className="text-3xl font-semibold text-stone-900 dark:text-stone-100">
+      <h1 className={themeClasses.pageTitle}>
         {t("howToUse.title")}
       </h1>
 

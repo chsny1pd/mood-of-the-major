@@ -92,7 +92,7 @@ export function AdminPendingPage() {
 
   return (
     <section>
-      <h1 className={`text-2xl font-bold ${themeClasses.heading}`}>{t("admin.pendingTitle")}</h1>
+      <h1 className={themeClasses.pageTitle}>{t("admin.pendingTitle")}</h1>
       <p className={`mt-1 text-sm ${themeClasses.body}`}>
         {t("admin.pendingDescription", { count: pendingCount })}
       </p>

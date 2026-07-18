@@ -30,7 +30,7 @@ export function AdminAuditLogPage() {
 
   return (
     <section>
-      <h1 className={`text-2xl font-bold ${themeClasses.heading}`}>{t("admin.auditTitle")}</h1>
+      <h1 className={themeClasses.pageTitle}>{t("admin.auditTitle")}</h1>
       <p className={`mt-1 text-sm ${themeClasses.body}`}>{t("admin.auditDescription")}</p>
 
       {logs.length === 0 ? (

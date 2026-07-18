@@ -30,6 +30,10 @@ export const updateUserStatusSchema = z.object({
   reason: z.string().max(500).optional(),
 });
 
+export const updateUserRoleSchema = z.object({
+  role: z.enum(["student", "administrator", "advisor"]),
+});
+
 export const adminContentListSchema = cursorQuery.extend({
   status: z
     .enum(["active", "hidden", "moderated_removed", "deleted_by_author"])

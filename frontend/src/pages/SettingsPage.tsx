@@ -138,7 +138,7 @@ export function SettingsPage() {
 
   return (
     <section className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
-      <h1 className="mb-8 font-display text-3xl font-semibold text-stone-900 dark:text-stone-100">
+      <h1 className={`mb-8 ${themeClasses.pageTitle}`}>
         {t("settings.title")}
       </h1>
 

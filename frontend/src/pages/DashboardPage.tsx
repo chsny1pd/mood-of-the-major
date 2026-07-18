@@ -72,7 +72,7 @@ export function DashboardPage() {
         className="pointer-events-none absolute -left-10 top-0 h-36 w-36 rounded-full bg-orange-400/15 blur-3xl dark:bg-orange-500/10"
       />
       <div className="relative">
-        <h1 className="font-display text-3xl font-semibold text-stone-900 dark:text-stone-100">
+        <h1 className={themeClasses.pageTitle}>
           {t("dashboard.pageTitle")}
         </h1>
         <p className={`mt-1 text-sm ${themeClasses.body}`}>{t("dashboard.description")}</p>

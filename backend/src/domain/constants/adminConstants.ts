@@ -5,6 +5,7 @@ export const AUDIT_ACTIONS = [
   "report.resolve",
   "user.suspend",
   "user.reinstate",
+  "user.role_change",
   "tag.create",
   "tag.update",
 ] as const;

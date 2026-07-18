@@ -14,7 +14,7 @@ export function SearchPage() {
 
   return (
     <section className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
-      <h1 className={`text-2xl font-bold ${themeClasses.heading}`}>{t("search.pageTitle")}</h1>
+      <h1 className={themeClasses.pageTitle}>{t("search.pageTitle")}</h1>
       <p className={`mt-1 text-sm ${themeClasses.body}`}>{t("search.description")}</p>
 
       <div className="mt-6">

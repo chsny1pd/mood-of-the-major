@@ -45,6 +45,8 @@ export interface AdminUserItem {
   lastLoginAt: string | null;
 }
 
+export type AdminUserRole = "student" | "administrator" | "advisor";
+
 export interface AuditLogItem {
   id: string;
   adminId: string;
@@ -117,6 +119,14 @@ export async function updateUserStatus(
 ) {
   const response = await apiClient.patch<{ success: true; data: { id: string; status: string } }>(
     `/admin/users/${userId}/status`,
+    body,
+  );
+  return response.data.data;
+}
+
+export async function updateUserRole(userId: string, body: { role: AdminUserRole }) {
+  const response = await apiClient.patch<{ success: true; data: { id: string; role: string } }>(
+    `/admin/users/${userId}/role`,
     body,
   );
   return response.data.data;

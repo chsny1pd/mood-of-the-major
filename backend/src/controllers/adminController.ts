@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import type { AdminService } from "../application/services/AdminService.js";
-import type { UserStatus } from "../domain/entities/User.js";
+import type { UserRole, UserStatus } from "../domain/entities/User.js";
 import { AuthenticationError } from "../domain/errors/AppError.js";
 import type { ResolveReportInput } from "../domain/ports/IReportRepository.js";
 import { pendingListQuerySchema, submissionTypeParamSchema, updatePendingSubmissionSchema } from "../validators/submissionSchemas.js";
@@ -113,6 +113,16 @@ export function createAdminController(adminService: AdminService) {
         requireAdminId(req),
         String(req.params.userId),
         req.body as { status: UserStatus; reason?: string },
+        clientIp(req),
+      );
+      res.status(200).json({ success: true, data });
+    }),
+
+    updateUserRole: asyncHandler(async (req, res: Response) => {
+      const data = await adminService.updateUserRole(
+        requireAdminId(req),
+        String(req.params.userId),
+        req.body as { role: UserRole },
         clientIp(req),
       );
       res.status(200).json({ success: true, data });

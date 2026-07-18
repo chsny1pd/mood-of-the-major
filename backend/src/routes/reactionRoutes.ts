@@ -15,7 +15,7 @@ export function createReactionRoutes(deps: Dependencies): Router {
   router.put(
     "/",
     authenticate,
-    authorize("student"),
+    authorize("student", "administrator"),
     validate(upsertReactionSchema),
     reactionController.upsert,
   );
@@ -23,7 +23,7 @@ export function createReactionRoutes(deps: Dependencies): Router {
   router.delete(
     "/",
     authenticate,
-    authorize("student"),
+    authorize("student", "administrator"),
     validate(removeReactionSchema),
     reactionController.remove,
   );

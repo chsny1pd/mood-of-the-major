@@ -14,7 +14,7 @@ export function createBookmarkRoutes(deps: Dependencies): Router {
   router.get(
     "/",
     authenticate,
-    authorize("student"),
+    authorize("student", "administrator"),
     validate(bookmarkListQuerySchema, "query"),
     bookmarkController.list,
   );
@@ -22,7 +22,7 @@ export function createBookmarkRoutes(deps: Dependencies): Router {
   router.post(
     "/",
     authenticate,
-    authorize("student"),
+    authorize("student", "administrator"),
     validate(createBookmarkSchema),
     bookmarkController.create,
   );
@@ -30,14 +30,14 @@ export function createBookmarkRoutes(deps: Dependencies): Router {
   router.get(
     "/status/:moodId",
     authenticate,
-    authorize("student"),
+    authorize("student", "administrator"),
     bookmarkController.getStatus,
   );
 
   router.delete(
     "/:moodId",
     authenticate,
-    authorize("student"),
+    authorize("student", "administrator"),
     bookmarkController.remove,
   );
 

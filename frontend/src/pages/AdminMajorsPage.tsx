@@ -37,7 +37,7 @@ export function AdminMajorsPage() {
     <section>
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className={`text-2xl font-bold ${themeClasses.heading}`}>{t("admin.majorsTitle")}</h1>
+          <h1 className={themeClasses.pageTitle}>{t("admin.majorsTitle")}</h1>
           <p className={`mt-1 text-sm ${themeClasses.body}`}>{t("admin.majorsDescription")}</p>
         </div>
         <button

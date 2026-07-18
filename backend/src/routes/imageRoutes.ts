@@ -12,7 +12,7 @@ export function createImageRoutes(deps: Dependencies): Router {
   router.post(
     "/upload-url",
     authenticate,
-    authorize("student"),
+    authorize("student", "administrator"),
     rateLimiters.imageUpload,
     validate(presignUploadSchema),
     imageController.requestUploadUrl,
@@ -22,7 +22,7 @@ export function createImageRoutes(deps: Dependencies): Router {
     router.put(
       "/:imageId/data",
       authenticate,
-      authorize("student"),
+      authorize("student", "administrator"),
       express.raw({
         type: ["image/jpeg", "image/png", "image/webp"],
         limit: MAX_IMAGE_SIZE_BYTES,
@@ -31,7 +31,7 @@ export function createImageRoutes(deps: Dependencies): Router {
     );
   }
 
-  router.post("/:imageId/confirm", authenticate, authorize("student"), imageController.confirmUpload);
+  router.post("/:imageId/confirm", authenticate, authorize("student", "administrator"), imageController.confirmUpload);
   router.get("/:imageId/url", authenticate, imageController.getSignedUrl);
   router.delete("/:imageId", authenticate, authorize("student", "administrator"), imageController.deleteImage);
 

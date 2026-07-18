@@ -30,7 +30,7 @@ export function AdminPostsPage() {
 
   return (
     <section>
-      <h1 className={`text-2xl font-bold ${themeClasses.heading}`}>{t("admin.postsTitle")}</h1>
+      <h1 className={themeClasses.pageTitle}>{t("admin.postsTitle")}</h1>
       <p className={`mt-1 text-sm ${themeClasses.body}`}>{t("admin.postsDescription")}</p>
 
       {posts.length === 0 ? (

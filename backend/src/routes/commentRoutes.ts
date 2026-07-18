@@ -21,7 +21,7 @@ export function createCommentRoutes(deps: Dependencies): Router {
   router.post(
     "/moods/:moodId/comments",
     authenticate,
-    authorize("student"),
+    authorize("student", "administrator"),
     rateLimiters.comment,
     validate(createCommentSchema),
     commentController.create,

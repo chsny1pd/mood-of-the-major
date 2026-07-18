@@ -3,12 +3,22 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { EmptyState } from "../components/EmptyState";
 import { queryKeys } from "../constants/queryKeys";
-import { fetchAdminUsers, updateUserStatus, type AdminUserItem } from "../services/adminService";
+import { useAuth } from "../hooks/useAuth";
+import {
+  fetchAdminUsers,
+  updateUserRole,
+  updateUserStatus,
+  type AdminUserItem,
+  type AdminUserRole,
+} from "../services/adminService";
 import { getApiErrorMessage } from "../services/apiClient";
 import { themeClasses } from "../lib/themeClasses";
 
+const ROLE_OPTIONS: AdminUserRole[] = ["student", "administrator", "advisor"];
+
 export function AdminUsersPage() {
   const { t } = useTranslation();
+  const { user: currentUser } = useAuth();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
 
@@ -25,9 +35,25 @@ export function AdminUsersPage() {
     },
   });
 
+  const roleMutation = useMutation({
+    mutationFn: ({ userId, role }: { userId: string; role: AdminUserRole }) =>
+      updateUserRole(userId, { role }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: queryKeys.adminUsers() });
+    },
+  });
+
+  const actionError =
+    statusMutation.isError || roleMutation.isError
+      ? getApiErrorMessage(
+          statusMutation.error ?? roleMutation.error,
+          t("admin.userUpdateError"),
+        )
+      : null;
+
   return (
     <section>
-      <h1 className={`text-2xl font-bold ${themeClasses.heading}`}>{t("admin.usersTitle")}</h1>
+      <h1 className={themeClasses.pageTitle}>{t("admin.usersTitle")}</h1>
       <p className={`mt-1 text-sm ${themeClasses.body}`}>{t("admin.usersDescription")}</p>
 
       <label className={`mt-6 block max-w-md text-sm ${themeClasses.label}`}>
@@ -40,6 +66,8 @@ export function AdminUsersPage() {
           placeholder={t("admin.searchPlaceholder")}
         />
       </label>
+
+      {actionError ? <p className="mt-4 text-sm text-red-600 dark:text-red-400">{actionError}</p> : null}
 
       {usersQuery.isLoading ? (
         <p className={`mt-6 ${themeClasses.muted}`}>{t("admin.loadingUsers")}</p>
@@ -66,8 +94,13 @@ export function AdminUsersPage() {
                 <UserRow
                   key={user.id}
                   user={user}
-                  isUpdating={statusMutation.isPending && statusMutation.variables?.userId === user.id}
+                  isSelf={currentUser?.id === user.id}
+                  isUpdatingStatus={
+                    statusMutation.isPending && statusMutation.variables?.userId === user.id
+                  }
+                  isUpdatingRole={roleMutation.isPending && roleMutation.variables?.userId === user.id}
                   onToggleStatus={(status) => statusMutation.mutate({ userId: user.id, status })}
+                  onChangeRole={(role) => roleMutation.mutate({ userId: user.id, role })}
                 />
               ))}
             </tbody>
@@ -80,20 +113,52 @@ export function AdminUsersPage() {
 
 function UserRow({
   user,
-  isUpdating,
+  isSelf,
+  isUpdatingStatus,
+  isUpdatingRole,
   onToggleStatus,
+  onChangeRole,
 }: {
   user: AdminUserItem;
-  isUpdating: boolean;
+  isSelf: boolean;
+  isUpdatingStatus: boolean;
+  isUpdatingRole: boolean;
   onToggleStatus: (status: "active" | "suspended") => void;
+  onChangeRole: (role: AdminUserRole) => void;
 }) {
   const { t } = useTranslation();
   const isAdmin = user.role === "administrator";
+  const roleValue = ROLE_OPTIONS.includes(user.role as AdminUserRole)
+    ? (user.role as AdminUserRole)
+    : "student";
 
   return (
     <tr className={`border-b ${themeClasses.border} last:border-0 ${themeClasses.hoverRow}`}>
-      <td className={`px-4 py-3 ${themeClasses.subheading}`}>{user.email}</td>
-      <td className={`px-4 py-3 capitalize ${themeClasses.body}`}>{user.role}</td>
+      <td className={`px-4 py-3 ${themeClasses.subheading}`}>
+        {user.email}
+        {isSelf ? (
+          <span className={`ml-2 text-xs ${themeClasses.faint}`}>({t("admin.you")})</span>
+        ) : null}
+      </td>
+      <td className="px-4 py-3">
+        {isSelf ? (
+          <span className={`capitalize ${themeClasses.body}`}>{user.role}</span>
+        ) : (
+          <select
+            value={roleValue}
+            disabled={isUpdatingRole}
+            onChange={(event) => onChangeRole(event.target.value as AdminUserRole)}
+            aria-label={t("admin.changeRole")}
+            className={`${themeClasses.input} max-w-[11rem] py-1.5 text-sm capitalize`}
+          >
+            {ROLE_OPTIONS.map((role) => (
+              <option key={role} value={role}>
+                {t(`admin.roles.${role}`)}
+              </option>
+            ))}
+          </select>
+        )}
+      </td>
       <td className={`px-4 py-3 capitalize ${themeClasses.body}`}>{user.status}</td>
       <td className="px-4 py-3">
         {isAdmin ? (
@@ -101,7 +166,7 @@ function UserRow({
         ) : user.status === "active" ? (
           <button
             type="button"
-            disabled={isUpdating}
+            disabled={isUpdatingStatus}
             onClick={() => onToggleStatus("suspended")}
             className="text-red-700 hover:underline disabled:opacity-50 dark:text-red-400"
           >
@@ -110,7 +175,7 @@ function UserRow({
         ) : (
           <button
             type="button"
-            disabled={isUpdating}
+            disabled={isUpdatingStatus}
             onClick={() => onToggleStatus("active")}
             className="text-orange-700 hover:underline disabled:opacity-50 dark:text-orange-400"
           >

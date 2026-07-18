@@ -7,6 +7,7 @@ import { MoodCardSkeleton } from "../components/Skeleton";
 import { queryKeys } from "../constants/queryKeys";
 import { ROUTES } from "../constants/routes";
 import { fetchBookmarks } from "../services/bookmarkService";
+import { themeClasses } from "../lib/themeClasses";
 
 export function BookmarksPage() {
   const { t } = useTranslation();
@@ -21,7 +22,7 @@ export function BookmarksPage() {
 
   return (
     <section className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
-      <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-100">{t("bookmarks.pageTitle")}</h1>
+      <h1 className={themeClasses.pageTitle}>{t("bookmarks.pageTitle")}</h1>
       <p className="mt-1 text-sm text-stone-600">{t("bookmarks.description")}</p>
 
       {bookmarksQuery.isLoading ? (

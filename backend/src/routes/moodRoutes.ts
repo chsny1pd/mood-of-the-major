@@ -32,7 +32,7 @@ export function createMoodRoutes(deps: Dependencies): Router {
   router.post(
     "/",
     authenticate,
-    authorize("student"),
+    authorize("student", "administrator"),
     rateLimiters.post,
     validate(createMoodSchema),
     moodController.create,
@@ -41,7 +41,7 @@ export function createMoodRoutes(deps: Dependencies): Router {
   router.post(
     "/:moodId/repost",
     authenticate,
-    authorize("student"),
+    authorize("student", "administrator"),
     rateLimiters.post,
     moodController.repost,
   );

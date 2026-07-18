@@ -8,6 +8,7 @@ import { ROUTES } from "../constants/routes";
 import { useMoodFeed } from "../features/feed/hooks/useMoodFeed";
 import { useLocalizedName } from "../lib/useLocalizedName";
 import { fetchFaculties } from "../services/referenceService";
+import { themeClasses } from "../lib/themeClasses";
 
 export function FacultyFeedPage() {
   const { t } = useTranslation();
@@ -29,7 +30,7 @@ export function FacultyFeedPage() {
       <Link to={ROUTES.feed} className="text-sm text-orange-800 hover:underline">
         {t("facultyFeed.backToAll")}
       </Link>
-      <h1 className="mt-4 text-3xl font-semibold text-stone-900">
+      <h1 className={`mt-4 ${themeClasses.pageTitle}`}>
         {faculty ? localizedName(faculty) : t("facultyFeed.fallbackTitle")}
       </h1>
 

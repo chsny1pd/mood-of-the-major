@@ -8,6 +8,7 @@ import { ROUTES } from "../constants/routes";
 import { useMoodFeed } from "../features/feed/hooks/useMoodFeed";
 import { useLocalizedName } from "../lib/useLocalizedName";
 import { fetchMajor } from "../services/referenceService";
+import { themeClasses } from "../lib/themeClasses";
 
 export function MajorFeedPage() {
   const { t } = useTranslation();
@@ -46,7 +47,7 @@ export function MajorFeedPage() {
         </Link>
       ) : null}
 
-      <h1 className="mt-2 text-3xl font-semibold text-stone-900">{majorName}</h1>
+      <h1 className={`mt-2 ${themeClasses.pageTitle}`}>{majorName}</h1>
 
       <div className="mt-8 space-y-4">
         {feedQuery.isLoading || majorQuery.isLoading ? (
