@@ -324,7 +324,7 @@ Core content entity — anonymous mood posts containing text, optional images (v
 | `majorId` | ObjectId | | ✓ | `null` | Major context |
 | `status` | String | ✓ | | `active` | `active`, `hidden`, `moderated_removed`, `deleted_by_author` |
 | `commentCount` | Number | ✓ | | `0` | Denormalized count of active comments |
-| `reactionSummary` | Object | ✓ | | `{}` | Map of `reactionType → count` (e.g., `{ "empathy": 12 }`) |
+| `reactionSummary` | Object | ✓ | | `{}` | Map of `emoji → count` (e.g., `{ "💙": 12, "🔥": 3 }`) |
 | `imageCount` | Number | ✓ | | `0` | Denormalized count of confirmed images |
 | `primaryTagId` | ObjectId | | ✓ | `null` | Denormalized primary emotion tag for feed badge display |
 | `reportCount` | Number | ✓ | | `0` | Open + resolved reports count (admin signal) |
@@ -472,7 +472,7 @@ Anonymous comments on mood posts (`FR-CMT-*`).
 | `parentId` | ObjectId | | ✓ | `null` | Parent comment for threading (`FR-CMT-004` TBD) |
 | `content` | String | ✓ | | | Comment text |
 | `status` | String | ✓ | | `active` | `active`, `moderated_removed`, `deleted_by_author` |
-| `reactionSummary` | Object | ✓ | | `{}` | Denormalized reaction counts |
+| `reactionSummary` | Object | ✓ | | `{}` | Denormalized emoji reaction counts |
 | `depth` | Number | ✓ | | `0` | Thread depth (0 = top-level) |
 | `moderatedAt` | Date | | ✓ | `null` | |
 | `moderatedBy` | ObjectId | | ✓ | `null` | |
@@ -522,7 +522,7 @@ Anonymous comments on mood posts (`FR-CMT-*`).
 
 #### Purpose
 
-Stores one reaction per user per target (mood or comment). Changing reaction updates existing document (`FR-REACT-003`).
+Stores emoji reactions on mood posts and comments. Each user may have **up to 7 distinct emoji** per target; one document per `(userId, targetType, targetId, emoji)` (`FR-REACT-001`, `FR-REACT-003`).
 
 #### Fields
 
@@ -532,24 +532,25 @@ Stores one reaction per user per target (mood or comment). Changing reaction upd
 | `userId` | ObjectId | ✓ | | | **Internal only** — ref `users` |
 | `targetType` | String | ✓ | | | `mood` or `comment` |
 | `targetId` | ObjectId | ✓ | | | Polymorphic ref |
-| `reactionType` | String | ✓ | | | Slug e.g., `empathy`, `support`, `relate` (admin-configurable `FR-REACT-005`) |
+| `emoji` | String | ✓ | | | Unicode emoji grapheme (max 8 UTF-16 code units) |
 | `createdAt` | Date | ✓ | | auto | |
-| `updatedAt` | Date | ✓ | | auto | Updated when reaction type changes |
+| `updatedAt` | Date | ✓ | | auto | Set when reaction row is created (toggle add/remove creates/deletes rows) |
 
 #### Validation Rules
 
 - `targetType`: enum `mood` | `comment`
 - `targetId`: must reference existing document of matching type and active status
-- `reactionType`: must be in active reaction type allowlist
-- Unique constraint: one document per `(userId, targetType, targetId)`
+- `emoji`: single emoji grapheme; ASCII slugs and plain text rejected at API layer
+- Unique constraint: one document per `(userId, targetType, targetId, emoji)`
+- Application cap: at most **7** documents per `(userId, targetType, targetId)`
 
 #### Indexes
 
 | Index | Type | Purpose |
 |-------|------|---------|
-| `{ userId: 1, targetType: 1, targetId: 1 }` | Unique compound | One reaction per user per target |
-| `{ targetType: 1, targetId: 1 }` | Compound | Count aggregation fallback |
-| `{ targetType: 1, targetId: 1, reactionType: 1 }` | Compound | Reaction type breakdown |
+| `{ userId: 1, targetType: 1, targetId: 1, emoji: 1 }` | Unique compound | One row per emoji per user per target |
+| `{ targetType: 1, targetId: 1 }` | Compound | Summary aggregation fallback |
+| `{ userId: 1, targetType: 1, targetId: 1 }` | Compound | Count user reactions on target (limit enforcement) |
 
 #### Relationships
 
@@ -564,10 +565,13 @@ Stores one reaction per user per target (mood or comment). Changing reaction upd
 
 #### Business Rules
 
-- Upsert on react: insert or update `reactionType` (`FR-REACT-003`)
-- Application service updates `reactionSummary` on target document
+- `PUT /reactions` **toggles** one emoji: insert and `$inc` summary on add; delete row and decrement on remove if already owned
+- Eighth distinct emoji on a target rejected with `REACTION_LIMIT_REACHED` (`422`)
+- Application service updates `reactionSummary` on target document (emoji keys)
+- Default UI shortcuts `💙`, `🤝`, `🫂`, `✊` are presentation-only; any valid emoji may appear in storage
 - Public API returns counts only — never `userId` or per-user reaction lists (`FR-REACT-004`, `BR-ANON-002`)
-- Removing reaction deletes document and decrements summary
+- Authenticated read returns caller's `userReactions: string[]` only
+- Legacy slug `reactionType` values migrated to `emoji` via one-time script (`migrate:reaction-emojis`)
 
 ---
 
@@ -1085,7 +1089,7 @@ auditlogs ──► users (adminId)
 | Mood → Images | 1:N (0+ allowed) |
 | Mood → Tags | N:M via `moodtags` |
 | Mood → Comments | 1:N |
-| User → Reaction per target | 1:1 per target (unique) |
+| User → Reaction per target | 1:N (max 7 emoji) |
 | User → Bookmark per mood | 1:1 (unique) |
 | Faculty → Majors | 1:N |
 | Faculty → Moods | 1:N |
@@ -1112,7 +1116,7 @@ auditlogs ──► users (adminId)
 | `faculties` | `{ slug: 1 }` | URL routing |
 | `majors` | `{ facultyId: 1, slug: 1 }` | Scoped slug uniqueness |
 | `moodimages` | `{ objectKey: 1 }` | One DB row per R2 object |
-| `reactions` | `{ userId: 1, targetType: 1, targetId: 1 }` | One reaction per user per target |
+| `reactions` | `{ userId: 1, targetType: 1, targetId: 1, emoji: 1 }` | One row per emoji per user per target |
 | `bookmarks` | `{ userId: 1, moodId: 1 }` | One bookmark per pair |
 | `moodtags` | `{ moodId: 1, tagId: 1 }` | No duplicate tag on mood |
 | `tags` | `{ type: 1, slug: 1 }` | Unique tag slugs per type |

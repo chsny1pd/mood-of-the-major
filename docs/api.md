@@ -810,7 +810,7 @@ All public mood responses use this shape — **no author identity**:
     { "id": "...", "slug": "stress", "name": "Stress", "isPrimary": true }
   ],
   "commentCount": 5,
-  "reactionSummary": { "empathy": 12, "support": 8 },
+  "reactionSummary": { "💙": 12, "🤝": 8 },
   "imageCount": 1,
   "images": [
     { "id": "...", "sortOrder": 0 }
@@ -1295,7 +1295,7 @@ Validation occurs within **Generate Presigned Upload URL** (pre-upload) and **Co
       "content": "You're not alone in this.",
       "parentId": null,
       "depth": 0,
-      "reactionSummary": { "support": 3 },
+      "reactionSummary": { "🤝": 3 },
       "createdAt": "2026-07-05T09:00:00.000Z"
     }
   ],
@@ -1413,11 +1413,15 @@ Cursor pagination on `GET /moods/:moodId/comments` per global strategy.
 
 ## Reaction APIs
 
-### Add or Update Reaction
+Reactions use **Unicode emoji** as keys. Each authenticated user may have up to **7 distinct emoji** per mood or comment. Default UI shortcuts: `💙`, `🤝`, `🫂`, `✊` (mapped from legacy slugs `empathy`, `support`, `relate`, `solidarity`). Users may add any valid single-emoji grapheme on a target; custom emojis appear in `reactionSummary` for that target only when count > 0.
+
+---
+
+### Toggle Reaction
 
 | | |
 |---|---|
-| **Purpose** | Set reaction on mood or comment (`FR-REACT-001`, `FR-REACT-003`) |
+| **Purpose** | Add or remove one emoji reaction on a mood or comment (`FR-REACT-001`, `FR-REACT-003`) |
 | **Method** | `PUT` |
 | **Endpoint** | `/api/v1/reactions` |
 | **Authentication** | Yes |
@@ -1429,15 +1433,15 @@ Cursor pagination on `GET /moods/:moodId/comments` per global strategy.
 {
   "targetType": "mood",
   "targetId": "665a1b2c3d4e5f6789012348",
-  "reactionType": "empathy"
+  "emoji": "💙"
 }
 ```
 
 **Validation Rules:**
 
 - `targetType`: `mood` | `comment`
-- `reactionType`: active allowlist — `empathy`, `support`, `relate`, `solidarity` (`OD-007` default set)
 - `targetId`: valid active target
+- `emoji`: required string, max 8 UTF-16 code units; must be a single emoji grapheme (plain text, URLs, and ASCII slugs rejected)
 
 **Success Response:** `200`
 
@@ -1447,13 +1451,25 @@ Cursor pagination on `GET /moods/:moodId/comments` per global strategy.
   "data": {
     "targetType": "mood",
     "targetId": "665a1b2c3d4e5f6789012348",
-    "reactionType": "empathy",
-    "reactionSummary": { "empathy": 13, "support": 8 }
+    "emoji": "💙",
+    "toggledOn": true,
+    "reactionSummary": { "💙": 13, "🤝": 8 },
+    "userReactions": ["💙", "🔥"]
   }
 }
 ```
 
-**Business Rules:** Upsert — one reaction per user per target. Updates `reactionSummary` on target. Never exposes who reacted (`FR-REACT-004`).
+- `toggledOn`: `true` when the emoji was added; `false` when removed via toggle
+- `userReactions`: caller's current emoji set on this target (always present for authenticated writes)
+
+**Error Responses:** `401`, `404` (`MOOD_NOT_FOUND`, `COMMENT_NOT_FOUND`), `422` (`VALIDATION_FAILED`, `REACTION_LIMIT_REACHED`)
+
+**Business Rules:**
+
+- **Toggle:** if the caller already has this emoji on the target, the reaction is removed; otherwise it is added
+- **Limit:** adding an eighth distinct emoji returns `422` `REACTION_LIMIT_REACHED` with no change
+- Updates denormalized `reactionSummary` on the target (emoji → count)
+- Never exposes who reacted beyond the caller's own `userReactions` (`FR-REACT-004`)
 
 **Related Collections:** `reactions`, `moods`, `comments`
 
@@ -1463,7 +1479,7 @@ Cursor pagination on `GET /moods/:moodId/comments` per global strategy.
 
 | | |
 |---|---|
-| **Purpose** | Remove user's reaction |
+| **Purpose** | Explicitly remove one emoji reaction for the caller |
 | **Method** | `DELETE` |
 | **Endpoint** | `/api/v1/reactions` |
 | **Authentication** | Yes |
@@ -1474,11 +1490,30 @@ Cursor pagination on `GET /moods/:moodId/comments` per global strategy.
 ```json
 {
   "targetType": "mood",
-  "targetId": "665a1b2c3d4e5f6789012348"
+  "targetId": "665a1b2c3d4e5f6789012348",
+  "emoji": "💙"
 }
 ```
 
-**Success Response:** `200` — Updated `reactionSummary` counts.
+**Validation Rules:** Same `targetType`, `targetId`, and `emoji` rules as Toggle Reaction.
+
+**Success Response:** `200`
+
+```json
+{
+  "success": true,
+  "data": {
+    "targetType": "mood",
+    "targetId": "665a1b2c3d4e5f6789012348",
+    "emoji": null,
+    "toggledOn": false,
+    "reactionSummary": { "🤝": 8 },
+    "userReactions": ["🔥"]
+  }
+}
+```
+
+If the caller did not have the emoji, response returns unchanged `reactionSummary` and `userReactions` (idempotent no-op).
 
 **Related Collections:** `reactions`, `moods`, `comments`
 
@@ -1504,13 +1539,13 @@ Cursor pagination on `GET /moods/:moodId/comments` per global strategy.
   "data": {
     "targetType": "mood",
     "targetId": "665a1b2c3d4e5f6789012348",
-    "reactionSummary": { "empathy": 12, "support": 8 },
-    "userReaction": "empathy"
+    "reactionSummary": { "💙": 12, "🤝": 8, "🔥": 3 },
+    "userReactions": ["💙", "🔥"]
   }
 }
 ```
 
-`userReaction` included only when authenticated — reveals caller's own reaction only, not others.
+`userReactions` is included only when authenticated — array of emoji the caller has on this target. Anonymous callers receive `userReactions: []`. Never exposes other users' reactions.
 
 **Related Collections:** `reactions`
 
@@ -2399,6 +2434,7 @@ Includes `reporterId` (admin only), full content snapshot, target metadata.
 | `ADMIN_PROTECTED` | 409 | Cannot suspend administrators |
 | `CANNOT_CHANGE_OWN_ROLE` | 409 | Admin cannot change own role |
 | `LAST_ADMIN_PROTECTED` | 409 | Cannot demote the last administrator |
+| `REACTION_LIMIT_REACHED` | 422 | User already has 7 distinct emoji on target |
 | `RATE_LIMIT_EXCEEDED` | 429 | Too many requests |
 | `INTERNAL_ERROR` | 500 | Server error |
 
@@ -2451,7 +2487,7 @@ Aligned with README Future Improvements — not implemented in v1.
 | ID | Resolution |
 |----|------------|
 | `OD-005` | Cursor-based pagination on all list endpoints |
-| `OD-007` | Default reaction types: `empathy`, `support`, `relate`, `solidarity` |
+| `OD-007` | Emoji reactions: up to 7 per user per target; default UI shortcuts `💙`, `🤝`, `🫂`, `✊`; any valid single emoji allowed |
 | `OD-012` | Default mood edit window: 24 hours from `createdAt` |
 
 Decisions `OD-002`, `OD-003`, `OD-009`, `OD-013`, `OD-014` remain as documented TBDs in endpoint authorization and validation notes.

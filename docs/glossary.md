@@ -103,10 +103,10 @@ Each entry includes:
 
 | | |
 |---|---|
-| **Definition** | A lightweight emotional response to a mood post or comment. Each user may have **at most one reaction per target**; changing reaction type updates the existing record. Default types: `empathy`, `support`, `relate`, `solidarity`. |
-| **Purpose** | Provides low-friction engagement without the overhead of writing a comment; reaction counts are visible without exposing who reacted. |
-| **Related Components** | `reactions` collection; `ReactionService`; `ReactionPicker`; `PUT /api/v1/reactions`; denormalized `reactionSummary` on moods/comments |
-| **Notes** | Public API returns aggregate counts only (`FR-REACT-004`). Authenticated users may see their own `userReaction` on a target. |
+| **Definition** | A lightweight emoji response to a mood post or comment. Each user may have **up to 7 distinct emoji** per target; one stored row per `(user, target, emoji)`. Default UI shortcuts: `💙`, `🤝`, `🫂`, `✊` (legacy slugs: empathy, support, relate, solidarity). Any valid single Unicode emoji may be used on a target. |
+| **Purpose** | Provides low-friction, chat-style engagement without the overhead of writing a comment; reaction counts are visible without exposing who reacted. |
+| **Related Components** | `reactions` collection; `ReactionService`; `ReactionBar`; `PUT /api/v1/reactions`; denormalized `reactionSummary` on moods/comments |
+| **Notes** | Public API returns aggregate emoji counts only (`FR-REACT-004`). Authenticated users receive their own `userReactions: string[]`. Eighth distinct emoji returns `REACTION_LIMIT_REACHED`. |
 
 ---
 
