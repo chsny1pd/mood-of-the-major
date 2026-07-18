@@ -1,5 +1,3 @@
-import type { ReactionType } from "../constants/engagementConstants.js";
-
 export type ReactionTargetType = "mood" | "comment";
 
 export interface Reaction {
@@ -7,20 +5,28 @@ export interface Reaction {
   userId: string;
   targetType: ReactionTargetType;
   targetId: string;
-  reactionType: ReactionType;
+  emoji: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface UpsertReactionInput {
+export interface ToggleReactionInput {
   userId: string;
   targetType: ReactionTargetType;
   targetId: string;
-  reactionType: ReactionType;
+  emoji: string;
 }
 
 export interface RemoveReactionInput {
   userId: string;
   targetType: ReactionTargetType;
   targetId: string;
+  emoji: string;
+}
+
+export interface ReactionMutationResult {
+  emoji: string | null;
+  toggledOn: boolean;
+  reactionSummary: Record<string, number>;
+  userReactions: string[];
 }

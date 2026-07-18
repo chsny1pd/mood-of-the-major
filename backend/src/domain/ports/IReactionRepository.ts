@@ -1,24 +1,24 @@
 import type {
   Reaction,
+  ReactionMutationResult,
   RemoveReactionInput,
   ReactionTargetType,
-  UpsertReactionInput,
+  ToggleReactionInput,
 } from "../entities/Reaction.js";
-import type { ReactionType } from "../constants/engagementConstants.js";
-
-export interface ReactionUpsertResult {
-  reactionType: ReactionType | null;
-  reactionSummary: Record<string, number>;
-}
 
 export interface IReactionRepository {
-  upsert(input: UpsertReactionInput): Promise<ReactionUpsertResult>;
-  remove(input: RemoveReactionInput): Promise<ReactionUpsertResult>;
-  findUserReaction(
+  toggle(input: ToggleReactionInput): Promise<ReactionMutationResult>;
+  remove(input: RemoveReactionInput): Promise<ReactionMutationResult>;
+  findUserReactions(
     userId: string,
     targetType: ReactionTargetType,
     targetId: string,
-  ): Promise<ReactionType | null>;
+  ): Promise<string[]>;
+  countUserReactions(
+    userId: string,
+    targetType: ReactionTargetType,
+    targetId: string,
+  ): Promise<number>;
   getReactionSummary(
     targetType: ReactionTargetType,
     targetId: string,
