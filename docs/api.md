@@ -471,6 +471,10 @@ Response headers: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Res
     "role": "student",
     "facultyId": "665a1b2c3d4e5f6789012345",
     "majorId": "665a1b2c3d4e5f6789012346",
+    "displayName": "Alex",
+    "realName": "Alex Student",
+    "birthYear": 2004,
+    "avatarUrl": "https://example.com/avatar.jpg",
     "faculty": { "id": "...", "name": "Faculty of Engineering", "slug": "engineering" },
     "major": { "id": "...", "name": "Computer Science", "slug": "computer-science" },
     "createdAt": "2026-01-15T10:00:00.000Z"
@@ -480,7 +484,7 @@ Response headers: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Res
 
 **Error Responses:** `401`
 
-**Business Rules:** Returns only the caller's own profile. Never other users' data.
+**Business Rules:** Returns only the caller's own profile. Never other users' data. `realName`, `displayName`, `avatarUrl`, and `birthYear` are account-private and must never appear on public mood/comment DTOs.
 
 **Related Collections:** `users`, `faculties`, `majors`
 
@@ -490,7 +494,7 @@ Response headers: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Res
 
 | | |
 |---|---|
-| **Purpose** | Update affiliation and preferences |
+| **Purpose** | Update profile fields and academic affiliation |
 | **Method** | `PATCH` |
 | **Endpoint** | `/api/v1/auth/me` |
 | **Authentication** | Yes |
@@ -500,22 +504,22 @@ Response headers: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Res
 
 ```json
 {
+  "displayName": "Alex",
+  "realName": "Alex Student",
+  "birthYear": 2004,
+  "avatarUrl": "https://example.com/avatar.jpg",
   "facultyId": "665a1b2c3d4e5f6789012345",
-  "majorId": "665a1b2c3d4e5f6789012346",
-  "notificationPreferences": {
-    "inApp": true,
-    "email": false
-  }
+  "majorId": "665a1b2c3d4e5f6789012346"
 }
 ```
 
-**Validation Rules:** All fields optional; `majorId` must match `facultyId` when both set.
+**Validation Rules:** All fields optional; `birthYear` integer 1950–current year; `majorId` must match `facultyId` when both set; unknown fields rejected.
 
 **Success Response:** `200` — Updated user object (same shape as Get Current User).
 
 **Error Responses:** `401`, `403`, `422`
 
-**Business Rules:** Cannot change `role` or `email` via this endpoint.
+**Business Rules:** Cannot change `role` or `email` via this endpoint. OAuth may fill empty `displayName`/`avatarUrl` on login (fill-when-empty).
 
 **Related Collections:** `users`
 

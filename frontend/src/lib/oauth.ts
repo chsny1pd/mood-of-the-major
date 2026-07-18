@@ -6,7 +6,7 @@ export function isOAuthConfigured(): boolean {
   return import.meta.env.VITE_OAUTH_ENABLED === "true";
 }
 
-export function getOAuthStartUrl(provider: "google" | "github", returnUrl: string = ROUTES.feed): string {
+export function getOAuthStartUrl(provider: "google" | "github", returnUrl: string = ROUTES.dashboard): string {
   const params = new URLSearchParams({ returnUrl });
   return `${API_BASE_URL}/auth/${provider}?${params.toString()}`;
 }
@@ -39,7 +39,7 @@ export function parseOAuthCallbackHash(): {
   const sanitizedReturnUrl =
     returnUrl && returnUrl.startsWith("/") && !returnUrl.startsWith("//")
       ? returnUrl
-      : ROUTES.feed;
+      : ROUTES.dashboard;
 
   return {
     accessToken: params.get("accessToken"),

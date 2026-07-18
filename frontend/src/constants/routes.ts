@@ -9,6 +9,7 @@ export const ROUTES = {
   create: "/create",
   bookmarks: "/bookmarks",
   search: "/search",
+  dashboard: "/dashboard",
   statistics: "/statistics",
   trending: "/trending",
   notifications: "/notifications",

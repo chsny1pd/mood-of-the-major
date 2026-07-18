@@ -1,10 +1,17 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { PublicNavbar } from "../components/PublicNavbar";
+import { useAuth } from "../hooks/useAuth";
+import { ROUTES } from "../constants/routes";
 import { themeClasses } from "../lib/themeClasses";
 
 export function PublicLayout() {
   const { t } = useTranslation();
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (!isLoading && isAuthenticated) {
+    return <Navigate to={ROUTES.dashboard} replace />;
+  }
 
   return (
     <div className={`flex min-h-screen flex-col ${themeClasses.page}`}>

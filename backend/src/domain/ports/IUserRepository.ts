@@ -1,4 +1,10 @@
-import type { CreateUserInput, User, UserRole, UserStatus } from "../entities/User.js";
+import type {
+  CreateUserInput,
+  UpdateUserProfileInput,
+  User,
+  UserRole,
+  UserStatus,
+} from "../entities/User.js";
 
 export interface AdminUserListQuery {
   status?: UserStatus;
@@ -25,6 +31,7 @@ export interface IUserRepository {
   clearRefreshSession(id: string): Promise<void>;
   findManyAdmin(query: AdminUserListQuery): Promise<User[]>;
   updateStatus(id: string, status: UserStatus): Promise<User | null>;
+  updateProfile(id: string, input: UpdateUserProfileInput): Promise<User | null>;
   countActiveSince(since: Date): Promise<number>;
   countAll(): Promise<number>;
 }

@@ -14,6 +14,10 @@ const userSchema = new Schema(
     },
     facultyId: { type: Schema.Types.ObjectId, ref: "Faculty", default: null },
     majorId: { type: Schema.Types.ObjectId, ref: "Major", default: null },
+    displayName: { type: String, trim: true, default: null },
+    realName: { type: String, trim: true, default: null },
+    birthYear: { type: Number, min: 1950, max: 2100, default: null },
+    avatarUrl: { type: String, trim: true, default: null },
     status: {
       type: String,
       required: true,

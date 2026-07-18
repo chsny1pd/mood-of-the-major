@@ -21,16 +21,14 @@ interface NavItem {
 }
 
 const primaryNavItems: NavItem[] = [
-  { to: ROUTES.home, labelKey: "nav.home" },
   { to: ROUTES.feed, labelKey: "nav.feed" },
-  { to: ROUTES.statistics, labelKey: "nav.statistics" },
+  { to: ROUTES.dashboard, labelKey: "nav.dashboard" },
   { to: ROUTES.howToUse, labelKey: "nav.howToUse" },
 ];
 
 const authenticatedNavItems: NavItem[] = [
   { to: ROUTES.search, labelKey: "nav.search", requiresAuth: true },
   { to: ROUTES.bookmarks, labelKey: "nav.saved", requiresAuth: true },
-  { to: ROUTES.trending, labelKey: "nav.trending", requiresAuth: true },
   { to: ROUTES.notifications, labelKey: "nav.inbox", requiresAuth: true },
   { to: ROUTES.admin, labelKey: "nav.admin", requiresAuth: true, adminOnly: true },
 ];
@@ -79,7 +77,7 @@ export function AppNavbar({ variant = "app" }: AppNavbarProps) {
       <div className="relative mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 sm:px-6">
         <div className="flex min-w-0 flex-1 items-center gap-4">
           <Link
-            to={ROUTES.home}
+            to={isAuthenticated ? ROUTES.dashboard : ROUTES.home}
             className="font-display shrink-0 text-lg font-semibold tracking-tight text-orange-700 dark:text-orange-300"
           >
             {t("app.name")}

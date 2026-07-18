@@ -12,9 +12,7 @@ const ThemeToggle = lazy(() =>
 );
 
 const publicNavItems = [
-  { to: ROUTES.home, labelKey: "nav.home" },
   { to: ROUTES.feed, labelKey: "nav.feed" },
-  { to: ROUTES.statistics, labelKey: "nav.statistics" },
   { to: ROUTES.howToUse, labelKey: "nav.howToUse" },
 ] as const;
 

@@ -1,4 +1,4 @@
-import type { User } from "../../domain/entities/User.js";
+import type { UpdateUserProfileInput, User } from "../../domain/entities/User.js";
 import type { IFacultyRepository } from "../../domain/ports/IFacultyRepository.js";
 import type { IPasswordHasher } from "../../domain/ports/IPasswordHasher.js";
 import type { ITokenService } from "../../domain/ports/ITokenService.js";
@@ -54,6 +54,10 @@ export interface UserProfile {
   role: User["role"];
   facultyId: string | null;
   majorId: string | null;
+  displayName: string | null;
+  realName: string | null;
+  birthYear: number | null;
+  avatarUrl: string | null;
   faculty: { id: string; name: string; slug: string } | null;
   major: { id: string; name: string; slug: string } | null;
   createdAt: Date;
@@ -158,6 +162,17 @@ export class AuthService {
       throw new AuthenticationError("Account suspended", "ACCOUNT_SUSPENDED", 403);
     }
 
+    const patch: UpdateUserProfileInput = {};
+    if (!user.displayName && input.displayName?.trim()) {
+      patch.displayName = input.displayName.trim();
+    }
+    if (!user.avatarUrl && input.avatarUrl?.trim()) {
+      patch.avatarUrl = input.avatarUrl.trim();
+    }
+    if (Object.keys(patch).length > 0) {
+      user = (await this.users.updateProfile(user.id, patch)) ?? user;
+    }
+
     await this.users.updateLastLoginAt(user.id, new Date());
 
     return this.issueSession(user);
@@ -213,6 +228,25 @@ export class AuthService {
     return this.buildProfile(user);
   }
 
+  async updateProfile(userId: string, input: UpdateUserProfileInput): Promise<UserProfile> {
+    const user = await this.users.findById(userId);
+
+    if (!user) {
+      throw new AuthenticationError("Invalid token", "AUTH_INVALID_TOKEN");
+    }
+
+    const facultyId = input.facultyId !== undefined ? input.facultyId : user.facultyId;
+    const majorId = input.majorId !== undefined ? input.majorId : user.majorId;
+    await this.validateAffiliation(facultyId ?? undefined, majorId ?? undefined);
+
+    const updated = await this.users.updateProfile(userId, input);
+    if (!updated) {
+      throw new AuthenticationError("Invalid token", "AUTH_INVALID_TOKEN");
+    }
+
+    return this.buildProfile(updated);
+  }
+
   private async issueSession(user: User): Promise<AuthResult> {
     const pair = this.tokens.issueTokenPair(user.id, user.role, user.tokenVersion);
 
@@ -248,6 +282,10 @@ export class AuthService {
       role: user.role,
       facultyId: user.facultyId,
       majorId: user.majorId,
+      displayName: user.displayName,
+      realName: user.realName,
+      birthYear: user.birthYear,
+      avatarUrl: user.avatarUrl,
       faculty,
       major: major
         ? { id: major.id, name: major.name, slug: major.slug }

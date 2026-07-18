@@ -27,16 +27,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const token = getAccessToken();
     if (!token) {
       setUser(null);
+      setProfileMeta(defaultProfileMeta);
       return;
     }
 
     const { fetchMe } = await import("../services/authService");
     const profile = await fetchMe();
     setUser(profile);
+    setProfileMeta({
+      displayName: profile.displayName,
+      avatarUrl: profile.avatarUrl,
+    });
   }, []);
 
   useEffect(() => {
     if (!getAccessToken()) {
+      setIsLoading(false);
       return;
     }
 
@@ -46,6 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } catch {
         clearAccessToken();
         setUser(null);
+        setProfileMeta(defaultProfileMeta);
       } finally {
         setIsLoading(false);
       }
@@ -57,12 +64,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const authUser = await loginRequest({ email, password });
     flushSync(() => {
       setUser(toInitialProfile(authUser));
-      setProfileMeta(defaultProfileMeta);
+      setProfileMeta({
+        displayName: authUser.displayName,
+        avatarUrl: authUser.avatarUrl,
+      });
     });
     void refreshProfile().catch(() => undefined);
   }, [refreshProfile]);
 
-  const loginWithOAuth = useCallback((provider: "google" | "github", returnUrl: string = ROUTES.feed) => {
+  const loginWithOAuth = useCallback((provider: "google" | "github", returnUrl: string = ROUTES.dashboard) => {
     window.location.assign(getOAuthStartUrl(provider, returnUrl));
   }, []);
 
@@ -105,7 +115,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const authUser = await registerRequest(input);
       flushSync(() => {
         setUser(toInitialProfile(authUser));
-        setProfileMeta(defaultProfileMeta);
+        setProfileMeta({
+          displayName: authUser.displayName,
+          avatarUrl: authUser.avatarUrl,
+        });
       });
       void refreshProfile().catch(() => undefined);
     },

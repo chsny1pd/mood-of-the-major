@@ -14,6 +14,10 @@ export const defaultProfileMeta: ProfileMeta = {
 export function toInitialProfile(user: AuthUser): UserProfile {
   return {
     ...user,
+    displayName: user.displayName ?? null,
+    realName: user.realName ?? null,
+    birthYear: user.birthYear ?? null,
+    avatarUrl: user.avatarUrl ?? null,
     faculty: null,
     major: null,
     createdAt: new Date().toISOString(),

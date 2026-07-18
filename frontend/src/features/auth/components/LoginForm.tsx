@@ -32,7 +32,7 @@ export function LoginForm() {
     try {
       await login(values.email, values.password);
       const returnUrl =
-        (location.state as { returnUrl?: string } | null)?.returnUrl ?? ROUTES.feed;
+        (location.state as { returnUrl?: string } | null)?.returnUrl ?? ROUTES.dashboard;
       navigate(returnUrl, { replace: true });
     } catch (error) {
       const fieldErrors = getApiFieldErrors(error);

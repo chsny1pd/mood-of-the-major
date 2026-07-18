@@ -40,7 +40,7 @@ function readVerifiedReturnUrl(req: Request, env: Env): string {
     resolveJwtSecret(env),
   );
 
-  return verified?.returnUrl ?? "/feed";
+  return verified?.returnUrl ?? "/dashboard";
 }
 
 async function finalizeOAuthLogin(

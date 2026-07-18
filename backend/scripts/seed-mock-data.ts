@@ -17,9 +17,9 @@ import { ReportModel } from "../src/infrastructure/database/models/Report.js";
 import type { Types } from "mongoose";
 
 const MOCK_EMAIL_DOMAIN = "moodofthemajor.test";
-const MOCK_STUDENT_COUNT = 24;
-const TARGET_MOOD_COUNT = 180;
-const MOCK_MARKER = "mock-data-v1";
+const MOCK_STUDENT_COUNT = 50;
+const TARGET_MOOD_COUNT = 500;
+const MOCK_MARKER = "mock-data-v2";
 
 const moodTemplates = [
   { content: "Midterms are stacking up and I barely slept.", tagSlug: "stress" },

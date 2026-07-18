@@ -7,6 +7,7 @@
   "nav": {
     "home": "หน้าแรก",
     "feed": "ฟีด",
+    "dashboard": "แดชบอร์ด",
     "statistics": "สถิติ",
     "howToUse": "วิธีใช้งาน",
     "search": "ค้นหา",
@@ -87,6 +88,22 @@
     "avatar": "รูปโปรไฟล์",
     "name": "ชื่อ",
     "email": "อีเมล",
+    "realName": "ชื่อจริง",
+    "displayName": "ชื่อที่แสดง",
+    "birthYear": "ปีเกิด",
+    "ageLabel": "อายุ: {{age}}",
+    "faculty": "คณะ",
+    "major": "สาขา",
+    "selectFaculty": "เลือกคณะ",
+    "selectMajor": "เลือกสาขา",
+    "changeAvatar": "เปลี่ยนรูป",
+    "uploading": "กำลังอัปโหลด…",
+    "saveProfile": "บันทึกโปรไฟล์",
+    "saving": "กำลังบันทึก…",
+    "saveSuccess": "บันทึกโปรไฟล์แล้ว",
+    "saveFailed": "บันทึกโปรไฟล์ไม่สำเร็จ",
+    "uploadFailed": "อัปโหลดรูปไม่สำเร็จ",
+    "privacyNote": "ชื่อจริงเป็นข้อมูลในบัญชีของคุณเท่านั้น และจะไม่แสดงบนฟีดสาธารณะ",
     "nameFallback": "ยังไม่ได้ตั้ง",
     "logoutDescription": "ออกจากระบบบนอุปกรณ์นี้",
     "logoutButton": "ออกจากระบบ"
@@ -343,6 +360,22 @@
     "kpiReactions": "ปฏิกิริยา",
     "emotionDistribution": "การกระจายอารมณ์",
     "activityOverTime": "กิจกรรมตามเวลา"
+  },
+  "dashboard": {
+    "pageTitle": "แดชบอร์ด",
+    "description": "ภาพรวมอารมณ์ชุมชนและเทรนด์ — ไม่แสดงตัวตนรายบุคคล",
+    "weekdayActivity": "กิจกรรมตามวันในสัปดาห์",
+    "trendingTitle": "อารมณ์ที่มาแรง",
+    "trendingDescription": "ธีมที่กำลังขึ้นหรือเปลี่ยนในช่วงที่เลือก",
+    "weekday": {
+      "sun": "อา.",
+      "mon": "จ.",
+      "tue": "อ.",
+      "wed": "พ.",
+      "thu": "พฤ.",
+      "fri": "ศ.",
+      "sat": "ส."
+    }
   },
   "trending": {
     "title": "มาแรง",

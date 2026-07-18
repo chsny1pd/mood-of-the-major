@@ -10,6 +10,10 @@ export interface User {
   role: UserRole;
   facultyId: string | null;
   majorId: string | null;
+  displayName: string | null;
+  realName: string | null;
+  birthYear: number | null;
+  avatarUrl: string | null;
   status: UserStatus;
   tokenVersion: number;
   refreshTokenHash: string | null;
@@ -18,6 +22,15 @@ export interface User {
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
+}
+
+export interface UpdateUserProfileInput {
+  displayName?: string | null;
+  realName?: string | null;
+  birthYear?: number | null;
+  avatarUrl?: string | null;
+  facultyId?: string | null;
+  majorId?: string | null;
 }
 
 export interface CreateUserInput {

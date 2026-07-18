@@ -9,6 +9,10 @@ export interface AuthUser {
   role: "student" | "administrator" | "advisor";
   facultyId: string | null;
   majorId: string | null;
+  displayName: string | null;
+  realName: string | null;
+  birthYear: number | null;
+  avatarUrl: string | null;
 }
 
 export interface UserProfile extends AuthUser {
@@ -16,6 +20,15 @@ export interface UserProfile extends AuthUser {
   major: { id: string; name: string; slug: string } | null;
   createdAt: string;
 }
+
+export type UpdateProfileInput = {
+  displayName?: string | null;
+  realName?: string | null;
+  birthYear?: number | null;
+  avatarUrl?: string | null;
+  facultyId?: string | null;
+  majorId?: string | null;
+};
 
 interface AuthResponse {
   user: AuthUser;
@@ -62,5 +75,15 @@ export async function logout(): Promise<void> {
 
 export async function fetchMe(): Promise<UserProfile> {
   const response = await apiClient.get<{ success: true; data: UserProfile }>("/auth/me");
+  return response.data.data;
+}
+
+export async function updateMe(input: UpdateProfileInput): Promise<UserProfile> {
+  const response = await apiClient.patch<{ success: true; data: UserProfile }>("/auth/me", input);
+  return response.data.data;
+}
+
+export async function updateMe(input: UpdateProfileInput): Promise<UserProfile> {
+  const response = await apiClient.patch<{ success: true; data: UserProfile }>("/auth/me", input);
   return response.data.data;
 }

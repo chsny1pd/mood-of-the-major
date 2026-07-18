@@ -7,6 +7,7 @@
   "nav": {
     "home": "Home",
     "feed": "Feed",
+    "dashboard": "Dashboard",
     "statistics": "Statistics",
     "howToUse": "How to Use",
     "search": "Search",
@@ -87,6 +88,22 @@
     "avatar": "Avatar",
     "name": "Name",
     "email": "Email",
+    "realName": "Real name",
+    "displayName": "Display name",
+    "birthYear": "Birth year",
+    "ageLabel": "Age: {{age}}",
+    "faculty": "Faculty",
+    "major": "Major",
+    "selectFaculty": "Select faculty",
+    "selectMajor": "Select major",
+    "changeAvatar": "Change photo",
+    "uploading": "Uploading…",
+    "saveProfile": "Save profile",
+    "saving": "Saving…",
+    "saveSuccess": "Profile saved.",
+    "saveFailed": "Could not save profile.",
+    "uploadFailed": "Could not upload photo.",
+    "privacyNote": "Your real name is private to your account and is never shown on the public feed.",
     "nameFallback": "Not set",
     "logoutDescription": "Sign out of your account on this device.",
     "logoutButton": "Log out"
@@ -343,6 +360,22 @@
     "kpiReactions": "Reactions",
     "emotionDistribution": "Emotion distribution",
     "activityOverTime": "Activity over time"
+  },
+  "dashboard": {
+    "pageTitle": "Dashboard",
+    "description": "Community mood insights and trending emotions — never individual identities.",
+    "weekdayActivity": "Activity by weekday",
+    "trendingTitle": "Trending emotions",
+    "trendingDescription": "Rising and shifting themes in the selected window.",
+    "weekday": {
+      "sun": "Sun",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat"
+    }
   },
   "trending": {
     "title": "Trending",

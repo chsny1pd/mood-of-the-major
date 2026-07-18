@@ -1,5 +1,6 @@
 import type { Response } from "express";
 import type { AuthService, LoginInput, RegisterInput } from "../application/services/AuthService.js";
+import type { UpdateUserProfileInput } from "../domain/entities/User.js";
 import {
   toAuthUserDto,
   toTokenDto,
@@ -83,6 +84,22 @@ export function createAuthController(authService: AuthService, env: Env) {
       }
 
       const profile = await authService.getProfile(req.userId);
+
+      res.status(200).json({
+        success: true,
+        data: toUserProfileDto(profile),
+      });
+    }),
+
+    updateMe: asyncHandler(async (req, res: Response) => {
+      if (!req.userId) {
+        throw new AuthenticationError("Authentication required", "AUTH_REQUIRED");
+      }
+
+      const profile = await authService.updateProfile(
+        req.userId,
+        req.body as UpdateUserProfileInput,
+      );
 
       res.status(200).json({
         success: true,

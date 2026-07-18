@@ -84,14 +84,33 @@ export const router = createBrowserRouter([
         lazy: () => import("../pages/SearchPage").then((module) => ({ Component: module.SearchPage })),
       },
       {
-        path: ROUTES.statistics,
+        path: ROUTES.dashboard,
         lazy: () =>
-          import("../pages/StatisticsPage").then((module) => ({ Component: module.StatisticsPage })),
+          import("../pages/DashboardPage").then((module) => ({ Component: module.DashboardPage })),
+      },
+      {
+        path: ROUTES.statistics,
+        lazy: async () => {
+          const { Navigate } = await import("react-router-dom");
+          const { ROUTES: routes } = await import("../constants/routes");
+          return {
+            Component: function StatisticsRedirect() {
+              return <Navigate to={routes.dashboard} replace />;
+            },
+          };
+        },
       },
       {
         path: ROUTES.trending,
-        lazy: () =>
-          import("../pages/TrendingPage").then((module) => ({ Component: module.TrendingPage })),
+        lazy: async () => {
+          const { Navigate } = await import("react-router-dom");
+          const { ROUTES: routes } = await import("../constants/routes");
+          return {
+            Component: function TrendingRedirect() {
+              return <Navigate to={routes.dashboard} replace />;
+            },
+          };
+        },
       },
       {
         path: ROUTES.notifications,

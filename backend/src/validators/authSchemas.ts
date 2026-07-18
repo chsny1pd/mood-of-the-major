@@ -40,5 +40,23 @@ export const refreshSchema = z
   })
   .strict();
 
+export const updateProfileSchema = z
+  .object({
+    displayName: z.string().trim().min(1).max(80).nullable().optional(),
+    realName: z.string().trim().min(1).max(80).nullable().optional(),
+    birthYear: z
+      .number()
+      .int()
+      .min(1950)
+      .max(new Date().getUTCFullYear())
+      .nullable()
+      .optional(),
+    avatarUrl: z.string().url().max(2048).nullable().optional(),
+    facultyId: z.string().regex(objectIdPattern, "Invalid facultyId").nullable().optional(),
+    majorId: z.string().regex(objectIdPattern, "Invalid majorId").nullable().optional(),
+  })
+  .strict();
+
 export type RegisterBody = z.infer<typeof registerSchema>;
 export type LoginBody = z.infer<typeof loginSchema>;
+export type UpdateProfileBody = z.infer<typeof updateProfileSchema>;

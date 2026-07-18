@@ -64,7 +64,7 @@ export function RegisterForm() {
         facultyId: values.facultyId || undefined,
         majorId: values.majorId || undefined,
       });
-      navigate(ROUTES.feed, { replace: true });
+      navigate(ROUTES.dashboard, { replace: true });
     } catch (error) {
       const fieldErrors = getApiFieldErrors(error);
       Object.entries(fieldErrors).forEach(([field, message]) => {

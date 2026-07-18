@@ -1,4 +1,4 @@
-import type { CreateUserInput, User, UserStatus } from "../../../domain/entities/User.js";
+import type { CreateUserInput, UpdateUserProfileInput, User, UserStatus } from "../../../domain/entities/User.js";
 import type { AdminUserListQuery, IUserRepository } from "../../../domain/ports/IUserRepository.js";
 import { UserModel } from "../models/User.js";
 import { escapeRegex } from "../../../utils/escapeRegex.js";
@@ -12,6 +12,10 @@ function mapUser(doc: {
   role: User["role"];
   facultyId?: { toString(): string } | null;
   majorId?: { toString(): string } | null;
+  displayName?: string | null;
+  realName?: string | null;
+  birthYear?: number | null;
+  avatarUrl?: string | null;
   status: User["status"];
   tokenVersion: number;
   refreshTokenHash?: string | null;
@@ -30,6 +34,10 @@ function mapUser(doc: {
     role: doc.role,
     facultyId: doc.facultyId ? doc.facultyId.toString() : null,
     majorId: doc.majorId ? doc.majorId.toString() : null,
+    displayName: doc.displayName ?? null,
+    realName: doc.realName ?? null,
+    birthYear: doc.birthYear ?? null,
+    avatarUrl: doc.avatarUrl ?? null,
     status: doc.status,
     tokenVersion: doc.tokenVersion,
     refreshTokenHash: doc.refreshTokenHash ?? null,
@@ -146,6 +154,29 @@ export class MongooseUserRepository implements IUserRepository {
     const doc = await UserModel.findOneAndUpdate(
       { _id: id, deletedAt: null },
       { status },
+      { returnDocument: "after" },
+    ).lean();
+
+    return doc ? mapUser(doc) : null;
+  }
+
+  async updateProfile(id: string, input: UpdateUserProfileInput): Promise<User | null> {
+    const $set: Record<string, unknown> = {};
+
+    if (input.displayName !== undefined) $set.displayName = input.displayName;
+    if (input.realName !== undefined) $set.realName = input.realName;
+    if (input.birthYear !== undefined) $set.birthYear = input.birthYear;
+    if (input.avatarUrl !== undefined) $set.avatarUrl = input.avatarUrl;
+    if (input.facultyId !== undefined) $set.facultyId = input.facultyId;
+    if (input.majorId !== undefined) $set.majorId = input.majorId;
+
+    if (Object.keys($set).length === 0) {
+      return this.findById(id);
+    }
+
+    const doc = await UserModel.findOneAndUpdate(
+      { _id: id, deletedAt: null },
+      { $set },
       { returnDocument: "after" },
     ).lean();
 
