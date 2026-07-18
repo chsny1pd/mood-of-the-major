@@ -1,10 +1,13 @@
 /**
- * Chrome on Windows often keeps locks on the user-data dir long enough that
- * chrome-launcher's destroyTmp() throws EPERM and makes `lhci autorun` exit 1
- * even after a successful Lighthouse run. Soften that cleanup so CI/local
- * Windows can assert scores.
+ * Wrapper around `lhci autorun` that:
+ * 1. Uses a short Chrome temp dir so Unix domain sockets stay under the
+ *    ~107-char path limit (repo paths like
+ *    /home/runner/work/.../frontend/.lh-tmp/... fail on GitHub Actions).
+ * 2. Softens chrome-launcher's destroyTmp() on Windows, where EPERM/EBUSY
+ *    after a successful run would otherwise make `lhci` exit 1.
  */
-import { readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
@@ -36,16 +39,35 @@ if (!source.includes(MARKER)) {
   }
 }
 
-const result = spawnSync("npx", ["lhci", "autorun"], {
-  cwd: root,
-  stdio: "inherit",
-  shell: true,
-  env: {
-    ...process.env,
-    TEMP: join(root, ".lh-tmp"),
-    TMP: join(root, ".lh-tmp"),
-    TMPDIR: join(root, ".lh-tmp"),
-  },
-});
+/** Short base path: /tmp on Unix, OS temp on Windows (no Unix socket limit). */
+const tmpRoot = process.platform === "win32" ? join(tmpdir(), "lhci") : "/tmp/lhci";
+mkdirSync(tmpRoot, { recursive: true });
+const chromeTmp = mkdtempSync(join(tmpRoot, "run-"));
 
-process.exit(result.status ?? 1);
+let exitCode = 1;
+try {
+  const result = spawnSync("npx", ["lhci", "autorun"], {
+    cwd: root,
+    stdio: "inherit",
+    shell: true,
+    env: {
+      ...process.env,
+      TEMP: chromeTmp,
+      TMP: chromeTmp,
+      TMPDIR: chromeTmp,
+    },
+  });
+  exitCode = result.status ?? 1;
+} finally {
+  try {
+    rmSync(chromeTmp, { recursive: true, force: true, maxRetries: 10 });
+  } catch (e) {
+    const code = e && typeof e === "object" && "code" in e ? e.code : undefined;
+    // Chrome may still hold locks briefly on Windows; ignore soft failures.
+    if (code !== "EPERM" && code !== "EBUSY" && code !== "ENOENT") {
+      console.warn("Failed to clean Chrome temp dir:", chromeTmp, e);
+    }
+  }
+}
+
+process.exit(exitCode);
