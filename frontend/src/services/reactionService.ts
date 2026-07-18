@@ -1,5 +1,17 @@
 import { apiClient } from "./apiClient";
-import type { ReactionType, ReactionView } from "../types/engagement";
+import type { ReactionView } from "../types/engagement";
+
+function normalizeReactionView(
+  data: Pick<ReactionView, "targetType" | "targetId" | "reactionSummary"> &
+    Partial<Pick<ReactionView, "userReactions">>,
+): ReactionView {
+  return {
+    targetType: data.targetType,
+    targetId: data.targetId,
+    reactionSummary: data.reactionSummary,
+    userReactions: data.userReactions ?? [],
+  };
+}
 
 export async function fetchReactions(
   targetType: "mood" | "comment",
@@ -8,40 +20,29 @@ export async function fetchReactions(
   const response = await apiClient.get<{ success: true; data: ReactionView }>("/reactions", {
     params: { targetType, targetId },
   });
-  return response.data.data;
+  return normalizeReactionView(response.data.data);
 }
 
-export async function upsertReaction(
+export async function toggleReaction(
   targetType: "mood" | "comment",
   targetId: string,
-  reactionType: ReactionType,
+  emoji: string,
 ): Promise<ReactionView> {
-  const response = await apiClient.put<{ success: true; data: ReactionView & { reactionType: ReactionType } }>(
-    "/reactions",
-    { targetType, targetId, reactionType },
-  );
-
-  return {
-    targetType: response.data.data.targetType,
-    targetId: response.data.data.targetId,
-    reactionSummary: response.data.data.reactionSummary,
-    userReaction: response.data.data.reactionType,
-  };
+  const response = await apiClient.put<{ success: true; data: ReactionView }>("/reactions", {
+    targetType,
+    targetId,
+    emoji,
+  });
+  return normalizeReactionView(response.data.data);
 }
 
 export async function removeReaction(
   targetType: "mood" | "comment",
   targetId: string,
+  emoji: string,
 ): Promise<ReactionView> {
-  const response = await apiClient.delete<{ success: true; data: { reactionSummary: Record<string, number> } }>(
-    "/reactions",
-    { data: { targetType, targetId } },
-  );
-
-  return {
-    targetType,
-    targetId,
-    reactionSummary: response.data.data.reactionSummary,
-    userReaction: null,
-  };
+  const response = await apiClient.delete<{ success: true; data: ReactionView }>("/reactions", {
+    data: { targetType, targetId, emoji },
+  });
+  return normalizeReactionView(response.data.data);
 }

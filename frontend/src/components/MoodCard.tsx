@@ -8,7 +8,6 @@ import { ROUTES } from "../constants/routes";
 import { useLocalizedName } from "../lib/useLocalizedName";
 import { useRelativeTime } from "../hooks/useRelativeTime";
 import { themeClasses } from "../lib/themeClasses";
-import { REACTION_TYPES } from "../types/engagement";
 import type { AnonymousMood } from "../types/mood";
 
 export const MoodCard = memo(function MoodCard({
@@ -25,8 +24,8 @@ export const MoodCard = memo(function MoodCard({
   const relativeTime = useRelativeTime(mood.createdAt);
 
   const primaryTag = mood.tags.find((tag) => tag.isPrimary) ?? mood.tags[0];
-  const totalReactions = REACTION_TYPES.reduce(
-    (sum, reaction) => sum + (mood.reactionSummary[reaction.type] ?? 0),
+  const totalReactions = Object.values(mood.reactionSummary ?? {}).reduce(
+    (sum, n) => sum + (typeof n === "number" ? n : 0),
     0,
   );
 

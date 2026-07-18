@@ -1,13 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import {
-  REACTION_TYPES,
-  getReactionTranslationKey,
-  type ReactionType,
-  type ReactionView,
-} from "../../../types/engagement";
+import { DEFAULT_REACTION_EMOJIS, type ReactionView } from "../../../types/engagement";
 import { queryKeys } from "../../../constants/queryKeys";
-import { fetchReactions, removeReaction, upsertReaction } from "../../../services/reactionService";
+import { fetchReactions, toggleReaction } from "../../../services/reactionService";
 import { useAuth } from "../../../hooks/useAuth";
 import { Link } from "react-router-dom";
 import { ROUTES } from "../../../constants/routes";
@@ -29,13 +24,8 @@ export function ReactionBar({ targetType, targetId, compact = false }: ReactionB
   });
 
   const mutation = useMutation({
-    mutationFn: async (reactionType: ReactionType | null) => {
-      if (reactionType === null) {
-        return removeReaction(targetType, targetId);
-      }
-      return upsertReaction(targetType, targetId, reactionType);
-    },
-    onMutate: async (nextType) => {
+    mutationFn: (emoji: string) => toggleReaction(targetType, targetId, emoji),
+    onMutate: async (emoji) => {
       await queryClient.cancelQueries({ queryKey: queryKeys.reactions(targetType, targetId) });
       const previous = queryClient.getQueryData<ReactionView>(
         queryKeys.reactions(targetType, targetId),
@@ -43,16 +33,20 @@ export function ReactionBar({ targetType, targetId, compact = false }: ReactionB
 
       if (previous) {
         const summary = { ...previous.reactionSummary };
-        if (previous.userReaction) {
-          summary[previous.userReaction] = Math.max(0, (summary[previous.userReaction] ?? 1) - 1);
-        }
-        if (nextType) {
-          summary[nextType] = (summary[nextType] ?? 0) + 1;
+        const hadReaction = previous.userReactions.includes(emoji);
+        const userReactions = hadReaction
+          ? previous.userReactions.filter((e) => e !== emoji)
+          : [...previous.userReactions, emoji];
+
+        if (hadReaction) {
+          summary[emoji] = Math.max(0, (summary[emoji] ?? 1) - 1);
+        } else {
+          summary[emoji] = (summary[emoji] ?? 0) + 1;
         }
 
         queryClient.setQueryData<ReactionView>(queryKeys.reactions(targetType, targetId), {
           ...previous,
-          userReaction: nextType,
+          userReactions,
           reactionSummary: summary,
         });
       }
@@ -76,25 +70,24 @@ export function ReactionBar({ targetType, targetId, compact = false }: ReactionB
   const data = reactionsQuery.data;
   if (!data) return null;
 
-  const handleClick = (type: ReactionType) => {
+  const handleClick = (emoji: string) => {
     if (!isAuthenticated) return;
-    const next = data.userReaction === type ? null : type;
-    mutation.mutate(next);
+    mutation.mutate(emoji);
   };
 
   return (
     <div className={`flex flex-wrap gap-2 ${compact ? "text-xs" : "text-sm"}`}>
-      {REACTION_TYPES.map((reaction) => {
-        const count = data.reactionSummary[reaction.type] ?? 0;
-        const isActive = data.userReaction === reaction.type;
-        const label = t(getReactionTranslationKey(reaction.type));
+      {DEFAULT_REACTION_EMOJIS.map((reaction) => {
+        const count = data.reactionSummary[reaction.emoji] ?? 0;
+        const isActive = data.userReactions.includes(reaction.emoji);
+        const label = t(reaction.translationKey);
 
         return (
           <button
-            key={reaction.type}
+            key={reaction.emoji}
             type="button"
             disabled={!isAuthenticated || mutation.isPending}
-            onClick={() => handleClick(reaction.type)}
+            onClick={() => handleClick(reaction.emoji)}
             className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 transition ${
               isActive
                 ? "border-orange-600 bg-orange-50 text-orange-900"

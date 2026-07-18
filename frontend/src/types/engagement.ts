@@ -1,11 +1,9 @@
-export const REACTION_TYPES = [
-  { type: "empathy", emoji: "💙" },
-  { type: "support", emoji: "🤝" },
-  { type: "relate", emoji: "🫂" },
-  { type: "solidarity", emoji: "✊" },
+export const DEFAULT_REACTION_EMOJIS = [
+  { emoji: "💙", translationKey: "engagement.reactions.empathy" },
+  { emoji: "🤝", translationKey: "engagement.reactions.support" },
+  { emoji: "🫂", translationKey: "engagement.reactions.relate" },
+  { emoji: "✊", translationKey: "engagement.reactions.solidarity" },
 ] as const;
-
-export type ReactionType = (typeof REACTION_TYPES)[number]["type"];
 
 export const REPORT_REASONS = [
   { code: "harassment" },
@@ -16,10 +14,6 @@ export const REPORT_REASONS = [
 ] as const;
 
 export type ReportReasonCode = (typeof REPORT_REASONS)[number]["code"];
-
-export function getReactionTranslationKey(type: ReactionType): string {
-  return `engagement.reactions.${type}`;
-}
 
 export function getReportReasonTranslationKey(code: ReportReasonCode): string {
   return `engagement.reportReasons.${code}`;
@@ -48,5 +42,5 @@ export interface ReactionView {
   targetType: "mood" | "comment";
   targetId: string;
   reactionSummary: Record<string, number>;
-  userReaction: ReactionType | null;
+  userReactions: string[];
 }
