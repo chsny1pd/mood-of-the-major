@@ -14,7 +14,7 @@ test.describe("Student journey", () => {
     await page.getByLabel("Password").fill(password);
     await page.getByRole("button", { name: "Create account" }).click();
 
-    await expect(page).toHaveURL(/\/feed/, { timeout: 15_000 });
+    await expect(page).toHaveURL(/\/dashboard/, { timeout: 15_000 });
 
     await page.goto("/create");
     await page.getByLabel("Your mood").fill(moodText);
@@ -38,7 +38,7 @@ test.describe("Student journey", () => {
     await page.getByLabel("Year of study").selectOption("2");
     await page.getByLabel("Password").fill(password);
     await page.getByRole("button", { name: "Create account" }).click();
-    await expect(page).toHaveURL(/\/feed/, { timeout: 15_000 });
+    await expect(page).toHaveURL(/\/dashboard/, { timeout: 15_000 });
 
     await logoutUser(page);
     await expect(page.getByRole("link", { name: "Log in" })).toBeVisible({ timeout: 10_000 });
@@ -48,6 +48,6 @@ test.describe("Student journey", () => {
     await page.getByLabel("Password").fill(password);
     await page.getByRole("button", { name: "Sign in" }).click();
 
-    await expect(page).toHaveURL(/\/feed/, { timeout: 15_000 });
+    await expect(page).toHaveURL(/\/dashboard/, { timeout: 15_000 });
   });
 });

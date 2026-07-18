@@ -1,3 +1,5 @@
+import { expect } from "@playwright/test";
+
 export const E2E_ADMIN = {
   email: "e2e-admin@test.local",
   password: "TestPass1",
@@ -15,7 +17,7 @@ export async function registerStudent(
   await page.getByLabel("Year of study").selectOption("2");
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Create account" }).click();
-  await page.waitForURL(/\/feed/, { timeout: 15_000 });
+  await expect(page).toHaveURL(/\/dashboard/, { timeout: 15_000 });
 }
 
 export async function loginUser(
@@ -27,13 +29,14 @@ export async function loginUser(
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Sign in" }).click();
-  await page.waitForURL(/\/feed/, { timeout: 15_000 });
+  await expect(page).toHaveURL(/\/dashboard/, { timeout: 15_000 });
 }
 
 export async function logoutUser(page: import("@playwright/test").Page): Promise<void> {
   await page.getByTestId("user-menu-trigger").click();
   await page.getByTestId("user-menu-logout").click();
-  await page.waitForURL(/\/$/, { timeout: 15_000 });
+  // From protected routes, RequireAuth may land on /login before navigate("/").
+  await expect(page.getByRole("link", { name: "Log in" })).toBeVisible({ timeout: 15_000 });
 }
 
 export async function createMoodWithTag(

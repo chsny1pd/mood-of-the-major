@@ -72,6 +72,7 @@ export async function fetchAdminReports(params?: {
   status?: string;
   targetType?: string;
   cursor?: string;
+  limit?: number;
 }) {
   const response = await apiClient.get<{
     success: true;

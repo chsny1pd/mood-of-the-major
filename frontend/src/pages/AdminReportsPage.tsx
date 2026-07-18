@@ -20,7 +20,9 @@ export function AdminReportsPage() {
 
   const reportsQuery = useQuery({
     queryKey: pendingReportsQueryKey,
-    queryFn: () => fetchAdminReports({ status: "pending" }),
+    // Oldest-first queue with no cursor UI yet — fetch API max so newer pending
+    // reports remain visible when pendingCount exceeds the default page size.
+    queryFn: () => fetchAdminReports({ status: "pending", limit: 50 }),
   });
 
   const resolveMutation = useMutation({
