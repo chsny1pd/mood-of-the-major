@@ -15,7 +15,7 @@ export interface StatisticsScope {
 }
 
 export interface DistributionItem {
-  tag: { id: string; slug: string; name: string };
+  tag: { id: string; slug: string; name: string; iconKey: string | null };
   moodCount: number | null;
   percentage: number | null;
   rank: number | null;
@@ -99,8 +99,8 @@ export class StatisticsService {
 
       return {
         tag: tag
-          ? { id: tag.id, slug: tag.slug, name: tag.name }
-          : { id: row.tagId, slug: "unknown", name: "Unknown" },
+          ? { id: tag.id, slug: tag.slug, name: tag.name, iconKey: tag.iconKey }
+          : { id: row.tagId, slug: "unknown", name: "Unknown", iconKey: null },
         moodCount: showCounts ? row.moodCount : null,
         percentage: showCounts ? row.percentage : null,
         rank: showCounts ? row.rank : null,

@@ -30,6 +30,7 @@ export interface PendingTagSubmission {
   name: string;
   nameTh: string | null;
   slug: string;
+  iconKey: string | null;
   approvalStatus: ApprovalStatus;
   submittedBy: string | null;
   createdAt: Date;
@@ -56,6 +57,7 @@ export interface SubmitMajorInput {
 export interface SubmitTagInput {
   name: string;
   nameTh?: string | null;
+  iconKey?: string | null;
   submittedBy: string;
 }
 
@@ -63,6 +65,7 @@ export interface UpdatePendingSubmissionInput {
   name?: string;
   nameTh?: string | null;
   facultyId?: string;
+  iconKey?: string | null;
 }
 
 export interface ISubmissionRepository {
@@ -84,5 +87,5 @@ export interface ISubmissionRepository {
   reject(type: SubmissionType, id: string): Promise<PendingSubmission | null>;
   listApprovedFacultiesAdmin(): Promise<Array<{ id: string; name: string; nameTh: string | null; slug: string; isActive: boolean; approvalStatus: ApprovalStatus }>>;
   listApprovedMajorsAdmin(): Promise<Array<{ id: string; facultyId: string; facultyName: string; name: string; nameTh: string | null; slug: string; isActive: boolean; approvalStatus: ApprovalStatus }>>;
-  listApprovedTagsAdmin(): Promise<Array<{ id: string; name: string; nameTh: string | null; slug: string; isActive: boolean; approvalStatus: ApprovalStatus }>>;
+  listApprovedTagsAdmin(): Promise<Array<{ id: string; name: string; nameTh: string | null; slug: string; iconKey: string | null; isActive: boolean; approvalStatus: ApprovalStatus }>>;
 }

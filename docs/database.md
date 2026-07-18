@@ -745,7 +745,7 @@ Controlled vocabulary for **mood categories / emotions** (`FR-CAT-*`) and extens
 | `slug` | String | ✓ | | | URL/filter key (e.g., `stress`, `joy`) |
 | `type` | String | ✓ | | `emotion` | `emotion` (mood category), future: `topic`, `reaction` |
 | `colorToken` | String | | ✓ | `null` | Design system color key (`DESIGN.md` Emotion Badge) |
-| `iconKey` | String | | ✓ | `null` | Icon identifier |
+| `iconKey` | String | | ✓ | `null` | Emoji glyph (or legacy ascii key) shown with the emotion |
 | `isActive` | Boolean | ✓ | | `true` | Deactivate instead of delete (`FR-CAT-003`) |
 | `sortOrder` | Number | | ✓ | `0` | Picker ordering |
 | `createdAt` | Date | ✓ | | auto | |

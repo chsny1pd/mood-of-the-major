@@ -44,7 +44,7 @@ const sampleMood: MoodWithRelations = {
   faculty: { id: "665a1b2c3d4e5f6789012345", name: "Engineering", nameTh: null, slug: "engineering" },
   major: { id: "665a1b2c3d4e5f6789012346", name: "Computer Science", nameTh: null, slug: "computer-science" },
   tagDetails: [
-    { id: "665a1b2c3d4e5f6789012349", slug: "stress", name: "Stress", nameTh: null, isPrimary: true },
+    { id: "665a1b2c3d4e5f6789012349", slug: "stress", name: "Stress", nameTh: null, iconKey: "😫", isPrimary: true },
   ],
   images: [{ id: "665a1b2c3d4e5f6789012350", sortOrder: 0 }],
 };

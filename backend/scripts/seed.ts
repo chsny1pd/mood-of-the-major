@@ -17,7 +17,7 @@ const emotionTags = [
     nameTh: "ความเครียด",
     slug: "stress",
     colorToken: "emotion-stress",
-    iconKey: "stress",
+    iconKey: "😫",
     sortOrder: 1,
   },
   {
@@ -25,7 +25,7 @@ const emotionTags = [
     nameTh: "ความสุข",
     slug: "joy",
     colorToken: "emotion-joy",
-    iconKey: "joy",
+    iconKey: "😊",
     sortOrder: 2,
   },
   {
@@ -33,7 +33,7 @@ const emotionTags = [
     nameTh: "ความวิตกกังวล",
     slug: "anxiety",
     colorToken: "emotion-anxiety",
-    iconKey: "anxiety",
+    iconKey: "😰",
     sortOrder: 3,
   },
   {
@@ -41,7 +41,7 @@ const emotionTags = [
     nameTh: "ความกตัญญู",
     slug: "gratitude",
     colorToken: "emotion-gratitude",
-    iconKey: "gratitude",
+    iconKey: "🙏",
     sortOrder: 4,
   },
 ];

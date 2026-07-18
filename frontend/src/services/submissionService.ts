@@ -15,6 +15,7 @@ export interface SubmitMajorPayload {
 export interface SubmitTagPayload {
   name: string;
   nameTh?: string | null;
+  iconKey?: string | null;
 }
 
 export interface SubmissionResult {

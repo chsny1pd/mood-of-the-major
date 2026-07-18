@@ -125,6 +125,7 @@ async function hydrateMoods(
             slug: tag.slug,
             name: tag.name,
             nameTh: tag.nameTh ?? null,
+            iconKey: tag.iconKey ?? null,
             isPrimary: mt.isPrimary,
           };
         })

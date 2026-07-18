@@ -141,6 +141,7 @@ export function MoodDetailPage() {
                   key={tag.id}
                   name={localizedName(tag)}
                   slug={tag.slug}
+                  iconKey={tag.iconKey}
                   isPrimary={tag.isPrimary}
                 />
               ))}

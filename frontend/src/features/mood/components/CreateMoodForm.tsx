@@ -164,7 +164,7 @@ export function CreateMoodForm() {
                         : "bg-stone-100 text-stone-700 hover:bg-stone-200 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700"
                     }`}
                   >
-                    <span aria-hidden="true">{emotionEmoji(tag.slug)}</span> {localizedName(tag)}
+                    <span aria-hidden="true">{emotionEmoji(tag.iconKey, tag.slug)}</span> {localizedName(tag)}
                     {isPrimary ? " ★" : ""}
                   </button>
                 );

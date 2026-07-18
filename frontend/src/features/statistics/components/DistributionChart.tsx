@@ -23,7 +23,7 @@ export function DistributionChart({ data }: DistributionChartProps) {
   const chartData = data
     .filter((item) => item.meetsThreshold && item.moodCount !== null)
     .map((item) => ({
-      name: `${emotionEmoji(item.tag.slug)} ${localizedName(item.tag)}`,
+      name: `${emotionEmoji(item.tag.iconKey, item.tag.slug)} ${localizedName(item.tag)}`,
       count: item.moodCount ?? 0,
     }));
 

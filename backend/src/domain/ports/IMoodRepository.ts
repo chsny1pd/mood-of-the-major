@@ -23,6 +23,7 @@ export interface MoodWithRelations extends Mood {
     slug: string;
     name: string;
     nameTh: string | null;
+    iconKey: string | null;
     isPrimary: boolean;
   }>;
   images: Array<{ id: string; sortOrder: number }>;

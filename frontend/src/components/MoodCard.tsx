@@ -43,7 +43,12 @@ export const MoodCard = memo(function MoodCard({
 
       <div className="mb-3 flex flex-wrap items-center gap-2">
         {primaryTag ? (
-          <EmotionBadge name={localizedName(primaryTag)} slug={primaryTag.slug} isPrimary />
+          <EmotionBadge
+            name={localizedName(primaryTag)}
+            slug={primaryTag.slug}
+            iconKey={primaryTag.iconKey}
+            isPrimary
+          />
         ) : null}
         {mood.faculty ? (
           <Link

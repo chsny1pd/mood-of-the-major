@@ -2,8 +2,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { EmptyState } from "../components/EmptyState";
+import { EmojiPicker } from "../components/EmojiPicker";
 import { queryKeys } from "../constants/queryKeys";
 import { useLocalizedName } from "../lib/useLocalizedName";
+import { emotionEmoji } from "../lib/emotionEmoji";
 import { themeClasses } from "../lib/themeClasses";
 import {
   approvePendingSubmission,
@@ -63,7 +65,7 @@ export function AdminPendingPage() {
     }: {
       type: PendingSubmissionType;
       id: string;
-      body: { name?: string; nameTh?: string | null; facultyId?: string };
+      body: { name?: string; nameTh?: string | null; facultyId?: string; iconKey?: string | null };
     }) => updatePendingSubmission(type, id, body),
     onSuccess: () => {
       setEditingId(null);
@@ -162,7 +164,12 @@ function PendingRow({
   faculties: Array<{ id: string; name: string; nameTh: string | null }>;
   onEdit: () => void;
   onCancelEdit: () => void;
-  onSave: (body: { name?: string; nameTh?: string | null; facultyId?: string }) => void;
+  onSave: (body: {
+    name?: string;
+    nameTh?: string | null;
+    facultyId?: string;
+    iconKey?: string | null;
+  }) => void;
   onApprove: () => void;
   onReject: () => void;
 }) {
@@ -171,11 +178,14 @@ function PendingRow({
   const [name, setName] = useState(item.name);
   const [nameTh, setNameTh] = useState(item.nameTh ?? "");
   const [facultyId, setFacultyId] = useState(item.type === "major" ? item.facultyId : "");
+  const [emoji, setEmoji] = useState(
+    item.type === "tag" ? emotionEmoji(item.iconKey, item.slug) : "😊",
+  );
 
   return (
     <li className={`p-4 ${themeClasses.card}`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
+        <div className="min-w-0 flex-1">
           <p className={`text-xs uppercase tracking-wide ${themeClasses.muted}`}>
             {typeLabel(item.type, t)}
           </p>
@@ -206,10 +216,16 @@ function PendingRow({
                   ))}
                 </select>
               ) : null}
+              {item.type === "tag" ? <EmojiPicker value={emoji} onChange={setEmoji} required /> : null}
             </div>
           ) : (
             <>
-              <p className={`mt-1 font-medium ${themeClasses.subheading}`}>{localizedName(item)}</p>
+              <p className={`mt-1 font-medium ${themeClasses.subheading}`}>
+                {item.type === "tag" ? (
+                  <span aria-hidden="true">{emotionEmoji(item.iconKey, item.slug)} </span>
+                ) : null}
+                {localizedName(item)}
+              </p>
               {item.type === "major" ? (
                 <p className={`text-sm ${themeClasses.body}`}>
                   {t("admin.tableFaculty")}: {item.facultyName}
@@ -226,12 +242,13 @@ function PendingRow({
             <>
               <button
                 type="button"
-                disabled={isBusy}
+                disabled={isBusy || (item.type === "tag" && !emoji.trim())}
                 onClick={() =>
                   onSave({
                     name: name.trim(),
                     nameTh: nameTh.trim() || null,
                     ...(item.type === "major" ? { facultyId } : {}),
+                    ...(item.type === "tag" ? { iconKey: emoji.trim() } : {}),
                   })
                 }
                 className="rounded-md bg-orange-800 px-3 py-1 text-sm text-white disabled:opacity-50 dark:bg-orange-700"

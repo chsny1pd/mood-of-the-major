@@ -3,10 +3,12 @@ import { emotionEmoji } from "../lib/emotionEmoji";
 export function EmotionBadge({
   name,
   slug,
+  iconKey,
   isPrimary = false,
 }: {
   name: string;
   slug?: string | null;
+  iconKey?: string | null;
   isPrimary?: boolean;
 }) {
   return (
@@ -17,7 +19,7 @@ export function EmotionBadge({
           : "bg-stone-100 text-stone-700"
       }`}
     >
-      <span aria-hidden="true">{emotionEmoji(slug)}</span>
+      <span aria-hidden="true">{emotionEmoji(iconKey, slug)}</span>
       {name}
     </span>
   );

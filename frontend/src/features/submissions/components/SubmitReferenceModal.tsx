@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import { EmojiPicker } from "../../../components/EmojiPicker";
 import { themeClasses } from "../../../lib/themeClasses";
 import { getApiErrorMessage } from "../../../services/apiClient";
 import {
@@ -35,6 +36,7 @@ export function SubmitReferenceModal({
   const { isAuthenticated } = useAuth();
   const [name, setName] = useState("");
   const [nameTh, setNameTh] = useState("");
+  const [emoji, setEmoji] = useState("😊");
   const [selectedFacultyId, setSelectedFacultyId] = useState(facultyId ?? "");
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -62,7 +64,7 @@ export function SubmitReferenceModal({
         }
         return submitMajor(resolvedFacultyId, payload);
       }
-      return submitTag(payload);
+      return submitTag({ ...payload, iconKey: emoji.trim() || "🏷️" });
     },
     onSuccess: () => {
       setSuccessMessage(t(`submissions.success.${type}`));
@@ -90,7 +92,7 @@ export function SubmitReferenceModal({
       aria-modal="true"
       aria-labelledby="submit-reference-title"
     >
-      <div className={`w-full max-w-md p-6 shadow-xl ${themeClasses.cardLg}`}>
+      <div className={`max-h-[90vh] w-full max-w-md overflow-y-auto p-6 shadow-xl ${themeClasses.cardLg}`}>
         <h2 id="submit-reference-title" className={`text-lg font-semibold ${themeClasses.heading}`}>
           {t(titleKey)}
         </h2>
@@ -100,7 +102,11 @@ export function SubmitReferenceModal({
           <div className="mt-4 space-y-4">
             <p className={`text-sm ${themeClasses.body}`}>{t("submissions.loginRequired")}</p>
             <div className="flex justify-end gap-2">
-              <button type="button" onClick={onClose} className={`rounded-xl border px-4 py-2 text-sm ${themeClasses.border} ${themeClasses.body}`}>
+              <button
+                type="button"
+                onClick={onClose}
+                className={`rounded-xl border px-4 py-2 text-sm ${themeClasses.border} ${themeClasses.body}`}
+              >
                 {t("common.cancel")}
               </button>
               <Link
@@ -186,6 +192,8 @@ export function SubmitReferenceModal({
               />
             </div>
 
+            {type === "tag" ? <EmojiPicker value={emoji} onChange={setEmoji} required /> : null}
+
             {mutation.isError ? (
               <p className="text-sm text-red-600 dark:text-red-400">
                 {getApiErrorMessage(mutation.error, t("submissions.submitError"))}
@@ -202,7 +210,12 @@ export function SubmitReferenceModal({
               </button>
               <button
                 type="submit"
-                disabled={mutation.isPending || name.trim().length < 2 || (type === "major" && !resolvedFacultyId)}
+                disabled={
+                  mutation.isPending ||
+                  name.trim().length < 2 ||
+                  (type === "major" && !resolvedFacultyId) ||
+                  (type === "tag" && !emoji.trim())
+                }
                 className="rounded-xl bg-orange-800 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-900 disabled:opacity-60 dark:bg-orange-700 dark:hover:bg-orange-600"
               >
                 {mutation.isPending ? t("submissions.submitting") : t("submissions.submit")}

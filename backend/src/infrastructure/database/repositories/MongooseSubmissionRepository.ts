@@ -126,6 +126,7 @@ export class MongooseSubmissionRepository implements ISubmissionRepository {
       nameTh: input.nameTh?.trim() ?? null,
       slug,
       type: "emotion",
+      iconKey: input.iconKey?.trim() || null,
       isActive: false,
       approvalStatus: "pending",
       submittedBy: input.submittedBy,
@@ -137,6 +138,7 @@ export class MongooseSubmissionRepository implements ISubmissionRepository {
       name: doc.name,
       nameTh: doc.nameTh ?? null,
       slug: doc.slug,
+      iconKey: doc.iconKey ?? null,
       approvalStatus: "pending",
       submittedBy: input.submittedBy,
       createdAt: doc.createdAt,
@@ -204,6 +206,7 @@ export class MongooseSubmissionRepository implements ISubmissionRepository {
           name: tag.name,
           nameTh: tag.nameTh ?? null,
           slug: tag.slug,
+          iconKey: tag.iconKey ?? null,
           approvalStatus: tag.approvalStatus as ApprovalStatus,
           submittedBy: tag.submittedBy?.toString() ?? null,
           createdAt: tag.createdAt,
@@ -282,6 +285,7 @@ export class MongooseSubmissionRepository implements ISubmissionRepository {
       name: tag.name,
       nameTh: tag.nameTh ?? null,
       slug: tag.slug,
+      iconKey: tag.iconKey ?? null,
       approvalStatus: tag.approvalStatus as ApprovalStatus,
       submittedBy: tag.submittedBy?.toString() ?? null,
       createdAt: tag.createdAt,
@@ -362,6 +366,7 @@ export class MongooseSubmissionRepository implements ISubmissionRepository {
       );
     }
     if (input.nameTh !== undefined) patch.nameTh = input.nameTh?.trim() ?? null;
+    if (input.iconKey !== undefined) patch.iconKey = input.iconKey?.trim() || null;
 
     await TagModel.updateOne({ _id: id, type: "emotion", approvalStatus: "pending" }, patch);
     return this.findTagPending(id);
@@ -423,6 +428,7 @@ export class MongooseSubmissionRepository implements ISubmissionRepository {
       name: doc.name,
       nameTh: doc.nameTh ?? null,
       slug: doc.slug,
+      iconKey: doc.iconKey ?? null,
       approvalStatus: "approved",
       submittedBy: doc.submittedBy?.toString() ?? null,
       createdAt: doc.createdAt,
@@ -485,6 +491,7 @@ export class MongooseSubmissionRepository implements ISubmissionRepository {
       name: doc.name,
       nameTh: doc.nameTh ?? null,
       slug: doc.slug,
+      iconKey: doc.iconKey ?? null,
       approvalStatus: "rejected",
       submittedBy: doc.submittedBy?.toString() ?? null,
       createdAt: doc.createdAt,
@@ -530,6 +537,7 @@ export class MongooseSubmissionRepository implements ISubmissionRepository {
       name: tag.name,
       nameTh: tag.nameTh ?? null,
       slug: tag.slug,
+      iconKey: tag.iconKey ?? null,
       isActive: tag.isActive,
       approvalStatus: tag.approvalStatus as ApprovalStatus,
     }));

@@ -50,7 +50,10 @@ export class SubmissionService {
     });
   }
 
-  async submitTag(userId: string, input: { name: string; nameTh?: string | null }) {
+  async submitTag(
+    userId: string,
+    input: { name: string; nameTh?: string | null; iconKey?: string | null },
+  ) {
     const name = validateName(input.name, "name");
 
     if (await this.submissions.tagNameExists(name)) {
@@ -60,6 +63,7 @@ export class SubmissionService {
     return this.submissions.submitTag({
       name,
       nameTh: input.nameTh ?? null,
+      iconKey: input.iconKey?.trim() || null,
       submittedBy: userId,
     });
   }
@@ -71,9 +75,14 @@ export class SubmissionService {
   updatePending(
     type: SubmissionType,
     id: string,
-    input: { name?: string; nameTh?: string | null; facultyId?: string },
+    input: { name?: string; nameTh?: string | null; facultyId?: string; iconKey?: string | null },
   ) {
-    const patch: { name?: string; nameTh?: string | null; facultyId?: string } = {};
+    const patch: {
+      name?: string;
+      nameTh?: string | null;
+      facultyId?: string;
+      iconKey?: string | null;
+    } = {};
 
     if (input.name !== undefined) {
       patch.name = validateName(input.name, "name");
@@ -85,6 +94,10 @@ export class SubmissionService {
 
     if (input.facultyId !== undefined) {
       patch.facultyId = input.facultyId;
+    }
+
+    if (input.iconKey !== undefined) {
+      patch.iconKey = input.iconKey?.trim() || null;
     }
 
     return this.submissions.updatePending(type, id, patch);

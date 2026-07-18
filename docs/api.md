@@ -2205,7 +2205,7 @@ Includes `reporterId` (admin only), full content snapshot, target metadata.
   "slug": "burnout",
   "type": "emotion",
   "colorToken": "dusty-orange",
-  "iconKey": "burnout"
+  "iconKey": "🔥"
 }
 ```
 
@@ -2350,7 +2350,7 @@ Includes `reporterId` (admin only), full content snapshot, target metadata.
   "slug": "stress",
   "name": "Stress",
   "colorToken": "dusty-orange",
-  "iconKey": "stress"
+  "iconKey": "😫"
 }
 ```
 

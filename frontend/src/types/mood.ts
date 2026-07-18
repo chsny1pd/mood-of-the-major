@@ -12,7 +12,14 @@ export interface AnonymousMood {
   content: string;
   faculty: { id: string; name: string; nameTh: string | null; slug: string } | null;
   major: { id: string; name: string; nameTh: string | null; slug: string } | null;
-  tags: Array<{ id: string; slug: string; name: string; nameTh: string | null; isPrimary: boolean }>;
+  tags: Array<{
+    id: string;
+    slug: string;
+    name: string;
+    nameTh: string | null;
+    iconKey?: string | null;
+    isPrimary: boolean;
+  }>;
   commentCount: number;
   reactionSummary: Record<string, number>;
   imageCount: number;

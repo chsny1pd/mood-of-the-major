@@ -69,7 +69,7 @@ export function AdminMoodsPage() {
               {tags.map((tag) => (
                 <tr key={tag.id} className={`border-b ${themeClasses.border} last:border-0 ${themeClasses.hoverRow}`}>
                   <td className={`px-4 py-3 ${themeClasses.subheading}`}>
-                    <span aria-hidden="true">{emotionEmoji(tag.slug)}</span> {localizedName(tag)}
+                    <span aria-hidden="true">{emotionEmoji(tag.iconKey, tag.slug)}</span> {localizedName(tag)}
                   </td>
                   <td className={`px-4 py-3 ${themeClasses.body}`}>{tag.slug}</td>
                   <td className={`px-4 py-3 capitalize ${themeClasses.body}`}>

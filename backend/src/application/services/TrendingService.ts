@@ -9,7 +9,7 @@ import { resolveScopeType } from "./StatisticsAggregationJob.js";
 import type { StatisticsScopeType } from "../../domain/constants/statisticsConstants.js";
 
 export interface TrendingItem {
-  tag: { id: string; slug: string; name: string };
+  tag: { id: string; slug: string; name: string; iconKey: string | null };
   moodCount: number | null;
   delta: number | null;
   direction: "rising" | "declining" | "stable";
@@ -91,8 +91,8 @@ export class TrendingService {
 
         return {
           tag: tag
-            ? { id: tag.id, slug: tag.slug, name: tag.name }
-            : { id: tagId, slug: "unknown", name: "Unknown" },
+            ? { id: tag.id, slug: tag.slug, name: tag.name, iconKey: tag.iconKey }
+            : { id: tagId, slug: "unknown", name: "Unknown", iconKey: null },
           moodCount: meetsThreshold ? row.moodCount : null,
           delta: meetsThreshold ? delta : null,
           direction,

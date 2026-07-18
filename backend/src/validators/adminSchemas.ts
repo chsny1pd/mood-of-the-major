@@ -65,7 +65,7 @@ export const createTagSchema = z.object({
     .regex(/^[a-z0-9-]+$/),
   type: z.literal("emotion").optional(),
   colorToken: z.string().max(80).optional(),
-  iconKey: z.string().max(80).optional(),
+  iconKey: z.string().trim().min(1).max(16).optional(),
   sortOrder: z.coerce.number().int().min(0).optional(),
 });
 
@@ -74,7 +74,7 @@ export const updateTagSchema = z.object({
   isActive: z.boolean().optional(),
   sortOrder: z.coerce.number().int().min(0).optional(),
   colorToken: z.string().max(80).optional(),
-  iconKey: z.string().max(80).optional(),
+  iconKey: z.string().trim().min(1).max(16).nullable().optional(),
 });
 
 export const notificationListSchema = cursorQuery.extend({

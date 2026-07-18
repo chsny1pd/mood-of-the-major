@@ -70,7 +70,7 @@ export const FilterPanel = memo(function FilterPanel({ filters, onChange, showSo
           <option value="">{t("filter.allEmotions")}</option>
           {tagsQuery.data?.map((tag) => (
             <option key={tag.id} value={tag.slug}>
-              {emotionEmoji(tag.slug)} {localizedName(tag)}
+              {emotionEmoji(tag.iconKey, tag.slug)} {localizedName(tag)}
             </option>
           ))}
         </select>

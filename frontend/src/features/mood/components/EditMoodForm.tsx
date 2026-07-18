@@ -115,7 +115,7 @@ export function EditMoodForm({ mood, onCancel, onSaved }: EditMoodFormProps) {
                       : "bg-stone-100 text-stone-700 hover:bg-stone-200"
                   }`}
                 >
-                  <span aria-hidden="true">{emotionEmoji(tag.slug)}</span> {localizedName(tag)}
+                  <span aria-hidden="true">{emotionEmoji(tag.iconKey, tag.slug)}</span> {localizedName(tag)}
                   {isPrimary ? " ★" : ""}
                 </button>
               );

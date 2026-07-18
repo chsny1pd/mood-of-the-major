@@ -444,6 +444,8 @@
     "description": "Community suggestions are reviewed by administrators before being added.",
     "nameEn": "Name (English)",
     "nameThOptional": "Name (Thai, optional)",
+    "emoji": "Emoji",
+    "emojiCustom": "Or type your own emoji",
     "submit": "Submit suggestion",
     "submitting": "Submitting...",
     "submitError": "Could not submit suggestion",

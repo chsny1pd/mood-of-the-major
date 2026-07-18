@@ -665,7 +665,7 @@ export class AdminService {
   async updatePendingSubmission(
     type: SubmissionType,
     id: string,
-    input: { name?: string; nameTh?: string | null; facultyId?: string },
+    input: { name?: string; nameTh?: string | null; facultyId?: string; iconKey?: string | null },
   ) {
     const updated = await this.submissions.updatePending(type, id, input);
     if (!updated) {

@@ -175,6 +175,7 @@ export interface AdminMoodTagItem {
   name: string;
   nameTh: string | null;
   slug: string;
+  iconKey: string | null;
   isActive: boolean;
   approvalStatus: string;
 }
@@ -211,6 +212,7 @@ export interface PendingTagSubmissionItem {
   name: string;
   nameTh: string | null;
   slug: string;
+  iconKey: string | null;
   approvalStatus: string;
   submittedBy: string | null;
   createdAt: string;
@@ -265,7 +267,7 @@ export async function fetchPendingSubmissions(params?: { type?: PendingSubmissio
 export async function updatePendingSubmission(
   type: PendingSubmissionType,
   id: string,
-  body: { name?: string; nameTh?: string | null; facultyId?: string },
+  body: { name?: string; nameTh?: string | null; facultyId?: string; iconKey?: string | null },
 ) {
   const response = await apiClient.patch<{ success: true; data: PendingSubmissionItem }>(
     `/admin/submissions/${type}/${id}`,
