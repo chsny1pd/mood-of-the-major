@@ -57,6 +57,17 @@ describe("Engagement routes", () => {
     expect(response.body.error.code).toBe("AUTH_REQUIRED");
   });
 
+  it("DELETE /api/v1/reactions requires authentication", async () => {
+    const response = await request(app).delete("/api/v1/reactions").send({
+      targetType: "mood",
+      targetId: "665a1b2c3d4e5f6789012348",
+      emoji: "💙",
+    });
+
+    expect(response.status).toBe(401);
+    expect(response.body.error.code).toBe("AUTH_REQUIRED");
+  });
+
   it("GET /api/v1/statistics/dashboard requires authentication", async () => {
     const response = await request(app).get("/api/v1/statistics/dashboard");
 

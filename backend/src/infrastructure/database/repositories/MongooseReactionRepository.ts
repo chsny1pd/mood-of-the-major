@@ -4,6 +4,8 @@ import type {
   ReactionTargetType,
   ToggleReactionInput,
 } from "../../../domain/entities/Reaction.js";
+import { MAX_REACTIONS_PER_USER } from "../../../domain/constants/engagementConstants.js";
+import { AppError } from "../../../domain/errors/AppError.js";
 import type { IReactionRepository } from "../../../domain/ports/IReactionRepository.js";
 import { CommentModel } from "../models/Comment.js";
 import { MoodModel } from "../models/Mood.js";
@@ -79,7 +81,7 @@ export class MongooseReactionRepository implements IReactionRepository {
       };
     }
 
-    await ReactionModel.create({
+    const created = await ReactionModel.create({
       userId: input.userId,
       targetType: input.targetType,
       targetId: input.targetId,
@@ -92,6 +94,20 @@ export class MongooseReactionRepository implements IReactionRepository {
       input.emoji,
       1,
     );
+    const count = await this.countUserReactions(
+      input.userId,
+      input.targetType,
+      input.targetId,
+    );
+    if (count > MAX_REACTIONS_PER_USER) {
+      await created.deleteOne();
+      await adjustTargetSummary(input.targetType, input.targetId, input.emoji, -1);
+      throw new AppError("Reaction limit reached", {
+        statusCode: 422,
+        code: "REACTION_LIMIT_REACHED",
+      });
+    }
+
     const userReactions = await this.findUserReactions(
       input.userId,
       input.targetType,

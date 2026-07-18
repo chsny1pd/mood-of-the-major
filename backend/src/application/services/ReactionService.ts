@@ -86,9 +86,21 @@ export class ReactionService {
     targetId: string,
     emoji: string,
   ) {
+    const normalizedEmoji = emoji.trim();
+    if (!isValidReactionEmoji(normalizedEmoji)) {
+      throw new ValidationError("Invalid reaction emoji", [
+        { field: "emoji", message: "Must be a single emoji." },
+      ]);
+    }
+
     await this.assertTargetExists(targetType, targetId);
 
-    const result = await this.reactions.remove({ userId, targetType, targetId, emoji });
+    const result = await this.reactions.remove({
+      userId,
+      targetType,
+      targetId,
+      emoji: normalizedEmoji,
+    });
 
     return {
       targetType,

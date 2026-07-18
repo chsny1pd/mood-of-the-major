@@ -81,6 +81,15 @@ describe("ReactionService.toggleReaction", () => {
 });
 
 describe("ReactionService reaction views", () => {
+  it("rejects invalid emoji when removing a reaction", async () => {
+    const { service, reactions } = makeService();
+
+    await expect(
+      service.removeReaction("u1", "mood", "m1", " empathy "),
+    ).rejects.toMatchObject({ code: "VALIDATION_FAILED" });
+    expect(reactions.remove).not.toHaveBeenCalled();
+  });
+
   it("removes one emoji and returns the repository mutation view", async () => {
     const remove = vi.fn().mockResolvedValue({
       emoji: "💙",
@@ -90,7 +99,7 @@ describe("ReactionService reaction views", () => {
     });
     const { service } = makeService({ remove });
 
-    const result = await service.removeReaction("u1", "mood", "m1", "💙");
+    const result = await service.removeReaction("u1", "mood", "m1", " 💙 ");
 
     expect(remove).toHaveBeenCalledWith({
       userId: "u1",
