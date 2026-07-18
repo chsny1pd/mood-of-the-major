@@ -30,8 +30,8 @@ export const LandingPage = memo(function LandingPage() {
           <p className="font-display text-3xl font-semibold tracking-tight text-orange-700 dark:text-orange-300 sm:text-4xl">
             {t("app.name")}
           </p>
-          {/* LCP element: body font (DM Sans) so paint is not blocked on Fraunces */}
-          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-stone-900 dark:text-stone-100 sm:text-5xl">
+          {/* LCP element: critical .lcp-hero styles in index.html + body font (DM Sans) */}
+          <h1 className="lcp-hero">
             {t("landing.headline")}
           </h1>
           <p className="mt-6 text-lg leading-relaxed text-stone-600 dark:text-stone-300">

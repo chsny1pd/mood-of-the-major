@@ -6,6 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Anonymous emotional sharing for university communities." />
     <title>Mood of the Major</title>
+    <!-- Critical LCP styles for `/` — sized headline before the deferred full CSS loads -->
+    <style>
+      .lcp-hero {
+        margin-top: 1rem;
+        font-size: 2.25rem;
+        font-weight: 600;
+        letter-spacing: -0.025em;
+        line-height: 1.15;
+        color: #1c1917;
+      }
+      .dark .lcp-hero {
+        color: #f5f5f4;
+      }
+      @media (min-width: 640px) {
+        .lcp-hero {
+          font-size: 3rem;
+        }
+      }
+    </style>
     <script>
       (function () {
         var storageKey = "motm-theme";
@@ -52,7 +71,7 @@
           '<main class="flex-1"><section class="mx-auto max-w-5xl px-4 py-16 sm:px-6 sm:py-24">' +
           '<div class="max-w-2xl">' +
           '<p class="text-3xl font-semibold tracking-tight text-orange-700 dark:text-orange-300 sm:text-4xl">Mood of the Major</p>' +
-          '<h1 class="mt-4 text-4xl font-semibold tracking-tight text-stone-900 dark:text-stone-100 sm:text-5xl">Share how you feel \u2014 anonymously, safely, together.</h1>' +
+          '<h1 class="lcp-hero">Share how you feel \u2014 anonymously, safely, together.</h1>' +
           '<p class="mt-6 text-lg leading-relaxed text-stone-600 dark:text-stone-300">Mood of the Major helps students express emotional experience without revealing identity, while communities understand collective mood across faculties and majors.</p>' +
           "</div></section></main></div>";
       })();

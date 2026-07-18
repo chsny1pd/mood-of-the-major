@@ -12,7 +12,7 @@
     "lint": "eslint .",
     "typecheck": "tsc -b --noEmit",
     "preview": "vite preview",
-    "lighthouse": "lhci autorun",
+    "lighthouse": "node ./scripts/lhci-autorun.mjs",
     "test": "vitest run"
   },
   "dependencies": {

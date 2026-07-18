@@ -46,7 +46,7 @@ async function ensureThaiResources(): Promise<void> {
   fullThaiLoaded = true;
 }
 
-void i18n
+const i18nInitPromise = i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
@@ -67,7 +67,7 @@ i18n.on("languageChanged", (language) => {
   applyDocumentLanguage(language.startsWith("th") ? "th" : "en");
 });
 
-void (async () => {
+void i18nInitPromise.then(async () => {
   const initialLanguage = i18n.resolvedLanguage ?? i18n.language;
   if (initialLanguage.startsWith("th")) {
     await ensureThaiPublicResources();
@@ -81,27 +81,14 @@ void (async () => {
     return;
   }
 
-  const loadFullTranslations = async () => {
-    if (initialLanguage.startsWith("th")) {
-      await ensureThaiResources();
-    } else {
-      await ensureEnglishResources();
-    }
-  };
-
-  if (typeof requestIdleCallback !== "undefined") {
-    requestIdleCallback(
-      () => {
-        void loadFullTranslations();
-      },
-      { timeout: 2000 },
-    );
+  // Non-landing routes need the full catalog before first paint of auth/app UI.
+  // Eager load (not idle) so /login does not flash raw keys like auth.signInTitle.
+  if (initialLanguage.startsWith("th")) {
+    await ensureThaiResources();
   } else {
-    setTimeout(() => {
-      void loadFullTranslations();
-    }, 200);
+    await ensureEnglishResources();
   }
-})();
+});
 
 export function applyDocumentLanguage(code: string): void {
   if (typeof document !== "undefined") {
@@ -110,6 +97,7 @@ export function applyDocumentLanguage(code: string): void {
 }
 
 export async function changeLanguage(code: string): Promise<void> {
+  await i18nInitPromise;
   if (code.startsWith("th")) {
     await ensureThaiResources();
   } else {
@@ -120,6 +108,7 @@ export async function changeLanguage(code: string): Promise<void> {
 }
 
 export async function ensureFullTranslations(): Promise<void> {
+  await i18nInitPromise;
   const language = i18n.resolvedLanguage ?? i18n.language;
   if (language.startsWith("th")) {
     await ensureThaiResources();

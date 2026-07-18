@@ -38,7 +38,7 @@ export function StaticHomeFallback() {
             <p className="text-3xl font-semibold tracking-tight text-orange-700 dark:text-orange-300 sm:text-4xl">
               {copy.app.name}
             </p>
-            <h1 className="mt-4 text-4xl font-semibold tracking-tight text-stone-900 dark:text-stone-100 sm:text-5xl">
+            <h1 className="lcp-hero">
               {copy.landing.headline}
             </h1>
             <p className="mt-6 text-lg leading-relaxed text-stone-600 dark:text-stone-300">
