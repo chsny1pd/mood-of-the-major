@@ -62,7 +62,7 @@ export interface IMoodRepository {
   isAuthor(moodId: string, authorId: string): Promise<boolean>;
   incrementCommentCount(moodId: string): Promise<void>;
   decrementCommentCount(moodId: string): Promise<void>;
-  adjustReactionSummary(moodId: string, reactionType: string, delta: number): Promise<Record<string, number>>;
+  adjustReactionSummary(moodId: string, emoji: string, delta: number): Promise<Record<string, number>>;
   incrementReportCount(moodId: string): Promise<void>;
   isActive(moodId: string): Promise<boolean>;
   moderateRemove(moodId: string, adminId: string, moderationNote: string | null): Promise<MoodWithRelations | null>;

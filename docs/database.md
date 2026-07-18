@@ -108,7 +108,7 @@ The schema uses a **hybrid approach** — normalized references for entities wit
 | 4 | `moods` | Anonymous mood posts |
 | 5 | `moodimages` | R2 image metadata (no binaries) |
 | 6 | `comments` | Anonymous comments on moods |
-| 7 | `reactions` | One reaction per user per target |
+| 7 | `reactions` | Up to 7 distinct emoji per user per target |
 | 8 | `reports` | User-flagged content for moderation |
 | 9 | `notifications` | In-app user notifications |
 | 10 | `bookmarks` | Private user-to-mood saves |

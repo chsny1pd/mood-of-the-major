@@ -146,10 +146,10 @@ export class MongooseCommentRepository implements ICommentRepository {
 
   async adjustReactionSummary(
     commentId: string,
-    reactionType: string,
+    emoji: string,
     delta: number,
   ): Promise<Record<string, number>> {
-    const key = `reactionSummary.${reactionType}`;
+    const key = `reactionSummary.${emoji}`;
     const updated = await CommentModel.findOneAndUpdate(
       { _id: commentId },
       { $inc: { [key]: delta } },

@@ -335,10 +335,10 @@ export class MongooseMoodRepository implements IMoodRepository {
 
   async adjustReactionSummary(
     moodId: string,
-    reactionType: string,
+    emoji: string,
     delta: number,
   ): Promise<Record<string, number>> {
-    const key = `reactionSummary.${reactionType}`;
+    const key = `reactionSummary.${emoji}`;
     const updated = await MoodModel.findOneAndUpdate(
       { _id: moodId },
       { $inc: { [key]: delta }, $set: { lastActivityAt: new Date() } },
