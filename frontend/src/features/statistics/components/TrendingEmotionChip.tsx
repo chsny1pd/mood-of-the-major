@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useLocalizedName } from "../../../lib/useLocalizedName";
+import { emotionEmoji } from "../../../lib/emotionEmoji";
 import type { TrendingItem } from "../../../types/statistics";
 
 interface TrendingEmotionChipProps {
@@ -20,7 +21,9 @@ export function TrendingEmotionChip({ item }: TrendingEmotionChipProps) {
   return (
     <article className={`rounded-xl border px-4 py-3 ${directionClass}`}>
       <div className="flex items-center justify-between gap-2">
-        <h3 className="font-semibold">{localizedName(item.tag)}</h3>
+        <h3 className="font-semibold">
+          <span aria-hidden="true">{emotionEmoji(item.tag.slug)}</span> {localizedName(item.tag)}
+        </h3>
         <span className="text-xs font-medium uppercase tracking-wide">
           {t(`trendingChip.${item.direction}`)}
         </span>

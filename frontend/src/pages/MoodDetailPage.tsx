@@ -140,6 +140,7 @@ export function MoodDetailPage() {
                 <EmotionBadge
                   key={tag.id}
                   name={localizedName(tag)}
+                  slug={tag.slug}
                   isPrimary={tag.isPrimary}
                 />
               ))}

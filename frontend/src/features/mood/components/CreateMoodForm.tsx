@@ -15,6 +15,7 @@ import { createMood } from "../../../services/moodService";
 import { fetchFaculties, fetchMajors } from "../../../services/referenceService";
 import type { SubmissionType } from "../../../services/submissionService";
 import { useLocalizedName } from "../../../lib/useLocalizedName";
+import { emotionEmoji } from "../../../lib/emotionEmoji";
 import { useImageUpload } from "../../upload/hooks/useImageUpload";
 import { createMoodSchema, type CreateMoodFormValues } from "../schemas";
 
@@ -163,7 +164,7 @@ export function CreateMoodForm() {
                         : "bg-stone-100 text-stone-700 hover:bg-stone-200 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700"
                     }`}
                   >
-                    {localizedName(tag)}
+                    <span aria-hidden="true">{emotionEmoji(tag.slug)}</span> {localizedName(tag)}
                     {isPrimary ? " ★" : ""}
                   </button>
                 );
@@ -175,16 +176,16 @@ export function CreateMoodForm() {
           ) : null}
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <div className="mb-1 flex items-center justify-between">
-              <label htmlFor="facultyId" className={themeClasses.label}>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
+          <div className="min-w-0">
+            <div className="mb-1.5 flex items-center justify-between gap-3">
+              <label htmlFor="facultyId" className={`min-w-0 truncate ${themeClasses.label}`}>
                 {t("moodForm.faculty")}
               </label>
               <button
                 type="button"
                 onClick={() => setSuggestType("faculty")}
-                className={`text-xs ${themeClasses.linkSubtle}`}
+                className={`shrink-0 text-xs ${themeClasses.linkSubtle}`}
               >
                 {t("submissions.addMore")}
               </button>
@@ -208,16 +209,16 @@ export function CreateMoodForm() {
             </select>
           </div>
 
-          <div>
-            <div className="mb-1 flex items-center justify-between">
-              <label htmlFor="majorId" className={themeClasses.label}>
+          <div className="min-w-0">
+            <div className="mb-1.5 flex items-center justify-between gap-3">
+              <label htmlFor="majorId" className={`min-w-0 truncate ${themeClasses.label}`}>
                 {t("moodForm.major")}
               </label>
               <button
                 type="button"
                 onClick={() => setSuggestType("major")}
                 disabled={!selectedFacultyId}
-                className={`text-xs disabled:opacity-50 ${themeClasses.linkSubtle}`}
+                className={`shrink-0 text-xs disabled:opacity-50 ${themeClasses.linkSubtle}`}
               >
                 {t("submissions.addMore")}
               </button>

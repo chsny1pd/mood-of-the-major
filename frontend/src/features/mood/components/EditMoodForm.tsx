@@ -6,6 +6,7 @@ import { queryKeys } from "../../../constants/queryKeys";
 import { getApiErrorMessage, getApiFieldErrors } from "../../../services/apiClient";
 import { fetchEmotionTags } from "../../../services/tagService";
 import { useLocalizedName } from "../../../lib/useLocalizedName";
+import { emotionEmoji } from "../../../lib/emotionEmoji";
 import { updateMoodSchema, type UpdateMoodFormValues } from "../schemas";
 import type { AnonymousMood } from "../../../types/mood";
 
@@ -114,7 +115,7 @@ export function EditMoodForm({ mood, onCancel, onSaved }: EditMoodFormProps) {
                       : "bg-stone-100 text-stone-700 hover:bg-stone-200"
                   }`}
                 >
-                  {localizedName(tag)}
+                  <span aria-hidden="true">{emotionEmoji(tag.slug)}</span> {localizedName(tag)}
                   {isPrimary ? " ★" : ""}
                 </button>
               );

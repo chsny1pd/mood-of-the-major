@@ -11,18 +11,30 @@ import { TagModel } from "../src/infrastructure/database/models/Tag.js";
 import { UserModel } from "../src/infrastructure/database/models/User.js";
 
 const SAMPLE_USER_EMAIL = "stats-demo@moodofthemajor.test";
+/** Enough moods for CE major to pass AGGREGATION_THRESHOLD_MIN (default 5) with headroom. */
+const TARGET_MAJOR_MOOD_COUNT = 40;
 
-const moodSamples = [
-  { content: "Midterms are stacking up.", tagSlug: "stress", dayOffset: 1 },
-  { content: "Finished a group project on time.", tagSlug: "joy", dayOffset: 2 },
-  { content: "Presentation tomorrow — nervous.", tagSlug: "anxiety", dayOffset: 3 },
-  { content: "Grateful for study buddies.", tagSlug: "gratitude", dayOffset: 4 },
-  { content: "Lab report deadline stress.", tagSlug: "stress", dayOffset: 5 },
-  { content: "Got helpful feedback from a tutor.", tagSlug: "gratitude", dayOffset: 6 },
-  { content: "Campus event lifted my mood.", tagSlug: "joy", dayOffset: 7 },
-  { content: "Waiting on internship results.", tagSlug: "anxiety", dayOffset: 8 },
-  { content: "Morning coffee and a quiet library.", tagSlug: "joy", dayOffset: 9 },
-  { content: "End-of-semester crunch.", tagSlug: "stress", dayOffset: 10 },
+const moodTemplates = [
+  { content: "Midterms are stacking up.", tagSlug: "stress" },
+  { content: "Finished a group project on time.", tagSlug: "joy" },
+  { content: "Presentation tomorrow — nervous.", tagSlug: "anxiety" },
+  { content: "Grateful for study buddies.", tagSlug: "gratitude" },
+  { content: "Lab report deadline stress.", tagSlug: "stress" },
+  { content: "Got helpful feedback from a tutor.", tagSlug: "gratitude" },
+  { content: "Campus event lifted my mood.", tagSlug: "joy" },
+  { content: "Waiting on internship results.", tagSlug: "anxiety" },
+  { content: "Morning coffee and a quiet library.", tagSlug: "joy" },
+  { content: "End-of-semester crunch.", tagSlug: "stress" },
+  { content: "Debugging all night for the CE project.", tagSlug: "stress" },
+  { content: "Passed the algorithms quiz!", tagSlug: "joy" },
+  { content: "Nervous about the hardware lab viva.", tagSlug: "anxiety" },
+  { content: "Thankful for senior mentoring hours.", tagSlug: "gratitude" },
+  { content: "Too many pull requests to review today.", tagSlug: "stress" },
+  { content: "Team demo went better than expected.", tagSlug: "joy" },
+  { content: "Waiting on compiler error #47.", tagSlug: "anxiety" },
+  { content: "Appreciate quiet study rooms in Engineering.", tagSlug: "gratitude" },
+  { content: "Circuits homework is eating my weekend.", tagSlug: "stress" },
+  { content: "Solved a bug that blocked the whole team.", tagSlug: "joy" },
 ] as const;
 
 function daysAgo(days: number): Date {
@@ -76,26 +88,28 @@ async function seedSampleMoods(): Promise<void> {
   }
 
   const existingCount = await MoodModel.countDocuments({
-    authorId: user._id,
+    majorId: major._id,
     status: "active",
     deletedAt: null,
   });
 
-  if (existingCount >= moodSamples.length) {
-    logger.info("Sample moods already present", { count: existingCount });
+  if (existingCount >= TARGET_MAJOR_MOOD_COUNT) {
+    logger.info("CE sample moods already sufficient", { count: existingCount, target: TARGET_MAJOR_MOOD_COUNT });
     await disconnectDatabase();
     return;
   }
 
+  const toCreate = TARGET_MAJOR_MOOD_COUNT - existingCount;
   let created = 0;
 
-  for (const sample of moodSamples) {
-    const tag = tagBySlug.get(sample.tagSlug)!;
-    const createdAt = daysAgo(sample.dayOffset);
+  for (let i = 0; i < toCreate; i += 1) {
+    const template = moodTemplates[i % moodTemplates.length]!;
+    const tag = tagBySlug.get(template.tagSlug)!;
+    const createdAt = daysAgo((i % 28) + 1);
 
     const mood = await MoodModel.create({
       authorId: user._id,
-      content: sample.content,
+      content: `${template.content} [ce-sample-${existingCount + i + 1}]`,
       facultyId: faculty._id,
       majorId: major._id,
       status: "active",
@@ -119,8 +133,10 @@ async function seedSampleMoods(): Promise<void> {
     created += 1;
   }
 
-  logger.info("Sample moods seeded", {
+  logger.info("Sample moods seeded for Computer Engineering", {
     created,
+    previous: existingCount,
+    totalTarget: TARGET_MAJOR_MOOD_COUNT,
     faculty: faculty.slug,
     major: major.slug,
     threshold: env.AGGREGATION_THRESHOLD_MIN,

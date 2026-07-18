@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import type {
   EmotionStatistics,
   UpsertEmotionStatisticsInput,
@@ -7,6 +8,16 @@ import type {
   IEmotionStatisticsRepository,
 } from "../../../domain/ports/IEmotionStatisticsRepository.js";
 import { EmotionStatisticsModel } from "../models/EmotionStatistics.js";
+
+function toObjectIdOrNull(id: string | null | undefined): Types.ObjectId | null {
+  if (!id) {
+    return null;
+  }
+  if (!Types.ObjectId.isValid(id)) {
+    return null;
+  }
+  return new Types.ObjectId(id);
+}
 
 function toEntity(doc: {
   _id: { toString(): string };
@@ -73,7 +84,7 @@ export class MongooseEmotionStatisticsRepository implements IEmotionStatisticsRe
     };
 
     if (query.scopeId) {
-      filter.scopeId = query.scopeId;
+      filter.scopeId = toObjectIdOrNull(query.scopeId);
     } else {
       filter.scopeId = null;
     }
@@ -90,7 +101,7 @@ export class MongooseEmotionStatisticsRepository implements IEmotionStatisticsRe
     };
 
     if (query.scopeId) {
-      filter.scopeId = query.scopeId;
+      filter.scopeId = toObjectIdOrNull(query.scopeId);
     } else {
       filter.scopeId = null;
     }

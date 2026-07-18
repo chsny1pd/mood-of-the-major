@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import type {
   DailyStatistics,
   UpsertDailyStatisticsInput,
@@ -8,6 +9,16 @@ import type {
 } from "../../../domain/ports/IDailyStatisticsRepository.js";
 import type { StatisticsScopeType } from "../../../domain/constants/statisticsConstants.js";
 import { DailyStatisticsModel } from "../models/DailyStatistics.js";
+
+function toObjectIdOrNull(id: string | null | undefined): Types.ObjectId | null {
+  if (!id) {
+    return null;
+  }
+  if (!Types.ObjectId.isValid(id)) {
+    return null;
+  }
+  return new Types.ObjectId(id);
+}
 
 function toEntity(doc: {
   _id: { toString(): string };
@@ -80,13 +91,13 @@ export class MongooseDailyStatisticsRepository implements IDailyStatisticsReposi
     };
 
     if (query.scopeId) {
-      filter.scopeId = query.scopeId;
+      filter.scopeId = toObjectIdOrNull(query.scopeId);
     } else {
       filter.scopeId = null;
     }
 
     if (query.tagId !== undefined) {
-      filter.tagId = query.tagId;
+      filter.tagId = query.tagId === null ? null : toObjectIdOrNull(query.tagId);
     }
 
     const docs = await DailyStatisticsModel.find(filter).sort({ date: 1 }).lean();
@@ -108,7 +119,7 @@ export class MongooseDailyStatisticsRepository implements IDailyStatisticsReposi
     };
 
     if (input.scopeId) {
-      match.scopeId = input.scopeId;
+      match.scopeId = toObjectIdOrNull(input.scopeId);
     } else {
       match.scopeId = null;
     }

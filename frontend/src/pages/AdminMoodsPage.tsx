@@ -5,6 +5,7 @@ import { EmptyState } from "../components/EmptyState";
 import { SubmitReferenceModal } from "../features/submissions/components/SubmitReferenceModal";
 import { queryKeys } from "../constants/queryKeys";
 import { useLocalizedName } from "../lib/useLocalizedName";
+import { emotionEmoji } from "../lib/emotionEmoji";
 import { themeClasses } from "../lib/themeClasses";
 import { fetchAdminMoodTags } from "../services/adminService";
 import { getApiErrorMessage } from "../services/apiClient";
@@ -67,7 +68,9 @@ export function AdminMoodsPage() {
             <tbody>
               {tags.map((tag) => (
                 <tr key={tag.id} className={`border-b ${themeClasses.border} last:border-0 ${themeClasses.hoverRow}`}>
-                  <td className={`px-4 py-3 ${themeClasses.subheading}`}>{localizedName(tag)}</td>
+                  <td className={`px-4 py-3 ${themeClasses.subheading}`}>
+                    <span aria-hidden="true">{emotionEmoji(tag.slug)}</span> {localizedName(tag)}
+                  </td>
                   <td className={`px-4 py-3 ${themeClasses.body}`}>{tag.slug}</td>
                   <td className={`px-4 py-3 capitalize ${themeClasses.body}`}>
                     {tag.isActive ? t("admin.active") : t("admin.inactive")}

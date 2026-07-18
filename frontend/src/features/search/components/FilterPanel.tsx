@@ -5,6 +5,7 @@ import { queryKeys } from "../../../constants/queryKeys";
 import { fetchFaculties, fetchMajors } from "../../../services/referenceService";
 import { fetchEmotionTags } from "../../../services/tagService";
 import { useLocalizedName } from "../../../lib/useLocalizedName";
+import { emotionEmoji } from "../../../lib/emotionEmoji";
 import { themeClasses } from "../../../lib/themeClasses";
 import type { MoodFilters } from "../types";
 
@@ -69,7 +70,7 @@ export const FilterPanel = memo(function FilterPanel({ filters, onChange, showSo
           <option value="">{t("filter.allEmotions")}</option>
           {tagsQuery.data?.map((tag) => (
             <option key={tag.id} value={tag.slug}>
-              {localizedName(tag)}
+              {emotionEmoji(tag.slug)} {localizedName(tag)}
             </option>
           ))}
         </select>

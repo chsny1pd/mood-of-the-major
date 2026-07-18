@@ -27,7 +27,6 @@ const primaryNavItems: NavItem[] = [
 
 const authenticatedNavItems: NavItem[] = [
   { to: ROUTES.bookmarks, labelKey: "nav.saved", requiresAuth: true },
-  { to: ROUTES.notifications, labelKey: "nav.inbox", requiresAuth: true },
   { to: ROUTES.admin, labelKey: "nav.admin", requiresAuth: true, adminOnly: true },
 ];
 
@@ -38,6 +37,32 @@ function navLinkClass({ isActive }: { isActive: boolean }) {
       ? "bg-orange-50 font-medium text-orange-900 dark:bg-orange-950 dark:text-orange-100"
       : "text-stone-600 hover:bg-stone-100 hover:text-orange-700 dark:text-stone-300 dark:hover:bg-stone-800 dark:hover:text-orange-300",
   ].join(" ");
+}
+
+function NotificationsBellLink({ className = "" }: { className?: string }) {
+  const { t } = useTranslation();
+
+  return (
+    <NavLink
+      to={ROUTES.notifications}
+      aria-label={t("nav.inbox")}
+      title={t("nav.inbox")}
+      className={({ isActive }) =>
+        [
+          "inline-flex h-9 w-9 items-center justify-center rounded-full transition",
+          isActive
+            ? "bg-orange-50 text-orange-800 dark:bg-orange-950 dark:text-orange-200"
+            : "text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-stone-800",
+          className,
+        ].join(" ")
+      }
+    >
+      <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+      </svg>
+    </NavLink>
+  );
 }
 
 interface AppNavbarProps {
@@ -124,6 +149,7 @@ export function AppNavbar({ variant = "app" }: AppNavbarProps) {
           <Suspense fallback={null}>
             <ThemeToggle />
           </Suspense>
+          {isAuthenticated ? <NotificationsBellLink /> : null}
           <Suspense fallback={null}>
             <UserMenu />
           </Suspense>
