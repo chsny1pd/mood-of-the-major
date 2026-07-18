@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { EMOTION_EMOJI_OPTIONS } from "../../lib/emotionEmoji";
-import { themeClasses } from "../../lib/themeClasses";
+import { EMOTION_EMOJI_OPTIONS } from "../lib/emotionEmoji";
+import { themeClasses } from "../lib/themeClasses";
 
 interface EmojiPickerProps {
   value: string;

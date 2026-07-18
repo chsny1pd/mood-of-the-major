@@ -267,6 +267,8 @@
       "other": "Other"
     },
     "logInToReact": "Log in to react",
+    "reactionLimit": "You can add up to 7 reactions",
+    "addReaction": "Add reaction",
     "reportModal": {
       "title": "Report content",
       "description": "Help keep the community safe. Reports are anonymous.",

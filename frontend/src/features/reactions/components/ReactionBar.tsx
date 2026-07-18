@@ -6,6 +6,10 @@ import { fetchReactions, toggleReaction } from "../../../services/reactionServic
 import { useAuth } from "../../../hooks/useAuth";
 import { Link } from "react-router-dom";
 import { ROUTES } from "../../../constants/routes";
+import { themeClasses } from "../../../lib/themeClasses";
+import { ReactionEmojiPicker } from "./ReactionEmojiPicker";
+
+const MAX_USER_REACTIONS = 7;
 
 interface ReactionBarProps {
   targetType: "mood" | "comment";
@@ -72,36 +76,60 @@ export function ReactionBar({ targetType, targetId, compact = false }: ReactionB
 
   const handleClick = (emoji: string) => {
     if (!isAuthenticated) return;
+    const isOwned = data.userReactions.includes(emoji);
+    if (!isOwned && data.userReactions.length >= MAX_USER_REACTIONS) return;
     mutation.mutate(emoji);
   };
 
+  const extraEmojis = Object.keys(data.reactionSummary).filter(
+    (emoji) =>
+      !DEFAULT_REACTION_EMOJIS.some((reaction) => reaction.emoji === emoji) &&
+      (data.reactionSummary[emoji] ?? 0) > 0,
+  );
+  const reactions = [
+    ...DEFAULT_REACTION_EMOJIS.map((reaction) => ({
+      emoji: reaction.emoji,
+      label: t(reaction.translationKey),
+    })),
+    ...extraEmojis.map((emoji) => ({ emoji, label: emoji })),
+  ];
+  const isAtLimit = data.userReactions.length >= MAX_USER_REACTIONS;
+
   return (
-    <div className={`flex flex-wrap gap-2 ${compact ? "text-xs" : "text-sm"}`}>
-      {DEFAULT_REACTION_EMOJIS.map((reaction) => {
+    <div className={`flex flex-wrap items-center gap-2 ${compact ? "text-xs" : "text-sm"}`}>
+      {reactions.map((reaction) => {
         const count = data.reactionSummary[reaction.emoji] ?? 0;
         const isActive = data.userReactions.includes(reaction.emoji);
-        const label = t(reaction.translationKey);
+        const cannotAdd = isAtLimit && !isActive;
 
         return (
           <button
             key={reaction.emoji}
             type="button"
-            disabled={!isAuthenticated || mutation.isPending}
+            disabled={!isAuthenticated || mutation.isPending || cannotAdd}
             onClick={() => handleClick(reaction.emoji)}
-            className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 transition ${
+            className={`inline-flex h-8 items-center gap-1 rounded-full border px-2.5 transition ${
               isActive
-                ? "border-orange-600 bg-orange-50 text-orange-900"
-                : "border-stone-200 bg-white text-stone-600 hover:border-orange-300"
+                ? "border-orange-600 bg-orange-50 text-orange-900 dark:border-orange-500 dark:bg-orange-950 dark:text-orange-100"
+                : "border-stone-200 bg-white text-stone-600 hover:border-orange-300 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-300 dark:hover:border-orange-700"
             } disabled:cursor-not-allowed disabled:opacity-60`}
-            title={label}
+            title={cannotAdd ? t("engagement.reactionLimit") : reaction.label}
+            aria-pressed={isActive}
           >
             <span>{reaction.emoji}</span>
             {count > 0 ? <span>{count}</span> : null}
           </button>
         );
       })}
+      <ReactionEmojiPicker
+        disabled={!isAuthenticated || mutation.isPending || isAtLimit}
+        onPick={handleClick}
+      />
+      {isAuthenticated && isAtLimit ? (
+        <span className={`text-xs ${themeClasses.muted}`}>{t("engagement.reactionLimit")}</span>
+      ) : null}
       {!isAuthenticated ? (
-        <Link to={ROUTES.login} className="self-center text-xs text-stone-500 hover:text-orange-800">
+        <Link to={ROUTES.login} className={`self-center text-xs ${themeClasses.linkSubtle}`}>
           {t("engagement.logInToReact")}
         </Link>
       ) : null}
