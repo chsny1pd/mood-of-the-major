@@ -6,6 +6,7 @@ const moodSchema = new Schema(
     content: { type: String, required: true, trim: true },
     facultyId: { type: Schema.Types.ObjectId, ref: "Faculty", default: null },
     majorId: { type: Schema.Types.ObjectId, ref: "Major", default: null },
+    groupId: { type: Schema.Types.ObjectId, ref: "Group", default: null },
     status: {
       type: String,
       required: true,
@@ -32,6 +33,7 @@ const moodSchema = new Schema(
 moodSchema.index({ status: 1, createdAt: -1 });
 moodSchema.index({ status: 1, facultyId: 1, createdAt: -1 });
 moodSchema.index({ status: 1, majorId: 1, createdAt: -1 });
+moodSchema.index({ status: 1, groupId: 1, createdAt: -1 });
 moodSchema.index({ status: 1, primaryTagId: 1, createdAt: -1 });
 moodSchema.index({ status: 1, lastActivityAt: -1 });
 moodSchema.index({ authorId: 1, createdAt: -1 });
@@ -46,6 +48,7 @@ export type MoodDocument = InferSchemaType<typeof moodSchema> & {
   authorId: Types.ObjectId;
   facultyId: Types.ObjectId | null;
   majorId: Types.ObjectId | null;
+  groupId: Types.ObjectId | null;
   primaryTagId: Types.ObjectId | null;
 };
 

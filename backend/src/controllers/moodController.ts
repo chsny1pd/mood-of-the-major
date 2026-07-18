@@ -35,7 +35,7 @@ export function createMoodController(moodService: MoodService) {
     }),
 
     getById: asyncHandler(async (req, res: Response) => {
-      const mood = await moodService.getMood(String(req.params.moodId));
+      const mood = await moodService.getMood(String(req.params.moodId), req.userId);
       const viewerFlags = moodService.getViewerFlags(
         mood,
         req.userId,

@@ -4,7 +4,7 @@
 > **Status:** Draft v1.0  
 > **Authority:** This document derives from [`README.md`](../README.md), [`SPECS.md`](../SPECS.md), [`DESIGN.md`](../DESIGN.md), and [`architecture.md`](./architecture.md). Where conflict exists, `README.md` takes precedence, then `SPECS.md`, then `architecture.md`, then `DESIGN.md`.  
 > **ODM:** Mongoose on **MongoDB Atlas**  
-> **Collections:** Exactly **15** — no additional collections without an ADR in `architecture.md`
+> **Collections:** Exactly **17** — no additional collections without an ADR in `docs/adr.md` (see ADR-016 for groups)
 
 ---
 
@@ -117,6 +117,8 @@ The schema uses a **hybrid approach** — normalized references for entities wit
 | 13 | `emotionstatistics` | Pre-aggregated emotion metrics by scope |
 | 14 | `dailystatistics` | Time-bucketed daily rollups |
 | 15 | `auditlogs` | Append-only admin action audit trail |
+| 16 | `groups` | User-created interest/support groups (ADR-016) |
+| 17 | `groupmembers` | Group membership edges (ADR-016) |
 
 > **Mapping note:** SPECS mood categories (`FR-CAT-*`) are implemented as `tags` documents with `type: emotion`. The domain port is **`ITagRepository`**, implemented by `MongooseTagRepository` on the `tags` collection.
 

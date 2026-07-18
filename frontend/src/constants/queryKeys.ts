@@ -22,4 +22,8 @@ export const queryKeys = {
   adminMoodTags: ["admin", "mood-tags"] as const,
   adminPendingSubmissions: (params?: unknown) => ["admin", "pending-submissions", params] as const,
   notifications: (params?: unknown) => ["notifications", params] as const,
+  groups: (q?: string) => ["groups", "list", q] as const,
+  groupDetail: (groupId: string) => ["groups", "detail", groupId] as const,
+  groupMoods: (groupId: string) => ["groups", "moods", groupId] as const,
+  groupMembers: (groupId: string) => ["groups", "members", groupId] as const,
 };

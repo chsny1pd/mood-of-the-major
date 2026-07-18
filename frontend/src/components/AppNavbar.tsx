@@ -23,6 +23,7 @@ interface NavItem {
 
 const primaryNavItems: NavItem[] = [
   { to: ROUTES.feed, labelKey: "nav.feed" },
+  { to: ROUTES.groups, labelKey: "nav.groups", requiresAuth: true },
   { to: ROUTES.dashboard, labelKey: "nav.dashboard" },
 ];
 
@@ -80,7 +81,12 @@ export function AppNavbar({ variant = "app" }: AppNavbarProps) {
   }, []);
 
   const visibleItems = [
-    ...primaryNavItems,
+    ...primaryNavItems.filter((item) => {
+      if (item.requiresAuth) {
+        return isAuthenticated;
+      }
+      return true;
+    }),
     ...authenticatedNavItems.filter((item) => {
       if (item.adminOnly) {
         return user?.role === "administrator";

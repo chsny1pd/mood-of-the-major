@@ -1,0 +1,6 @@
+export const MAX_OWNED_GROUPS_PER_USER = 3;
+export const GROUP_NAME_MIN_LENGTH = 2;
+export const GROUP_NAME_MAX_LENGTH = 80;
+export const GROUP_DESCRIPTION_MAX_LENGTH = 500;
+export const GROUP_LIST_DEFAULT_LIMIT = 20;
+export const GROUP_LIST_MAX_LIMIT = 50;

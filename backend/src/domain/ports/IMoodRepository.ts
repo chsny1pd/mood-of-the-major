@@ -3,6 +3,8 @@ import type { CreateMoodInput, Mood } from "../entities/Mood.js";
 export interface MoodFeedFilters {
   facultyId?: string;
   majorId?: string;
+  /** When set, returns moods in that group. When omitted, excludes group-scoped moods. */
+  groupId?: string;
   tagSlug?: string;
   from?: Date;
   to?: Date;

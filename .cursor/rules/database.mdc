@@ -8,7 +8,7 @@ alwaysApply: false
 
 Follow [`docs/database.md`](../../docs/database.md).
 
-- Exactly **15 collections**; new collections require an ADR.
+- Exactly **17 collections**; new collections require an ADR.
 - Collection names: lowercase plural (`moodimages`, `auditlogs`, etc.).
 - `users` includes `tokenVersion`, `refreshTokenHash`, `refreshTokenExpiresAt` for auth lifecycle.
 - Public queries filter `deletedAt: null` and active status; use projection profiles that strip identity fields.

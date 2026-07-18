@@ -26,7 +26,8 @@
 16. [ADR-013 — Precomputed Statistics](#adr-013--precomputed-statistics)
 17. [ADR-014 — Soft Delete Strategy](#adr-014--soft-delete-strategy)
 18. [ADR-015 — Future Architectural Decisions](#adr-015--future-architectural-decisions)
-19. [Related Documents](#related-documents)
+19. [ADR-016 — Anonymous Interest Groups Collections](#adr-016--anonymous-interest-groups-collections)
+20. [Related Documents](#related-documents)
 
 ---
 
@@ -79,6 +80,7 @@ Each record follows this structure:
 | [ADR-013](#adr-013--precomputed-statistics) | Precomputed statistics | Accepted |
 | [ADR-014](#adr-014--soft-delete-strategy) | Soft delete strategy | Accepted |
 | [ADR-015](#adr-015--future-architectural-decisions) | Future architectural decisions (tracking) | Proposed |
+| [ADR-016](#adr-016--anonymous-interest-groups-collections) | Anonymous interest groups (`groups`, `groupmembers`) | Accepted |
 
 > **Note:** `architecture.md` contains a shorter inline ADR table with different numbering (e.g., JWT as ADR-002 there). **This document (`docs/adr.md`) is the authoritative ADR log** with the numbering above.
 
@@ -1046,32 +1048,56 @@ The following topics are **recognized but not yet decided**. When implementation
 | **Mobile React Native app** | Native app launch | Shared types, same JWT API |
 | **ML content moderation** | Auto-flag pipeline | Internal classification service |
 | **GraphQL API** | Not planned — REST canonical | N/A unless requirements change |
-| **New MongoDB collection** | Feature exceeds 15-collection lock | ADR + schema update |
+| **New MongoDB collection** | Feature exceeds 15-collection lock | See ADR-016 for groups |
 | **Platform migration** | Cost or compliance driver | Re-evaluate Vercel/Railway/Atlas/R2 |
 
 ### Alternatives Considered
 
 N/A — this ADR is a **backlog tracker**, not a choice among options.
 
+---
+
+## ADR-016 — Anonymous Interest Groups Collections
+
+### Status
+
+**Accepted**
+
+### Context
+
+Students need optional interest/support rooms for anonymous mood sharing beyond faculty/major feeds. The database catalog was locked at 15 collections; user-created groups require dedicated membership storage and cannot be modeled safely as tags alone (authorization, cover media, create limits, owner kick).
+
+### Decision
+
+Add two collections and one mood FK:
+
+| Collection | Purpose |
+|------------|---------|
+| `groups` | Group catalog: name, description, optional `coverImageUrl`, `ownerId`, denormalized `memberCount`, status |
+| `groupmembers` | Membership edges: `groupId`, `userId`, `role` (`owner` \| `member`) |
+
+- `moods.groupId` optional ObjectId — posts scoped to a group are excluded from global/faculty/major feeds.
+- Create limit: **3** owned groups per user; join count unlimited; join is open (no approval).
+- Public APIs expose member **count** only; owner-only member list may include `displayName` for kick moderation.
+- Collection total becomes **17**.
+
+### Alternatives Considered
+
+| Alternative | Why not chosen |
+|-------------|----------------|
+| Tag-only “groups” | Cannot enforce membership gates or ownership cleanly |
+| Embed members on `groups` | Unbounded array growth; hard to query “my groups” |
+| Full Facebook clone | Out of product scope (chat, events, public member directories) |
+
 ### Consequences
 
-**Positive:**
-
-- Prevents undocumented stack drift.
-- Gives contributors a single place to check pending architectural work.
-
-**Negative:**
-
-- None until individual topics are decided.
+- Positive: Clear authZ boundary; reuses mood engagement stack inside groups.
+- Negative: Two more collections and feed filter complexity (`groupId: null` on public feeds).
+- Neutral: Cover images stored as URL string initially (R2 cover prefix can follow later).
 
 ### Future Considerations
 
-When promoting a topic from this list:
-
-1. Assign next ADR number in this document.
-2. Set status to `Accepted` or `Rejected` with full sections.
-3. Update `architecture.md`, affected layer docs, and `PROJECT_AUDIT.md` if diverging from prior intent.
-4. Update `README.md` if stack table changes.
+Approval-based join, group post sharing to main feed, R2-backed cover uploads.
 
 ---
 

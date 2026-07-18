@@ -15,6 +15,7 @@ import {
   ValidationError,
 } from "../../domain/errors/AppError.js";
 import type { IFacultyRepository } from "../../domain/ports/IFacultyRepository.js";
+import type { IGroupMemberRepository } from "../../domain/ports/IGroupRepository.js";
 import type { IMoodImageRepository } from "../../domain/ports/IMoodImageRepository.js";
 import type { MoodFeedFilters, MoodWithRelations } from "../../domain/ports/IMoodRepository.js";
 import type { IMoodRepository } from "../../domain/ports/IMoodRepository.js";
@@ -26,6 +27,7 @@ export interface CreateMoodServiceInput {
   content: string;
   facultyId?: string;
   majorId?: string;
+  groupId?: string;
   tagIds: string[];
   primaryTagId: string;
   imageIds?: string[];
@@ -72,6 +74,7 @@ export class MoodService {
     private readonly tags: ITagRepository,
     private readonly faculties: IFacultyRepository,
     private readonly users: IUserRepository,
+    private readonly groupMembers: IGroupMemberRepository,
   ) {}
 
   async createMood(userId: string, input: CreateMoodServiceInput): Promise<MoodWithRelations> {
@@ -180,11 +183,21 @@ export class MoodService {
       }
     }
 
+    let groupId: string | null = null;
+    if (input.groupId) {
+      const membership = await this.groupMembers.findMembership(input.groupId, userId);
+      if (!membership) {
+        throw new AuthorizationError("Join this group to post", "GROUP_MEMBERSHIP_REQUIRED");
+      }
+      groupId = input.groupId;
+    }
+
     const mood = await this.moods.create({
       authorId: userId,
       content,
       facultyId: facultyId ?? null,
       majorId: majorId ?? null,
+      groupId,
       tagIds: input.tagIds,
       primaryTagId: input.primaryTagId,
       imageIds,
@@ -198,11 +211,21 @@ export class MoodService {
     return mood;
   }
 
-  async getMood(moodId: string): Promise<MoodWithRelations> {
+  async getMood(moodId: string, viewerUserId?: string): Promise<MoodWithRelations> {
     const mood = await this.moods.findById(moodId);
 
     if (!mood) {
       throw new AppError("Mood not found", { statusCode: 404, code: "NOT_FOUND" });
+    }
+
+    if (mood.groupId) {
+      if (!viewerUserId) {
+        throw new AuthorizationError("Join this group to view posts", "GROUP_MEMBERSHIP_REQUIRED");
+      }
+      const membership = await this.groupMembers.findMembership(mood.groupId, viewerUserId);
+      if (!membership) {
+        throw new AuthorizationError("Join this group to view posts", "GROUP_MEMBERSHIP_REQUIRED");
+      }
     }
 
     return mood;
@@ -396,6 +419,50 @@ export class MoodService {
     }
 
     return this.getFeed({ ...input, majorId: major.id });
+  }
+
+  async getGroupFeed(
+    groupId: string,
+    input: { limit?: number; cursor?: string },
+  ): Promise<FeedResult> {
+    const maxLimit = FEED_MAX_LIMIT;
+    const limit = Math.min(Math.max(input.limit ?? FEED_DEFAULT_LIMIT, 1), maxLimit);
+
+    let cursorCreatedAt: Date | undefined;
+    let cursorId: string | undefined;
+
+    if (input.cursor) {
+      const decoded = decodeCursor(input.cursor);
+      if (!decoded) {
+        throw new ValidationError("Invalid cursor", [
+          { field: "cursor", message: "Cursor is invalid or expired." },
+        ]);
+      }
+      cursorCreatedAt = new Date(decoded.createdAt);
+      cursorId = decoded.id;
+    }
+
+    const items = await this.moods.findActiveFeed({
+      limit,
+      cursorCreatedAt,
+      cursorId,
+      groupId,
+      sort: "newest",
+    });
+
+    const pagination = buildNextCursor(
+      items.map((item) => ({ id: item.id, createdAt: item.createdAt })),
+      limit,
+    );
+
+    return {
+      items,
+      meta: {
+        limit,
+        nextCursor: pagination.nextCursor,
+        hasMore: pagination.hasMore,
+      },
+    };
   }
 
   async searchMoods(input: SearchQueryInput): Promise<FeedResult> {

@@ -22,6 +22,7 @@ async function hydrateMoods(
     content: string;
     facultyId?: { toString(): string } | null;
     majorId?: { toString(): string } | null;
+    groupId?: { toString(): string } | null;
     status: MoodWithRelations["status"];
     commentCount: number;
     reactionSummary: Record<string, number>;
@@ -92,6 +93,7 @@ async function hydrateMoods(
       content: mood.content,
       facultyId: mood.facultyId?.toString() ?? null,
       majorId: mood.majorId?.toString() ?? null,
+      groupId: mood.groupId?.toString() ?? null,
       status: mood.status,
       commentCount: mood.commentCount,
       reactionSummary: mood.reactionSummary ?? {},
@@ -148,6 +150,8 @@ function buildFeedFilter(query: MoodFeedQuery): Record<string, unknown> {
   const filter: Record<string, unknown> = {
     status: "active",
     deletedAt: null,
+    // Public feeds exclude group-scoped moods; group feeds pass groupId explicitly.
+    groupId: query.groupId ?? null,
   };
 
   if (query.facultyId) {
@@ -195,6 +199,7 @@ export class MongooseMoodRepository implements IMoodRepository {
       content: input.content,
       facultyId: input.facultyId,
       majorId: input.majorId,
+      groupId: input.groupId,
       status: "active",
       primaryTagId: input.primaryTagId,
       imageCount: input.imageIds.length,
@@ -278,6 +283,7 @@ export class MongooseMoodRepository implements IMoodRepository {
     const filter: Record<string, unknown> = {
       status: "active",
       deletedAt: null,
+      groupId: null,
       content: { $regex: pattern, $options: "i" },
     };
 
@@ -485,6 +491,7 @@ export class MongooseMoodRepository implements IMoodRepository {
       content: doc.content,
       facultyId: doc.facultyId?.toString() ?? null,
       majorId: doc.majorId?.toString() ?? null,
+      groupId: doc.groupId?.toString() ?? null,
       status: doc.status,
       commentCount: doc.commentCount,
       reactionSummary: doc.reactionSummary ?? {},
@@ -528,6 +535,7 @@ export class MongooseMoodRepository implements IMoodRepository {
       content: input.content,
       facultyId: input.facultyId,
       majorId: input.majorId,
+      groupId: null,
       status: "active",
       primaryTagId: input.primaryTagId,
       imageCount: 0,

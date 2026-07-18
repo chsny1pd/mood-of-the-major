@@ -1551,6 +1551,28 @@ If the caller did not have the emoji, response returns unchanged `reactionSummar
 
 ---
 
+## Group APIs
+
+Anonymous interest/support groups (ADR-016). Posts with `moods.groupId` are excluded from global/faculty/major feeds. Public group DTOs expose member **count** only; owner member lists may include `displayLabel` for kick moderation.
+
+| Method | Endpoint | Notes |
+|--------|----------|--------|
+| `GET` | `/api/v1/groups?q=&limit=&cursor=` | Search/list groups |
+| `POST` | `/api/v1/groups` | Create (max **3** owned per user) |
+| `GET` | `/api/v1/groups/:groupId` | Detail + `isMember` / `isOwner` |
+| `POST` | `/api/v1/groups/:groupId/join` | Open join |
+| `DELETE` | `/api/v1/groups/:groupId/leave` | Members only; owners cannot leave |
+| `GET` | `/api/v1/groups/:groupId/members` | Owner only |
+| `DELETE` | `/api/v1/groups/:groupId/members/:userId` | Owner kick |
+| `GET` | `/api/v1/groups/:groupId/moods` | Members only |
+| `POST` | `/api/v1/groups/:groupId/moods` | Members only; anonymous mood DTO |
+
+**Auth:** JWT required; roles `student`, `administrator`.
+
+**Related Collections:** `groups`, `groupmembers`, `moods`
+
+---
+
 ## Bookmark APIs
 
 ### Bookmark Mood

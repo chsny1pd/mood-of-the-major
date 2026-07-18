@@ -2,13 +2,14 @@ import type { NextFunction, Request, Response } from "express";
 import type { ZodSchema } from "zod";
 import { ValidationError } from "../domain/errors/AppError.js";
 
-export function validate(schema: ZodSchema, source: "body" | "query" = "body") {
+export function validate(schema: ZodSchema, source: "body" | "query" | "params" = "body") {
   return (req: Request, _res: Response, next: NextFunction): void => {
-    const result = schema.safeParse(source === "body" ? req.body : req.query);
+    const payload = source === "body" ? req.body : source === "query" ? req.query : req.params;
+    const result = schema.safeParse(payload);
 
     if (!result.success) {
       const details = result.error.issues.map((issue) => ({
-        field: issue.path.join(".") || "body",
+        field: issue.path.join(".") || source,
         message: issue.message,
       }));
 
@@ -18,8 +19,10 @@ export function validate(schema: ZodSchema, source: "body" | "query" = "body") {
 
     if (source === "body") {
       req.body = result.data;
-    } else {
+    } else if (source === "query") {
       req.validatedQuery = result.data as Record<string, unknown>;
+    } else {
+      req.params = result.data as typeof req.params;
     }
 
     next();

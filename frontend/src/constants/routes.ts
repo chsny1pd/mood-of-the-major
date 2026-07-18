@@ -8,6 +8,8 @@ export const ROUTES = {
   feed: "/feed",
   create: "/create",
   bookmarks: "/bookmarks",
+  groups: "/groups",
+  groupDetail: (groupId: string) => `/groups/${groupId}`,
   search: "/search",
   dashboard: "/dashboard",
   statistics: "/statistics",

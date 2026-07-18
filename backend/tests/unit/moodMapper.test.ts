@@ -8,6 +8,7 @@ const sampleMood: MoodWithRelations = {
   content: "Feeling overwhelmed with finals week...",
   facultyId: "665a1b2c3d4e5f6789012345",
   majorId: "665a1b2c3d4e5f6789012346",
+  groupId: null,
   status: "active",
   commentCount: 5,
   reactionSummary: { "💙": 12, "🤝": 8 },

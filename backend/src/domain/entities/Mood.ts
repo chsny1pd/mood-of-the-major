@@ -11,6 +11,7 @@ export interface Mood {
   content: string;
   facultyId: string | null;
   majorId: string | null;
+  groupId: string | null;
   status: MoodStatus;
   commentCount: number;
   reactionSummary: Record<string, number>;
@@ -32,6 +33,7 @@ export interface CreateMoodInput {
   content: string;
   facultyId: string | null;
   majorId: string | null;
+  groupId: string | null;
   tagIds: string[];
   primaryTagId: string;
   imageIds: string[];

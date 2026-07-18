@@ -4,6 +4,7 @@ import { AuthService } from "../application/services/AuthService.js";
 import { BookmarkService } from "../application/services/BookmarkService.js";
 import { CommentService } from "../application/services/CommentService.js";
 import { FacultyService } from "../application/services/FacultyService.js";
+import { GroupService } from "../application/services/GroupService.js";
 import { MoodService } from "../application/services/MoodService.js";
 import { ReactionService } from "../application/services/ReactionService.js";
 import { ReportService } from "../application/services/ReportService.js";
@@ -18,6 +19,7 @@ import { createAuthController } from "../controllers/authController.js";
 import { createBookmarkController } from "../controllers/bookmarkController.js";
 import { createCommentController } from "../controllers/commentController.js";
 import { createFacultyController } from "../controllers/facultyController.js";
+import { createGroupController } from "../controllers/groupController.js";
 import { createImageController } from "../controllers/imageController.js";
 import { createMoodController } from "../controllers/moodController.js";
 import { createReactionController } from "../controllers/reactionController.js";
@@ -45,6 +47,8 @@ import { MongooseNotificationRepository } from "../infrastructure/database/repos
 import { MongooseBookmarkRepository } from "../infrastructure/database/repositories/MongooseBookmarkRepository.js";
 import { MongooseCommentRepository } from "../infrastructure/database/repositories/MongooseCommentRepository.js";
 import { MongooseFacultyRepository } from "../infrastructure/database/repositories/MongooseFacultyRepository.js";
+import { MongooseGroupMemberRepository } from "../infrastructure/database/repositories/MongooseGroupMemberRepository.js";
+import { MongooseGroupRepository } from "../infrastructure/database/repositories/MongooseGroupRepository.js";
 import { MongooseMoodImageRepository } from "../infrastructure/database/repositories/MongooseMoodImageRepository.js";
 import { MongooseMoodRepository } from "../infrastructure/database/repositories/MongooseMoodRepository.js";
 import { MongooseReactionRepository } from "../infrastructure/database/repositories/MongooseReactionRepository.js";
@@ -78,6 +82,7 @@ export interface AppDependencies {
   logger: ReturnType<typeof createLogger>;
   authService: AuthService;
   facultyService: FacultyService;
+  groupService: GroupService;
   moodService: MoodService;
   imageService: ImageService;
   commentService: CommentService;
@@ -95,6 +100,7 @@ export interface AppDependencies {
   authController: ReturnType<typeof createAuthController>;
   oauthController: ReturnType<typeof createOAuthController>;
   facultyController: ReturnType<typeof createFacultyController>;
+  groupController: ReturnType<typeof createGroupController>;
   moodController: ReturnType<typeof createMoodController>;
   imageController: ReturnType<typeof createImageController>;
   submissionController: ReturnType<typeof createSubmissionController>;
@@ -119,6 +125,8 @@ export function createDependencies(env: Env): AppDependencies {
   const rateLimiters = createRateLimiters(env, logger);
   const userRepository = new MongooseUserRepository();
   const facultyRepository = new MongooseFacultyRepository();
+  const groupRepository = new MongooseGroupRepository();
+  const groupMemberRepository = new MongooseGroupMemberRepository();
   const moodRepository = new MongooseMoodRepository();
   const moodImageRepository = new MongooseMoodImageRepository();
   const tagRepository = new MongooseTagRepository();
@@ -152,6 +160,13 @@ export function createDependencies(env: Env): AppDependencies {
     tagRepository,
     facultyRepository,
     userRepository,
+    groupMemberRepository,
+  );
+  const groupService = new GroupService(
+    groupRepository,
+    groupMemberRepository,
+    userRepository,
+    moodService,
   );
   const imageService = new ImageService(moodImageRepository, imageStorage, env);
   const commentService = new CommentService(commentRepository, moodRepository);
@@ -204,6 +219,7 @@ export function createDependencies(env: Env): AppDependencies {
     rateLimiters,
     authService,
     facultyService,
+    groupService,
     moodService,
     imageService,
     commentService,
@@ -221,6 +237,7 @@ export function createDependencies(env: Env): AppDependencies {
     authController: createAuthController(authService, env),
     oauthController: createOAuthController(authService, env),
     facultyController: createFacultyController(facultyService),
+    groupController: createGroupController(groupService),
     moodController: createMoodController(moodService),
     imageController: createImageController(imageService),
     tagController: createTagController(tagRepository),

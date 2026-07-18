@@ -74,6 +74,18 @@ export const router = createBrowserRouter([
           import("../pages/BookmarksPage").then((module) => ({ Component: module.BookmarksPage })),
       },
       {
+        path: ROUTES.groups,
+        lazy: () =>
+          import("../pages/GroupsPage").then((module) => ({ Component: module.GroupsPage })),
+      },
+      {
+        path: ROUTES.groupDetail(":groupId"),
+        lazy: () =>
+          import("../pages/GroupDetailPage").then((module) => ({
+            Component: module.GroupDetailPage,
+          })),
+      },
+      {
         path: ROUTES.search,
         lazy: async () => {
           const { Navigate } = await import("react-router-dom");

@@ -12,6 +12,7 @@ import { themeClasses } from "../../../lib/themeClasses";
 import { getApiErrorMessage, getApiFieldErrors } from "../../../services/apiClient";
 import { fetchEmotionTags } from "../../../services/tagService";
 import { createMood } from "../../../services/moodService";
+import { createGroupMood } from "../../../services/groupService";
 import { fetchFaculties, fetchMajors } from "../../../services/referenceService";
 import type { SubmissionType } from "../../../services/submissionService";
 import { useLocalizedName } from "../../../lib/useLocalizedName";
@@ -19,7 +20,12 @@ import { emotionEmoji } from "../../../lib/emotionEmoji";
 import { useImageUpload } from "../../upload/hooks/useImageUpload";
 import { createMoodSchema, type CreateMoodFormValues } from "../schemas";
 
-export function CreateMoodForm() {
+interface CreateMoodFormProps {
+  groupId?: string;
+  onSuccess?: () => void;
+}
+
+export function CreateMoodForm({ groupId, onSuccess }: CreateMoodFormProps = {}) {
   const { t } = useTranslation();
   const localizedName = useLocalizedName();
   const navigate = useNavigate();
@@ -88,17 +94,25 @@ export function CreateMoodForm() {
     setFormError(null);
 
     try {
-      const mood = await createMood({
+      const payload = {
         content: values.content,
         facultyId: values.facultyId || undefined,
         majorId: values.majorId || undefined,
         tagIds: values.tagIds,
         primaryTagId: values.primaryTagId,
         imageIds: imageIds.length > 0 ? imageIds : undefined,
-      });
+      };
+
+      const mood = groupId
+        ? await createGroupMood(groupId, payload)
+        : await createMood(payload);
 
       reset();
-      navigate(ROUTES.moodDetail(mood.id));
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        navigate(ROUTES.moodDetail(mood.id));
+      }
     } catch (error) {
       const fieldErrors = getApiFieldErrors(error);
       Object.entries(fieldErrors).forEach(([field, message]) => {
